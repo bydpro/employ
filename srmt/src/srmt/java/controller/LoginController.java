@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,13 +49,25 @@ public class LoginController {
 	}
 
 	@RequestMapping("/enterMainPage.do")
-	public String enterMainPage(HttpServletRequest request) {
+	public String enterMainPage(HttpServletRequest request, Model model) {
 		HttpSession session = request.getSession();
 		String userType = (String) session.getAttribute("userType");
 		String msg = "mainPage4Tec";
 		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 			msg = "mainPage";
 		}
+		model.addAttribute("username", (String) session.getAttribute("userName"));
 		return msg;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/loginOut.do")
+	public Map loginOut(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		session.setAttribute(Constants.USER_ID, null);
+		session = null;
+		Map map =new HashMap<>();
+		map.put("msg", true);
+		return map;
 	}
 }

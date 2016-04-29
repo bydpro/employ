@@ -159,11 +159,30 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 		}
 	});
 
+	function loginOut(){
+		$.ajax({
+			type : "POST",
+			dataType : "json",
+			url : "loginOut.do",
+			async : true,
+			success : function(data) {
+				if(data.msg){
+					var  jsp = "enterLoginPage.do";
+	        		window.location.href = jsp;
+				}
+			},
+		})
+	}
 </script>
 </head>
 <body class="easyui-layout">
 	<div region="north" class="north" border="true">
-		<h2>高校教师科研管理系统</h2>
+		<div align="right">
+			<form>
+				<label>欢迎你：</label> <label>${username}</label>&nbsp;&nbsp;<a
+					href="javascript:void(0)" onclick="loginOut()">退出</a>
+			</form>
+		</div>
 	</div>
 	<div region="center" title="功能">
 		<div class="easyui-tabs" fit="true" border="false" id="tabs">
