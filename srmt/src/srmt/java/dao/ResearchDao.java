@@ -3,6 +3,7 @@ package srmt.java.dao;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -608,13 +609,14 @@ public class ResearchDao {
 		return queryList;
 	}
 
-	public double getCurrentThesisWorkload(String userId) {
+	public List<Map> getCurrentThesisWorkload4Tec(BigInteger userNum) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("   SELECT                                                   ");
+		sb.append("   	T.THESIS_NAME THESISNAME,                   ");
 		sb.append("   	T.THESIS_PERIODICAL THESISPERIODICAL                   ");
 		sb.append("   FROM                                                     ");
 		sb.append("   	SYS_USER_RESEARCH SUR                                  ");
-		sb.append("   LEFT JOIN THESIS_INFO T ON SUR.RESEARCH_ID = THESIS_ID   ");
+		sb.append("   LEFT JOIN THESIS_INFO T ON SUR.RESEARCH_ID = T.THESIS_ID   ");
 		sb.append("   WHERE                                                    ");
 		sb.append("   	SUR.RESEARCH_TYPE = :researchThesis                ");
 		sb.append("   AND SUR.RESEARCH_USER_ID = :userId                        ");
@@ -622,9 +624,10 @@ public class ResearchDao {
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchThesis", Constants.RESEARCH_TYPE_THESIS);
-		query.setParameter("userId", userId);
+		query.setParameter("userId", userNum.toString());
 		List<Map> queryList = query.list();
 		double workloadSum = 0;
+		List<Map> list =new ArrayList<>();
 		if (queryList != null && queryList.size() > 0) {
 			for (Map map : queryList) {
 				double workload = 0;
@@ -647,10 +650,17 @@ public class ResearchDao {
 						workload = 0.1;
 					}
 					workloadSum = workloadSum + workload;
+					Map thesisMap = new HashMap<>();
+					thesisMap.put("thesisName",  (String) map.get("THESISNAME"));
+					thesisMap.put("workload", workload);
+					list.add(thesisMap);
 				}
 			}
 		}
-		return workloadSum;
+		Map workMap = new  HashMap<>();
+		workMap.put("workloadSum", workloadSum);
+		list.add(workMap);
+		return list;
 	}
 
 	public double getCurrentProjectWorkload(String userId) {

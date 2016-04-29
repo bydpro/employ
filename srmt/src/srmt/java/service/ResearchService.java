@@ -2,6 +2,7 @@ package srmt.java.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -126,9 +127,7 @@ public class ResearchService {
 		return file.getAbsolutePath();
 	}
 
-	public double getWorkload(String userId) {
-		double sum = researchDao.getCurrentPatentWorkload(userId) + researchDao.getCurrentProjectWorkload(userId)
-				+ researchDao.getCurrentRewardWorkload(userId) + researchDao.getCurrentThesisWorkload(userId);
-		return sum;
+	public List<Map> getCurrentThesisWorkload4Tec(BigInteger userNum) {
+		return researchDao.getCurrentThesisWorkload4Tec(userNum);
 	}
 }
