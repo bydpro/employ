@@ -35,7 +35,7 @@ public class SysUserResearch implements Serializable {
 	private String researchType;
 
 	@Column(name="research_user_id")
-	private String researchUserId;
+	private long researchUserId;
 
 	public SysUserResearch() {
 	}
@@ -80,11 +80,11 @@ public class SysUserResearch implements Serializable {
 		this.researchType = researchType;
 	}
 
-	public String getResearchUserId() {
+	public long getResearchUserId() {
 		return this.researchUserId;
 	}
 
-	public void setResearchUserId(String researchUserId) {
+	public void setResearchUserId(long researchUserId) {
 		this.researchUserId = researchUserId;
 	}
 

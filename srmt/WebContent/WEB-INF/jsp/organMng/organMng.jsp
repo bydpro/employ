@@ -100,7 +100,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#organDg').datagrid('reload');// reload the user data
+							$('#organDg').datagrid('reload',getData());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -251,9 +251,8 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="unLayoutOrgan()">取消注销</a>
 </div>
 
-<div id="organDlg" class="easyui-dialog" style="width:590px;height:300px;padding:10px 20px"
-		closed="true" buttons="#organDlg-buttons">
-	<div class="ftitle">单位信息</div>
+<div id="organDlg" class="easyui-dialog" style="width:390px;height:250px;padding:10px 20px"
+		closed="true" buttons="#organDlg-buttons" align="center">
 	<form id="submitForm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="organId" hidden="true"/>

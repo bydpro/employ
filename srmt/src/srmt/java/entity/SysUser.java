@@ -59,6 +59,11 @@ public class SysUser implements Serializable {
 
 	private String username;
 
+	@Column(name = "user_num")
+	private Long userNum;
+	
+
+
 	public SysUser() {
 	}
 
@@ -181,5 +186,11 @@ public class SysUser implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	public Long getUserNum() {
+		return userNum;
+	}
 
+	public void setUserNum(Long userNum) {
+		this.userNum = userNum;
+	}
 }

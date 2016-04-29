@@ -3,8 +3,8 @@
 <meta charset="utf-8" />
 <style>
 #text-box {
-	width:200px;
-    height: 30px;
+	width: 200px;
+	height: 30px;
 }
 </style>
 <script type="text/javascript">
@@ -23,64 +23,66 @@
 		});
 		return o;
 	}
-	
+
 	function clearForm() {
 		$('#ff').form('clear');
 	}
 
 	function doSearch() {
-		reFreshGrid(1,10);
+		getData();
 	}
-	
-	function addUser(){
-		$('#dlg').dialog('open').dialog('setTitle','新增用户');
+
+	function addUser() {
+		$('#dlg').dialog('open').dialog('setTitle', '新增用户');
 		$('#fm').form('clear');
 	}
-	
-	
-	function editUser(){
+
+	function editUser() {
 		var row = $('#dg').datagrid('getSelected');
-		if (row){
+		if (row) {
 			$.ajax({
-				type: "POST",
-	            dataType: "json",
-	            url: "userMng/getUserInfo.do",
-	            data: {userId:row.USERID},
-	            async:true,
-	            success: function (data) {
-	        		$('#dlg').dialog('open').dialog('setTitle','修改用户');
-	    			$('#fm').form('load',data);
-	            },
+				type : "POST",
+				dataType : "json",
+				url : "userMng/getUserInfo.do",
+				data : {
+					userId : row.USERID
+				},
+				async : true,
+				success : function(data) {
+					$('#dlg').dialog('open').dialog('setTitle', '修改用户');
+					$('#fm').form('load', data);
+				},
 			})
-		}else{
-			$.messager.alert('提示','请选中一行!');
+		} else {
+			$.messager.alert('提示', '请选中一行!');
 		}
 	}
-	
-	function delUser(){
-		debugger
+
+	function delUser() {
 		var row = $('#dg').datagrid('getSelected');
-		if (row){
-			$.messager.confirm('Confirm','确认删除所选用户么?',function(r){
-				if (r){
-					$.post('userMng/delUser.do',{userId:row.USERID},function(result){
-						if (result.success){
-							$.messager.alert('提示','删除成功!');
-							$('#dg').datagrid('reload');	// reload the user data
+		if (row) {
+			$.messager.confirm('Confirm', '确认删除所选用户么?', function(r) {
+				if (r) {
+					$.post('userMng/delUser.do', {
+						userId : row.USERID
+					}, function(result) {
+						if (result.success) {
+							$.messager.alert('提示', '删除成功!');
+							$('#dg').datagrid('reload',getData()); // reload the user data
 						} else {
-							$.messager.show({	// show error message
-								title: 'Error',
-								msg: '删除失败'
+							$.messager.show({ // show error message
+								title : 'Error',
+								msg : '删除失败'
 							});
 						}
-					},'json');
+					}, 'json');
 				}
 			});
-		}else{
-			$.messager.alert('提示','请选中一行!');
+		} else {
+			$.messager.alert('提示', '请选中一行!');
 		}
 	}
-	
+
 	function saveUser() {
 		$('#fm').form('submit', {
 			url : "userMng/saveUser.do",
@@ -96,19 +98,18 @@
 					});
 				} else {
 					$('#dlg').dialog('close'); // close the dialog
-					$('#dg').datagrid('reload'); // reload the user data
+					$('#dg').datagrid('reload',getData()); // reload the user data
 				}
 			}
 		});
 	}
-	function formatValue(val,row){
-		if (val == 1){
+	function formatValue(val, row) {
+		if (val == 1) {
 			return '是';
 		} else {
 			return '否';
 		}
 	}
-	
 
 	function formatSex(val, row) {
 		if (val == 1) {
@@ -119,116 +120,112 @@
 			return '未知';
 		}
 	}
-	
-	function layoutUser(){
-		debugger
+
+	function layoutUser() {
 		var row = $('#dg').datagrid('getSelected');
-		if (row){
-			if(row.ISVALID==0){
-				$.messager.alert('提示','当前用户已经处于无效状态，无需再次注销!');
+		if (row) {
+			if (row.ISVALID == 0) {
+				$.messager.alert('提示', '当前用户已经处于无效状态，无需再次注销!');
 				return;
 			}
-			$.messager.confirm('Confirm','确认将选中用户设置为无效么?',function(r){
-				if (r){
-					$.post('userMng/layoutUser.do',{userId:row.USERID},function(result){
-						if (result.success){
-							$.messager.alert('提示','注销成功!');
-							$('#dg').datagrid('reload');	// reload the user data
+			$.messager.confirm('Confirm', '确认将选中用户设置为无效么?', function(r) {
+				if (r) {
+					$.post('userMng/layoutUser.do', {
+						userId : row.USERID
+					}, function(result) {
+						if (result.success) {
+							$.messager.alert('提示', '注销成功!');
+							$('#dg').datagrid('reload',getData()); // reload the user data
 						} else {
-							$.messager.show({	// show error message
-								title: 'Error',
-								msg: '注销失败'
+							$.messager.show({ // show error message
+								title : 'Error',
+								msg : '注销失败'
 							});
 						}
-					},'json');
+					}, 'json');
 				}
 			});
-		}else{
-			$.messager.alert('提示','请选中一行!');
-		}
-	}
-	
-	function unLayoutUser(){
-		debugger
-		var row = $('#dg').datagrid('getSelected');
-		if (row){
-			if(row.ISVALID==1){
-				$.messager.alert('提示','当前用户已经处于有效状态，无需再次取消注销!');
-				return;
-			}
-			$.messager.confirm('Confirm','确认将选中用户设置为有效么?',function(r){
-				if (r){
-					$.post('userMng/unLayoutUser.do',{userId:row.USERID},function(result){
-						if (result.success){
-							$.messager.alert('提示','取消注销成功!');
-							$('#dg').datagrid('reload');	// reload the user data
-						} else {
-							$.messager.show({	// show error message
-								title: 'Error',
-								msg: '取消注销'
-							});
-						}
-					},'json');
-				}
-			});
-		}else{
-			$.messager.alert('提示','请选中一行!');
+		} else {
+			$.messager.alert('提示', '请选中一行!');
 		}
 	}
 
-
-	$(function() {
-		$("#dg").datagrid({
-			url :'userMng/queryUserList.do',
-			pageSize : 10,//每页显示的记录条数，默认为10  
-			pageList : [ 10, 20, 35, 50, 100 ],//可以设置每页记录条数的列表  
-			pagination : true,
-			fitColumns : true,
-			singleSelect : true,
-			striped : true,
-			rownumbers : true,
-		});
-		reFreshGrid(1,10);
-		var pager = $('#dg').datagrid('getPager');
-		$(pager).pagination({
-			beforePageText : '第',//页数文本框前显示的汉字  
-			afterPageText : '页    共 {pages} 页',
-			displayMsg : '当前显示 {from} - {to} 条记录   共 {total} 条记录',
-			onSelectPage : function(pageNumber, pageSize) {
-				debugger
-				reFreshGrid(pageNumber,pageSize);//每次更换页面时触发更改   
+	function unLayoutUser() {
+		var row = $('#dg').datagrid('getSelected');
+		if (row) {
+			if (row.ISVALID == 1) {
+				$.messager.alert('提示', '当前用户已经处于有效状态，无需再次取消注销!');
+				return;
 			}
-		});
-	})
+			$.messager.confirm('Confirm', '确认将选中用户设置为有效么?', function(r) {
+				if (r) {
+					$.post('userMng/unLayoutUser.do', {
+						userId : row.USERID
+					}, function(result) {
+						if (result.success) {
+							$.messager.alert('提示', '取消注销成功!');
+							$('#dg').datagrid('reload',getData()); // reload the user data
+						} else {
+							$.messager.show({ // show error message
+								title : 'Error',
+								msg : '取消注销'
+							});
+						}
+					}, 'json');
+				}
+			});
+		} else {
+			$.messager.alert('提示', '请选中一行!');
+		}
+	}
 
-	function reFreshGrid(pageNumber,pageSize) {
-		debugger
+	function getData() {
+		$.post('userMng/queryUserList.do?' + Math.random(), $('#ff')
+				.serializeObject(), function(data) {
+			$('#dg').datagrid({
+				loadFilter : pagerFilter
+			}).datagrid('loadData', data);
+		});
+	}
+
+	function pagerFilter(data) {
+		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
+			data = {
+				total : data.length,
+				rows : data
+			}
+		}
 		var dg = $('#dg');
 		var opts = dg.datagrid('options');
 		var pager = dg.datagrid('getPager');
-		
-		$('#pageNum').val(pageNumber);
-		$('#pageSize').val(pageSize);
-		//异步获取数据到javascript对象，入参为查询条件和页码信息  
-		$.post('userMng/queryUserList.do?' + Math.random(), $('#ff').serializeObject(), 
-			function(data) {
-			debugger
-			//注意此处从数据库传来的data数据有记录总行数的total列  
-			var total = data[0].total;
-			data.shift();
-			$('#dg').datagrid('loadData', data);
-			pager.pagination({
-				//更新pagination的导航列表各参数  
-				total : total,//总数  
-				pageSize : pageSize,//行数  
-				pageNumber : pageNumber//页数  
-			});
+		pager.pagination({
+			onSelectPage : function(pageNum, pageSize) {
+				opts.pageNumber = pageNum;
+				opts.pageSize = pageSize;
+				pager.pagination('refresh', {
+					pageNumber : pageNum,
+					pageSize : pageSize
+				});
+				dg.datagrid('loadData', data);
+			}
 		});
+		if (!data.originalRows) {
+			data.originalRows = (data.rows);
+		}
+		var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+		var end = start + parseInt(opts.pageSize);
+		data.rows = (data.originalRows.slice(start, end));
+		return data;
 	}
+
+	$(function() {
+		getData();
+
+	})
 </script>
 <form id="ff" method="post">
     <div style="margin-bottom: 7px">
-		<label for="username">姓&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
+		<label for="username">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
 		<input class="easyui-textbox" type="text" name="userName"  style="width:200px;height:30px;"/>
 		<label for="email">电子邮箱:</label>
 		<input class="easyui-textbox" type="text" name="email" style="width:200px;height:30px;"/>
@@ -239,8 +236,8 @@
     			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOragn.do'">
     </div>
      <div style="margin-bottom: 7px;">
-		<label for="loginId">用户名:</label>
-		<input class="easyui-textbox" type="text" name="loginId"  style="width:200px;height:30px;"/>
+		<label for="userNum">用户编号:</label>
+		<input class="easyui-textbox" type="text" name="userNum"  style="width:200px;height:30px;"/>
 		<label>是否有效:&nbsp;&nbsp;</label>
         <span class="radioSpan">
                 <input type="radio" name="isValid" value="1">是</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -256,11 +253,17 @@
     
 </form>
 <table id="dg" title="用户列表" 
-	style="width: 1050px; height: 78%;" toolbar="#toolbar">
+	style="width: 1050px; height: 78%;" toolbar="#toolbar" data-options="
+				rownumbers:true,
+				singleSelect:true,
+				autoRowHeight:false,
+				pagination:true,
+				fitColumns :true,
+				pageSize:10">
 	<thead>
 		<tr>
-			<th field="LOGINID" width="50">用户名</th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
+			<th field="USERNUM" width="50">用户编号</th>
 			<th field="USERNAME" width="50">姓名</th>
 			<th field="SEX" width="50" formatter="formatSex">性别</th>
 			<th field="EMAIL" width="50">电子邮箱</th>

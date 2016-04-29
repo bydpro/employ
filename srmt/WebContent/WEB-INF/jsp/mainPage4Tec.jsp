@@ -55,7 +55,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 		}, {
 			text : "教师科研信息统计",
 			attributes : {
-				url : "organMng/enterOrganMng.do"
+				url : "research/enterWorkload4Tec.do"
 			},
 			iconCls : "icon-teacher_tong"
 		} ];
@@ -173,10 +173,6 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 	<div region="west" class="west" title="菜单">
 		<div id="RightAccordion" class="easyui-accordion" border="false"
 			data-options="multiple:true">
-			<div title="基本信息管理" data-options="iconCls:'icon-information_list',selected:true"
-				style="overflow: auto; padding: 10px;">
-				<ul id="tree4"></ul>
-			</div>
 			<div title="教师科研信息管理" data-options="iconCls:'icon-teacher'"
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
@@ -189,7 +185,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 	</div>
 
 	<div id="tabsMenu" class="easyui-menu" style="width: 120px;">
-		<div id="close">关闭</div>
+		<div name="close">关闭</div>
 		<div name="Other">关闭其他</div>
 		<div name="All">关闭所有</div>
 	</div>

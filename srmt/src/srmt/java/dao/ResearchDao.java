@@ -1,16 +1,15 @@
 package srmt.java.dao;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -19,16 +18,10 @@ import org.hibernate.Transaction;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import com.sun.org.apache.regexp.internal.recompile;
-
 import srmt.java.common.Constants;
 import srmt.java.entity.PatentInfo;
 import srmt.java.entity.ProjectInfo;
 import srmt.java.entity.RewardInfo;
-import srmt.java.entity.SysOrgan;
 import srmt.java.entity.SysUserResearch;
 import srmt.java.entity.ThesisInfo;
 
@@ -45,9 +38,11 @@ public class ResearchDao {
 	public List<Map> queryResearchList(HttpServletRequest request) {
 		String dictValue = request.getParameter("dictValue");
 		String researchName = request.getParameter("researchName");
+		String userNum = request.getParameter("userNum");
 		StringBuffer sb = new StringBuffer();
 		sb.append("   SELECT                                                             ");
 		sb.append("   	SU.USER_ID USERID,                                               ");
+		sb.append("   	SU.USER_NUM USERNUM,                                               ");
 		sb.append("   	SU.USERNAME,                                                     ");
 		sb.append("   	SU.EMAIL,                                                        ");
 		sb.append("   	SUR.RID,                                                        ");
@@ -59,7 +54,7 @@ public class ResearchDao {
 		sb.append("   		WHERE SD.DICT_VALUE=SUR.RESEARCH_TYPE) DICTNAME               ");
 		sb.append("   FROM                                                               ");
 		sb.append("   			SYS_USER_RESEARCH SUR                                    ");
-		sb.append("   		LEFT JOIN SYS_USER SU ON SUR.RESEARCH_USER_ID = SU.USER_ID   ");
+		sb.append("   		LEFT JOIN SYS_USER SU ON SUR.RESEARCH_USER_ID = SU.USER_NUM   ");
 		sb.append("   		LEFT JOIN (                                                  ");
 		sb.append("   			SELECT                                                   ");
 		sb.append("   				P.PATENT_ID RESEARCHID,                              ");
@@ -88,8 +83,9 @@ public class ResearchDao {
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
 		String userType = (String) session.getAttribute("userType");
+		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
 		if (Constants.USER_TYPE_TEC.equals(userType)) {
-			sb.append("    AND SU.USER_ID = :userId        ");
+			sb.append("    AND SU.USER_NUM = :userNum4Curr        ");
 		}
 		if (StringUtils.isNotEmpty(dictValue)) {
 			sb.append("   AND SUR.RESEARCH_TYPE=:dictValue  ");
@@ -97,10 +93,17 @@ public class ResearchDao {
 		if (StringUtils.isNotEmpty(researchName)) {
 			sb.append("  AND RE.RESEARCHNAME LIKE :researchName  ");
 		}
+		if (StringUtils.isNotEmpty(userNum)) {
+			sb.append("  AND SU.USER_NUM = :userNum   ");
+		}
+		sb.append("   ORDER BY SU.USER_NUM ASC  ");
 		Transaction transaction = getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		if (Constants.USER_TYPE_TEC.equals(userType)) {
-			query.setParameter("userId", userId);
+			query.setParameter("userNum4Curr", userNum4Curr);
+		}
+		if (StringUtils.isNotEmpty(userNum)) {
+			query.setParameter("userNum", userNum);
 		}
 		if (StringUtils.isNotEmpty(dictValue)) {
 			query.setParameter("dictValue", dictValue);
@@ -157,11 +160,12 @@ public class ResearchDao {
 		String thesisFileUrl = request.getParameter("thesisFileUrl");
 		String thesisType = request.getParameter("thesisType");
 		String thesisAbstract = request.getParameter("thesisAbstract");
-
+		String userNum = request.getParameter("userNum");
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
+		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
 		String userId = (String) session.getAttribute("userId");
-
 		if (StringUtils.isNotEmpty(thesisId)) {
 			ThesisInfo thesisInfo = (ThesisInfo) getSession().get(ThesisInfo.class, thesisId);
 			thesisInfo.setThesisRecord(thesisRecord);
@@ -183,7 +187,11 @@ public class ResearchDao {
 			thesisInfo.setThesisType(thesisType);
 			getSession().save(thesisInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			sysUserResearch.setResearchUserId(userId);
+			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
+			}else{
+				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
+			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_THESIS);
 			sysUserResearch.setResearchId(thesisInfo.getThesisId());
 			sysUserResearch.setCreater(userId);
@@ -209,6 +217,7 @@ public class ResearchDao {
 			map.put("thesisFileUrl", thesisInfo.getThesisFile());
 			map.put("thesisAbstract", thesisInfo.getThesisAbstract());
 			map.put("thesisType", thesisInfo.getThesisType());
+			map.put("userNum", "201610000001");
 		}
 		transaction.commit();
 		getSession().close();
@@ -227,6 +236,7 @@ public class ResearchDao {
 		String rewardContent = request.getParameter("rewardContent");
 		String rewardFileUrl = request.getParameter("rewardFileUrl");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String userNum = request.getParameter("userNum");
 		Date rewardDate = null;
 		try {
 			if (StringUtils.isNotEmpty(rewardTime)) {
@@ -238,7 +248,8 @@ public class ResearchDao {
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
-
+		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
 		if (StringUtils.isNotEmpty(rewardId)) {
 			RewardInfo rewardInfo = (RewardInfo) getSession().get(RewardInfo.class, rewardId);
 			rewardInfo.setRewardLevel(rewardLevel);
@@ -264,7 +275,11 @@ public class ResearchDao {
 			rewardInfo.setRewardFile(rewardFileUrl);
 			getSession().save(rewardInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			sysUserResearch.setResearchUserId(userId);
+			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
+			}else{
+				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
+			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_REWARD);
 			sysUserResearch.setResearchId(rewardInfo.getRewardId());
 			sysUserResearch.setCreater(userId);
@@ -291,6 +306,7 @@ public class ResearchDao {
 			map.put("rewardType", rewardInfo.getRewardType());
 			map.put("rewardContent", rewardInfo.getRewardContent());
 			map.put("rewardFile", rewardInfo.getRewardFile());
+			map.put("userNum", "201610000001");
 		}
 		transaction.commit();
 		getSession().close();
@@ -308,6 +324,7 @@ public class ResearchDao {
 		String patentContent = request.getParameter("patentContent");
 		String patentFileUrl = request.getParameter("patentFileUrl");
 		String patentDateStr = request.getParameter("patentDate");
+		String userNum = request.getParameter("userNum");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date patentDate = null;
 		try {
@@ -320,7 +337,8 @@ public class ResearchDao {
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
-
+		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
 		if (StringUtils.isNotEmpty(patentId)) {
 			PatentInfo patentInfo = (PatentInfo) getSession().get(PatentInfo.class, patentId);
 			patentInfo.setPatentCreater(patentCreater);
@@ -348,7 +366,11 @@ public class ResearchDao {
 			patentInfo.setPatentPeople(patentPeople);
 			getSession().save(patentInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			sysUserResearch.setResearchUserId(userId);
+			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
+			}else{
+				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
+			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_PATENT);
 			sysUserResearch.setResearchId(patentInfo.getPatentId());
 			sysUserResearch.setCreater(userId);
@@ -366,21 +388,22 @@ public class ResearchDao {
 		if (StringUtils.isNotEmpty(patentId)) {
 			PatentInfo patentInfo = (PatentInfo) getSession().get(PatentInfo.class, patentId);
 			map.put("patentId", patentInfo.getPatentId());
-			map.put("patentCreater",patentInfo.getPatentCreater());
+			map.put("patentCreater", patentInfo.getPatentCreater());
 			map.put("patentDate", patentInfo.getPatentDate());
 			map.put("patentFirst", patentInfo.getPatentFirst());
-		    map.put("patentIsTransfer",patentInfo.getPatentIsTransfer());
-		    map.put("patentName",patentInfo.getPatentName());
-		    map.put("patentType",patentInfo.getPatentType());
-		    map.put("patentContent",patentInfo.getPatentContent());
-		    map.put("patentPeople",patentInfo.getPatentPeople());
-		    map.put("patentFile",patentInfo.getPatentFile());
-			}
+			map.put("patentIsTransfer", patentInfo.getPatentIsTransfer());
+			map.put("patentName", patentInfo.getPatentName());
+			map.put("patentType", patentInfo.getPatentType());
+			map.put("patentContent", patentInfo.getPatentContent());
+			map.put("patentPeople", patentInfo.getPatentPeople());
+			map.put("patentFile", patentInfo.getPatentFile());
+			map.put("userNum", "201610000001");
+		}
 		transaction.commit();
 		getSession().close();
 		return map;
 	}
-	
+
 	public void saveProject(HttpServletRequest request) {
 		String projectId = request.getParameter("projectId");
 		String projectName = request.getParameter("projectName");
@@ -394,6 +417,7 @@ public class ResearchDao {
 		String projectContent = request.getParameter("projectContent");
 		String startTime = request.getParameter("startTime");
 		String endTime = request.getParameter("endTime");
+		String userNum = request.getParameter("userNum");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = null;
 		try {
@@ -403,7 +427,7 @@ public class ResearchDao {
 		} catch (Exception e) {
 			e.getStackTrace();
 		}
-		
+
 		Date endDate = null;
 		try {
 			if (StringUtils.isNotEmpty(endTime)) {
@@ -415,7 +439,8 @@ public class ResearchDao {
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
-
+		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
 		if (StringUtils.isNotEmpty(projectId)) {
 			ProjectInfo projectInfo = (ProjectInfo) getSession().get(ProjectInfo.class, projectId);
 			projectInfo.setProjectName(projectName);
@@ -445,7 +470,11 @@ public class ResearchDao {
 			projectInfo.setProectFile(projectFileUrl);
 			getSession().save(projectInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			sysUserResearch.setResearchUserId(userId);
+			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
+			}else{
+				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
+			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_PROJECT);
 			sysUserResearch.setResearchId(projectInfo.getProjectId());
 			sysUserResearch.setCreater(userId);
@@ -456,31 +485,32 @@ public class ResearchDao {
 		transaction.commit();
 
 	}
-	
+
 	public Map getProjectInfo(String projectId) {
 		Map map = new HashMap();
 		Transaction transaction = getSession().beginTransaction();
 		if (StringUtils.isNotEmpty(projectId)) {
 			ProjectInfo projectInfo = (ProjectInfo) getSession().get(ProjectInfo.class, projectId);
 			map.put("projectId", projectInfo.getProjectId());
-			map.put("projectFirst",projectInfo.getProjectFirst());
+			map.put("projectFirst", projectInfo.getProjectFirst());
 			map.put("projectFund", projectInfo.getProjectFund());
 			map.put("projectName", projectInfo.getProjectName());
-		    map.put("projectSecond",projectInfo.getProjectSecond());
-		    map.put("projectSource",projectInfo.getProjectSource());
-		    map.put("projectType",projectInfo.getProjectType());
-		    map.put("projectThird",projectInfo.getProjectType());
-		    map.put("endTime",projectInfo.getEndTime());
-		    map.put("startTime",projectInfo.getStartTime());
-		    map.put("projectContent",projectInfo.getProjectContent());
-		    map.put("projectFile",projectInfo.getProectFile());
-			}
+			map.put("projectSecond", projectInfo.getProjectSecond());
+			map.put("projectSource", projectInfo.getProjectSource());
+			map.put("projectType", projectInfo.getProjectType());
+			map.put("projectThird", projectInfo.getProjectType());
+			map.put("endTime", projectInfo.getEndTime());
+			map.put("startTime", projectInfo.getStartTime());
+			map.put("projectContent", projectInfo.getProjectContent());
+			map.put("projectFile", projectInfo.getProectFile());
+			map.put("userNum", "201610000001");
+		}
 		transaction.commit();
 		getSession().close();
 		return map;
 	}
-	
-	public List<Map> queryProjectType(){
+
+	public List<Map> queryProjectType() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType  ORDER BY SD.SEQ ASC";
 		Transaction transaction = getSession().beginTransaction();
@@ -493,8 +523,8 @@ public class ResearchDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public List<Map> queryPatentType(){
+
+	public List<Map> queryPatentType() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType ";
 		Transaction transaction = getSession().beginTransaction();
@@ -507,8 +537,8 @@ public class ResearchDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public List<Map> queryPlaceType(){
+
+	public List<Map> queryPlaceType() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType  ORDER BY SD.SEQ ASC";
 		Transaction transaction = getSession().beginTransaction();
@@ -521,8 +551,8 @@ public class ResearchDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public List<Map> queryRewardType(){
+
+	public List<Map> queryRewardType() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType  ORDER BY SD.SEQ ASC";
 		Transaction transaction = getSession().beginTransaction();
@@ -535,8 +565,8 @@ public class ResearchDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public List<Map> queryThesisIncluded(){
+
+	public List<Map> queryThesisIncluded() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType  ORDER BY SD.SEQ ASC";
 		Transaction transaction = getSession().beginTransaction();
@@ -549,8 +579,8 @@ public class ResearchDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public List<Map> queryThesisType(){
+
+	public List<Map> queryThesisType() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType  ORDER BY SD.SEQ ASC";
 		Transaction transaction = getSession().beginTransaction();
@@ -563,8 +593,8 @@ public class ResearchDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public List<Map> queryPatentPeople(){
+
+	public List<Map> queryPatentPeople() {
 		String sql = "SELECT SD.DICT_VALUE DICTVALUE,SD.DICT_NAME  DICTNAME FROM SYS_DICT SD "
 				+ "WHERE SD.IS_VALID= :isValid AND SD.DICT_TYPE= :dictType  ORDER BY SD.SEQ ASC";
 		Transaction transaction = getSession().beginTransaction();
@@ -578,4 +608,231 @@ public class ResearchDao {
 		return queryList;
 	}
 
+	public double getCurrentThesisWorkload(String userId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("   SELECT                                                   ");
+		sb.append("   	T.THESIS_PERIODICAL THESISPERIODICAL                   ");
+		sb.append("   FROM                                                     ");
+		sb.append("   	SYS_USER_RESEARCH SUR                                  ");
+		sb.append("   LEFT JOIN THESIS_INFO T ON SUR.RESEARCH_ID = THESIS_ID   ");
+		sb.append("   WHERE                                                    ");
+		sb.append("   	SUR.RESEARCH_TYPE = :researchThesis                ");
+		sb.append("   AND SUR.RESEARCH_USER_ID = :userId                        ");
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		query.setParameter("researchThesis", Constants.RESEARCH_TYPE_THESIS);
+		query.setParameter("userId", userId);
+		List<Map> queryList = query.list();
+		double workloadSum = 0;
+		if (queryList != null && queryList.size() > 0) {
+			for (Map map : queryList) {
+				double workload = 0;
+				String thesisPeriodical = (String) map.get("THESISPERIODICAL");
+				if (StringUtils.isNotEmpty(thesisPeriodical)) {
+					if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_SHOUSCI)) {
+						workload = 2.0;
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EIYUAN)
+							|| thesisPeriodical.contains(Constants.THESIS_INCLUDED_EISHOU)
+							|| thesisPeriodical.contains(Constants.THESIS_INCLUDED_JIAOWU)) {
+						workload = 1.2;
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EISHOULU)) {
+						workload = 1.0;
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_SHOULU)) {
+						workload = 0.8;
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_CHINESE)
+							|| thesisPeriodical.contains(Constants.THESIS_INCLUDED_GUOJI)) {
+						workload = 0.5;
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_OTHER)) {
+						workload = 0.1;
+					}
+					workloadSum = workloadSum + workload;
+				}
+			}
+		}
+		return workloadSum;
+	}
+
+	public double getCurrentProjectWorkload(String userId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("  SELECT                                                            ");
+		sb.append("  	T.PROJECT_TYPE PROJECTTYPE,                                    ");
+		sb.append("    T.PROJECT_FUND PROJECTFUND                                      ");
+		sb.append("  FROM                                                              ");
+		sb.append("  	SYS_USER_RESEARCH SUR                                          ");
+		sb.append("  LEFT JOIN PROJECT_INFO T ON SUR.RESEARCH_ID = T.PROJECT_ID        ");
+		sb.append("  WHERE                                                             ");
+		sb.append("  	SUR.RESEARCH_TYPE = :researchProject                        ");
+		sb.append("  AND SUR.RESEARCH_USER_ID = :userId                               ");
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		query.setParameter("researchProject", Constants.RESEARCH_TYPE_PROJECT);
+		query.setParameter("userId", userId);
+		List<Map> queryList = query.list();
+		double workloadSum = 0;
+		if (queryList != null && queryList.size() > 0) {
+			for (Map map : queryList) {
+				double workload = 0;
+				String projectType = (String) map.get("PROJECTTYPE");
+				float projectFund = (float) map.get("PROJECTFUND");
+				if (Constants.PROJECT_TYPE__GUO.equals(projectType)) {
+					workload = (projectFund * (12 / 200000)) * Constants.PROECT_TIAO_K;
+				} else if (Constants.PROJECT_TYPE_SHEN.equals(projectType)) {
+					workload = (projectFund * (8 / 200000)) * Constants.PROECT_TIAO_K;
+				} else if (Constants.PROJECT_TYPE_OTHER.equals(projectType)) {
+					workload = (projectFund * (5 / 200000)) * Constants.PROECT_TIAO_K;
+				}
+				workloadSum = workloadSum + workload;
+			}
+		}
+		return workloadSum;
+	}
+
+	public double getCurrentRewardWorkload(String userId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("    SELECT                                                      ");
+		sb.append("    T.REWARD_TYPE   REWARDTYPE,                                 ");
+		sb.append("   T.REWARD_PLACE     REWARDPLACE                               ");
+		sb.append("    FROM                                                        ");
+		sb.append("    	SYS_USER_RESEARCH SUR                                      ");
+		sb.append("    LEFT JOIN REWARD_INFO T ON SUR.RESEARCH_ID = T.REWARD_ID    ");
+		sb.append("    WHERE                                                       ");
+		sb.append("    	SUR.RESEARCH_TYPE = :researchReward                     ");
+		sb.append("    AND SUR.RESEARCH_USER_ID = :userId                         ");
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		query.setParameter("researchReward", Constants.RESEARCH_TYPE_REWARD);
+		query.setParameter("userId", userId);
+		List<Map> queryList = query.list();
+		double workloadSum = 0;
+		if (queryList != null && queryList.size() > 0) {
+			for (Map map : queryList) {
+				String rewardType = (String) map.get("REWARDTYPE");
+				String rewardPlace = (String) map.get("REWARDPLACE");
+				double workload = 0;
+				if (Constants.REWARD_TYPE_SHEN1.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 10;
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload = 6;
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload = 4;
+					} else if (Constants.PLACE_TYPE_FOURTH.equals(rewardPlace)) {
+						workload = 2;
+					} else {
+						workload = 1;
+					}
+				} else if (Constants.REWARD_TYPE_SHEN2.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 6;
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload = 4;
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload = 2;
+					} else if (Constants.PLACE_TYPE_FOURTH.equals(rewardPlace)) {
+						workload = 1;
+					} else {
+						workload = 0.5;
+					}
+				} else if (Constants.REWARD_TYPE_SHEN3.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 4;
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload = 2;
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload = 1;
+					} else if (Constants.PLACE_TYPE_FOURTH.equals(rewardPlace)) {
+						workload = 0.5;
+					}
+				} else if (Constants.REWARD_TYPE_DISHI1.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 2;
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload = 1;
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload = 0.5;
+					}
+				} else if (Constants.REWARD_TYPE_DISHI2.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 1;
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload = 0.5;
+					}
+				} else if (Constants.REWARD_TYPE_DISHI3.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 0.5;
+					}
+				} else if (Constants.REWARD_TYPE_XIAO1.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 0.3;
+					}
+				} else if (Constants.REWARD_TYPE_XIAO2.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 0.2;
+					}
+				} else if (Constants.REWARD_TYPE_XIAO3.equals(rewardType)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload = 0.1;
+					}
+				} else if (Constants.REWARD_TYPE_XIAO1.equals(rewardType)
+						|| Constants.REWARD_TYPE_XIAO2.equals(rewardType)) {
+					workload = 1;
+				}
+
+				workloadSum = workloadSum + workload;
+			}
+		}
+		return workloadSum;
+	}
+
+	public double getCurrentPatentWorkload(String userId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("  SELECT                                                    ");
+		sb.append("  	T.PATENT_TYPE PATENTTYPE,                              ");
+		sb.append("  	T.PATENT_FIRST PATENTFIRST,                            ");
+		sb.append("  	T.PATENT_IS_TRANSFER PATENTISTRANSFER                  ");
+		sb.append("  FROM                                                      ");
+		sb.append("  	SYS_USER_RESEARCH SUR                                  ");
+		sb.append("  LEFT JOIN PATENT_INFO T ON SUR.RESEARCH_ID = T.PATENT_ID  ");
+		sb.append("  WHERE                                                     ");
+		sb.append("  	SUR.RESEARCH_TYPE = :researchPatent                  ");
+		sb.append("  AND SUR.RESEARCH_USER_ID = :userId                        ");
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		query.setParameter("researchPatent", Constants.RESEARCH_TYPE_PATENT);
+		query.setParameter("userId", userId);
+		List<Map> queryList = query.list();
+		double workloadSum = 0;
+		if (queryList != null && queryList.size() > 0) {
+			for (Map map : queryList) {
+				String patenttype = (String) map.get("PATENTTYPE");
+				String patentFirst = (String) map.get("PATENTFIRST");
+				String patentIsTransfer = (String) map.get("PATENTISTRANSFER");
+				double workload = 0;
+				if (Constants.PATENT_TYPE_FAMING.equals(patenttype)) {
+					if (Constants.YES.equals(patentFirst)) {
+						workload = 3;
+						if (Constants.YES.equals(patentIsTransfer)) {
+							workload = workload + 1;
+						}
+					}
+				} else if (Constants.PATENT_TYPE_SHIYONG.equals(patenttype)
+						|| Constants.PATENT_TYPE_WAIGAUAN.equals(patenttype)) {
+					if (Constants.YES.equals(patentFirst)) {
+						workload = 1;
+					}
+				} else if (Constants.PATENT_TYPE_SOFTWAR.equals(patenttype)) {
+					if (Constants.YES.equals(patentFirst)) {
+						workload = 1;
+					}
+				}
+				workloadSum = workloadSum + workload;
+			}
+		}
+		return workloadSum;
+		
+	}
 }

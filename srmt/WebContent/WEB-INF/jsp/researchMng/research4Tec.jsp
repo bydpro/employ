@@ -421,6 +421,7 @@
 				pageSize:10">
 	<thead>
 		<tr>
+			<th field="USERNUM" width="50">用户编号</th>
 			<th field="USERNAME" width="50">姓名</th>
 			<th field="RESEARCHNAME" width="50">科研名称</th>
 			<th field="DICTNAME" width="50">科研类型</th>

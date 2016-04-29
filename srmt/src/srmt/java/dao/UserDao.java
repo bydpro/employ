@@ -2,6 +2,7 @@ package srmt.java.dao;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,16 +39,15 @@ public class UserDao {
 		String email = request.getParameter("email");
 		String mobile = request.getParameter("mobile");
 		String organId = request.getParameter("organId");
-		String loginId = request.getParameter("loginId");
+		String userNum = request.getParameter("userNum");
 		String isValid = request.getParameter("isValid");
-		String page = request.getParameter("pageNum");
-		String rows = request.getParameter("pageSize");
 
 		StringBuffer sb = new StringBuffer();
 		sb.append(" SELECT                                               									");
 		sb.append(" 		SU.USERNAME,                                    							    ");
 		sb.append(" 		SU.USER_ID     USERID,                          						    ");
 		sb.append(" 		SU.LOGIN_ID LOGINID,                            							");
+		sb.append(" 		SU.USER_NUM USERNUM,                         						");
 		sb.append(" 		SU.SEX,                                                 							");
 		sb.append(" 		SU.EMAIL,                                                                         ");
 		sb.append(" 		SU.MOBILE,                                                                      ");
@@ -78,9 +78,10 @@ public class UserDao {
 				sb.append("  and su.IS_VALID != :isValid or su.IS_VALID is null     ");
 			}
 		}
-		if (StringUtils.isNotEmpty(loginId)) {
-			sb.append(" and su.LOGIN_ID = :loginId   ");
+		if (StringUtils.isNotEmpty(userNum)) {
+			sb.append(" and su.user_num = :userNum   ");
 		}
+		sb.append(" ORDER BY SU.USER_NUM ASC ");
 		Transaction transaction = getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		if (StringUtils.isNotEmpty(userName)) {
@@ -100,39 +101,12 @@ public class UserDao {
 		if (StringUtils.isNotEmpty(isValid)) {
 			query.setParameter("isValid", isValid);
 		}
-		if (StringUtils.isNotEmpty(loginId)) {
-			loginId = "%" + loginId + "%";
-			query.setParameter("loginId", loginId);
+		if (StringUtils.isNotEmpty(userNum)) {
+			query.setParameter("userNum", userNum);
 		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-		int pageNum = 0;
-		int pageRows = 10;
-		if (StringUtils.isNotEmpty(page)) {
-			pageNum = Integer.parseInt(page);
-		}
-		if (StringUtils.isNotEmpty(rows)) {
-			pageRows = Integer.parseInt(rows);
-		}
-		int total = getTotal(query);
-		query.setFirstResult((pageNum - 1) * pageRows);
-		query.setMaxResults(pageRows);
-		Map totalMap = new HashMap();
-		totalMap.put("total", total);
-		List<Map> list = new ArrayList<Map>();
-		list.add(totalMap);
 		List<Map> queryList = query.list();
-		list.addAll(queryList);
-		return list;
-	}
-
-	public int getTotal(SQLQuery query) {
-		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-		List<Map> list = query.list();
-		int size = 0;
-		if (list != null && list.size() > 0) {
-			size = list.size();
-		}
-		return size;
+		return queryList;
 	}
 
 	public void delUser(HttpServletRequest request) {
@@ -175,7 +149,7 @@ public class UserDao {
 			e.getStackTrace();
 		}
 		Transaction transaction = getSession().beginTransaction();
-		if (StringUtils.isNoneEmpty(userId)) {
+		if (StringUtils.isNotEmpty(userId)) {
 			SysUser sysUser = (SysUser) getSession().get(SysUser.class, userId);
 			sysUser.setUsername(userName);
 			sysUser.setSex(sex);
@@ -188,6 +162,7 @@ public class UserDao {
 			getSession().update(sysUser);
 		} else {
 			SysUser sysUser = new SysUser();
+			sysUser.setUserNum(getUserNum());
 			sysUser.setUsername(userName);
 			sysUser.setSex(sex);
 			sysUser.setEmail(email);
@@ -251,7 +226,7 @@ public class UserDao {
 	public Boolean isExitEmail(String email, String userId) {
 		Boolean flag = false;
 		String sql = "select * from sys_user where email =:email  ";
-		if (StringUtils.isNotEmpty(email)) {
+		if (StringUtils.isNotEmpty(userId)) {
 			sql = sql + "  and  user_id != :userId";
 		}
 		Transaction transaction = getSession().beginTransaction();
@@ -270,7 +245,7 @@ public class UserDao {
 	public Boolean isExitMobile(String mobile, String userId) {
 		Boolean flag = false;
 		String sql = "select * from sys_user where mobile =:mobile  ";
-		if (StringUtils.isNotEmpty(mobile)) {
+		if (StringUtils.isNotEmpty(userId)) {
 			sql = sql + "  and  user_id != :userId";
 		}
 		Transaction transaction = getSession().beginTransaction();
@@ -305,5 +280,42 @@ public class UserDao {
 		getSession().close();
 		result.put("success", true);
 		return result;
+	}
+	
+	public Long getUserNum() {
+		String sql = "select  CONVERT(max(s.user_num),CHAR) maxNum from sys_user s ";
+		Map map = queryUserNum(sql);
+		String maxNum = (String) map.get("maxNum");
+		Date date = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		long userNum = 0;
+		if (StringUtils.isNotEmpty(maxNum)) {
+			String year = maxNum.substring(0, 4);
+			if (String.valueOf(cal.get(Calendar.YEAR)).equals(year)) {
+				userNum = Long.parseLong(maxNum.substring(4)) + 1;
+			} else {
+				userNum = Constants.USER_NUM_MIN;
+			}
+		} else {
+			userNum = Constants.USER_NUM_MIN;
+		}
+
+		String userNumStr = String.valueOf(cal.get(Calendar.YEAR)) + String.valueOf(userNum);
+		userNum = Long.parseLong(userNumStr.trim());
+		return userNum;
+
+	}
+	
+	public Map queryUserNum(String sql) {
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sql);
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> list = query.list();
+		Map map = new HashMap<>();
+		if (list != null && list.size() > 0) {
+			map = list.get(0);
+		}
+		return map;
 	}
 }

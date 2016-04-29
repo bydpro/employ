@@ -1,5 +1,6 @@
 package srmt.java.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.transform.Transformers;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import srmt.java.common.Constants;
@@ -46,12 +45,14 @@ public class LoginDao {
 			String organId = (String)loginInfo.get("organ_id");
 			String userName = (String)loginInfo.get("username");
 			String userType = (String)loginInfo.get("user_type");
+			BigInteger userNum = (BigInteger)loginInfo.get("user_num");
 			HttpSession session = request.getSession();
 			session.setAttribute("userId", userId);
 			session.setAttribute("loginId", login);
 			session.setAttribute("organId", organId);
 			session.setAttribute("userName", userName);
 			session.setAttribute("userType", userType);
+			session.setAttribute("userNum", userNum);
 			msg =Constants.YES;
 		} else {
 			msg = Constants.NO;

@@ -73,7 +73,6 @@
 	}
 	
 	function checkPass(){
-		debugger
 		var newPass = $('#newPassword').val();
 		var newPassword4Check = $('#newPassword4Check').val();
 		if(newPass != newPassword4Check){
