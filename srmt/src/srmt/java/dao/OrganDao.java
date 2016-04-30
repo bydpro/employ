@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import srmt.java.common.Constants;
 import srmt.java.entity.SysOrgan;
-import srmt.java.entity.SysUserResearch;
 
 @Repository
 @Transactional
@@ -29,6 +28,7 @@ public class OrganDao {
 	public Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
+
 	public List<Map> queryOragnList(HttpServletRequest request) {
 		String organName = request.getParameter("organName");
 		String organCode = request.getParameter("organCode");
@@ -49,14 +49,14 @@ public class OrganDao {
 			sb.append("  and SO.ORGAN_CODE LIKE :organCode       ");
 		}
 		if (StringUtils.isNotEmpty(isValid)) {
-			if(isValid.equals(Constants.YES)){
+			if (isValid.equals(Constants.YES)) {
 				sb.append("  and SO.IS_VALID = :isValid       ");
-			}else {
+			} else {
 				isValid = Constants.YES;
 				sb.append("  and SO.IS_VALID != :isValid or SO.IS_VALID is null     ");
 			}
 		}
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		if (StringUtils.isNotEmpty(organName)) {
 			organName = "%" + organName + "%";
@@ -70,7 +70,7 @@ public class OrganDao {
 			query.setParameter("isValid", isValid);
 		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        List<Map> queryList = query.list();
+		List<Map> queryList = query.list();
 		return queryList;
 	}
 
@@ -113,13 +113,13 @@ public class OrganDao {
 			map.put("organCode", sysOrgan.getOrganCode());
 			map.put("organName", sysOrgan.getOrganName());
 			map.put("isValid", sysOrgan.getIsValid());
-		    map.put("address", sysOrgan.getOrganAddress());
-			}
+			map.put("address", sysOrgan.getOrganAddress());
+		}
 		transaction.commit();
 		getSession().close();
 		return map;
 	}
-	
+
 	public Map saveOrgan(HttpServletRequest request) {
 		String organId = request.getParameter("organId");
 		String organName = request.getParameter("organName");
@@ -127,20 +127,20 @@ public class OrganDao {
 		String address = request.getParameter("address");
 		String isValid = request.getParameter("isValid");
 		Map result = new HashMap();
-		if(isExitOrganCode(organCode, organId)){
+		if (isExitOrganCode(organCode, organId)) {
 			result.put("errorMsg", true);
 			result.put("msg", "单位代码不能重复");
 			return result;
 		}
 		Transaction transaction = getSession().beginTransaction();
-		if(StringUtils.isNotEmpty(organId)){
+		if (StringUtils.isNotEmpty(organId)) {
 			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
 			sysOrgan.setIsValid(isValid);
 			sysOrgan.setOrganAddress(address);
 			sysOrgan.setOrganCode(organCode);
 			sysOrgan.setOrganName(organName);
 			getSession().update(sysOrgan);
-		}else {
+		} else {
 			SysOrgan sysOrgan = new SysOrgan();
 			sysOrgan.setIsValid(isValid);
 			sysOrgan.setOrganAddress(address);
@@ -153,8 +153,8 @@ public class OrganDao {
 		result.put("success", true);
 		return result;
 	}
-	
-	public List<Map> queryOrgan(HttpServletRequest request){
+
+	public List<Map> queryOrgan(HttpServletRequest request) {
 		String sql = "SELECT SO.ORGAN_ID  ORGANID ,SO.ORGAN_NAME ORGANNAME FROM SYS_ORGAN SO WHERE SO.IS_VALID=:isValid";
 		Transaction transaction = getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sql);
@@ -165,21 +165,21 @@ public class OrganDao {
 		getSession().close();
 		return queryList;
 	}
-	
-	public Boolean isExitOrganCode(String organCode,String organId){
+
+	public Boolean isExitOrganCode(String organCode, String organId) {
 		Boolean flag = false;
-		String sql ="select * from sys_organ where organ_code=:organCode ";
-		if(StringUtils.isNotEmpty(organId)){
-			sql = sql +"  and  organ_id != :organId";
+		String sql = "select * from sys_organ where organ_code=:organCode ";
+		if (StringUtils.isNotEmpty(organId)) {
+			sql = sql + "  and  organ_id != :organId";
 		}
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.setParameter("organCode", organCode);
-		if(StringUtils.isNotEmpty(organId)){
+		if (StringUtils.isNotEmpty(organId)) {
 			query.setParameter("organId", organId);
 		}
 		List queryList = query.list();
-		if(queryList!=null&&queryList.size()>0){
+		if (queryList != null && queryList.size() > 0) {
 			flag = true;
 		}
 		return flag;

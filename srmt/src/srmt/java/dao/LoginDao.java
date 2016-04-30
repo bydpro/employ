@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,7 @@ public class LoginDao {
 
 	public String loginIn(String sql, String loginId, String password,HttpServletRequest request) {
 		
-		Transaction  transaction  = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query =getSession().createSQLQuery(sql);
 		query.setParameter("loginId", loginId);
 		query.setParameter("password", password);

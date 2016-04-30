@@ -53,19 +53,19 @@ public class ResearchDao {
 		StringBuffer sb = new StringBuffer();
 		sb.append("   SELECT                                                             ");
 		sb.append("   	SU.USER_ID USERID,                                               ");
-		sb.append("   	SU.USER_NUM USERNUM,                                               ");
+		sb.append("   	SU.USER_NUM USERNUM,                                             ");
 		sb.append("   	SU.USERNAME,                                                     ");
 		sb.append("   	SU.EMAIL,                                                        ");
-		sb.append("   	SUR.RID,                                                        ");
-		sb.append("   	SU.MOBILE,                                                        ");
+		sb.append("   	SUR.RID,                                                         ");
+		sb.append("   	SU.MOBILE,                                                       ");
 		sb.append("     RE.RESEARCHID,                                                   ");
 		sb.append("     RE.RESEARCHNAME,                                                 ");
 		sb.append("   	SUR.RESEARCH_TYPE RESEARCHTYPE,                                  ");
 		sb.append("   	(SELECT SD.DICT_NAME FROM SYS_DICT SD                            ");
-		sb.append("   		WHERE SD.DICT_VALUE=SUR.RESEARCH_TYPE) DICTNAME               ");
+		sb.append("   		WHERE SD.DICT_VALUE=SUR.RESEARCH_TYPE) DICTNAME              ");
 		sb.append("   FROM                                                               ");
 		sb.append("   			SYS_USER_RESEARCH SUR                                    ");
-		sb.append("   		LEFT JOIN SYS_USER SU ON SUR.RESEARCH_USER_ID = SU.USER_NUM   ");
+		sb.append("   		LEFT JOIN SYS_USER SU ON SUR.RESEARCH_USER_ID = SU.USER_NUM  ");
 		sb.append("   		LEFT JOIN (                                                  ");
 		sb.append("   			SELECT                                                   ");
 		sb.append("   				P.PATENT_ID RESEARCHID,                              ");
@@ -92,7 +92,6 @@ public class ResearchDao {
 		sb.append("   							REWARD_INFO RI                           ");
 		sb.append("               		) RE ON RE.RESEARCHID = SUR.RESEARCH_ID       WHERE 1=1               ");
 		HttpSession session = request.getSession();
-		String userId = (String) session.getAttribute("userId");
 		String userType = (String) session.getAttribute("userType");
 		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
 		if (Constants.USER_TYPE_TEC.equals(userType)) {
@@ -108,7 +107,7 @@ public class ResearchDao {
 			sb.append("  AND SU.USER_NUM = :userNum   ");
 		}
 		sb.append("   ORDER BY SU.USER_NUM ASC  ");
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		if (Constants.USER_TYPE_TEC.equals(userType)) {
 			query.setParameter("userNum4Curr", userNum4Curr);
@@ -630,7 +629,7 @@ public class ResearchDao {
 		sb.append("   WHERE                                                    ");
 		sb.append("   	SUR.RESEARCH_TYPE = :researchThesis                ");
 		sb.append("   AND SUR.RESEARCH_USER_ID = :userId                        ");
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchThesis", Constants.RESEARCH_TYPE_THESIS);
@@ -676,17 +675,17 @@ public class ResearchDao {
 
 	public List<Map> getCurrentProjectWorkload4Tec(BigInteger userNum) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("  SELECT                                                            ");
+		sb.append("  SELECT                                                         ");
 		sb.append("  	T.project_name projectname,                                 ");
-		sb.append("  	T.PROJECT_TYPE PROJECTTYPE,                                    ");
-		sb.append("      T.PROJECT_FUND PROJECTFUND                                      ");
-		sb.append("  FROM                                                              ");
-		sb.append("  	SYS_USER_RESEARCH SUR                                          ");
-		sb.append("  LEFT JOIN PROJECT_INFO T ON SUR.RESEARCH_ID = T.PROJECT_ID        ");
-		sb.append("  WHERE                                                             ");
+		sb.append("  	T.PROJECT_TYPE PROJECTTYPE,                                 ");
+		sb.append("      T.PROJECT_FUND PROJECTFUND                                 ");
+		sb.append("  FROM                                                           ");
+		sb.append("  	SYS_USER_RESEARCH SUR                                       ");
+		sb.append("  LEFT JOIN PROJECT_INFO T ON SUR.RESEARCH_ID = T.PROJECT_ID     ");
+		sb.append("  WHERE                                                          ");
 		sb.append("  	SUR.RESEARCH_TYPE = :researchProject                        ");
-		sb.append("  AND SUR.RESEARCH_USER_ID = :userId                               ");
-		Transaction transaction = getSession().beginTransaction();
+		sb.append("  AND SUR.RESEARCH_USER_ID = :userId                             ");
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchProject", Constants.RESEARCH_TYPE_PROJECT);
@@ -731,8 +730,8 @@ public class ResearchDao {
 		sb.append("    	SYS_USER_RESEARCH SUR                                      ");
 		sb.append("    LEFT JOIN REWARD_INFO T ON SUR.RESEARCH_ID = T.REWARD_ID    ");
 		sb.append("    WHERE                                                       ");
-		sb.append("    	SUR.RESEARCH_TYPE = :researchReward                     ");
-		sb.append("    AND SUR.RESEARCH_USER_ID = :userId                         ");
+		sb.append("    	SUR.RESEARCH_TYPE = :researchReward                        ");
+		sb.append("    AND SUR.RESEARCH_USER_ID = :userId                          ");
 		Transaction transaction = getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -826,6 +825,7 @@ public class ResearchDao {
 		workMap.put("rewardName", "奖励科研总分");
 		workMap.put("workload", workloadSum);
 		list.add(workMap);
+		transaction.commit();
 		return list;
 	}
 
@@ -842,7 +842,7 @@ public class ResearchDao {
 		sb.append("  WHERE                                                     ");
 		sb.append("  	SUR.RESEARCH_TYPE = :researchPatent                  ");
 		sb.append("  AND SUR.RESEARCH_USER_ID = :userId                        ");
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchPatent", Constants.RESEARCH_TYPE_PATENT);

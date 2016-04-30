@@ -204,10 +204,46 @@ public class ResearchController {
 		List<Map> projectList = researchService.getCurrentProjectWorkload4Tec(userNum);
 		List<Map> rewardList = researchService.getCurrentRewardWorkload4Tec(userNum);
 		List<Map> patentList = researchService.getCurrentPatentWorkload4Tec(userNum);
+        double sumWorkload = 0;
+        int thesisSize = 0;
+        int projectSize = 0;
+        int rewardSize = 0;
+        int patentSize = 0;
+        if(thesisList!=null&&thesisList.size()>0){
+        	thesisSize = thesisList.size()-1;
+        	Map map = thesisList.get(thesisSize-1);
+        	double workload =(double) map.get("workload");
+        	sumWorkload = sumWorkload + workload;
+        }
+        if(projectList!=null&&projectList.size()>0){
+        	projectSize = projectList.size()-1;
+        	Map map = projectList.get(projectList.size()-1);
+        	double workload =(double) map.get("workload");
+        	sumWorkload = sumWorkload + workload;
+        }
+        if(rewardList!=null&&rewardList.size()>0){
+        	rewardSize = rewardList.size()-1;
+        	Map map = rewardList.get(rewardList.size()-1);
+        	double workload =(double) map.get("workload");
+        	sumWorkload = sumWorkload + workload;
+        }
+        if(patentList!=null&&patentList.size()>0){
+        	patentSize = patentList.size()-1;
+        	Map map = patentList.get(patentList.size()-1);
+        	double workload =(double) map.get("workload");
+        	sumWorkload = sumWorkload + workload;
+        }
+		Map sumMap = new HashMap<>();
+		sumMap.put("sumWorkload", sumWorkload);
+		sumMap.put("thesisSize", thesisSize);
+		sumMap.put("projectSize", projectSize);
+		sumMap.put("rewardSize", rewardSize);
+		sumMap.put("patentSize", patentSize);
 		Model.addAttribute("thesisList", thesisList);
 		Model.addAttribute("projectList", projectList);
 		Model.addAttribute("rewardList", rewardList);
 		Model.addAttribute("patentList", patentList);
+		Model.addAttribute("sumMap", sumMap);
 		return new ModelAndView(msgView);
 	}
 }

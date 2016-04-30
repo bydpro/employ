@@ -1,7 +1,6 @@
 package srmt.java.dao;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -82,7 +81,7 @@ public class UserDao {
 			sb.append(" and su.user_num = :userNum   ");
 		}
 		sb.append(" ORDER BY SU.USER_NUM ASC ");
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		if (StringUtils.isNotEmpty(userName)) {
 			userName = "%" + userName + "%";
@@ -229,7 +228,7 @@ public class UserDao {
 		if (StringUtils.isNotEmpty(userId)) {
 			sql = sql + "  and  user_id != :userId";
 		}
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.setParameter("email", email);
 		if (StringUtils.isNotEmpty(userId)) {
@@ -248,7 +247,7 @@ public class UserDao {
 		if (StringUtils.isNotEmpty(userId)) {
 			sql = sql + "  and  user_id != :userId";
 		}
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.setParameter("mobile", mobile);
 		if (StringUtils.isNotEmpty(userId)) {
@@ -308,7 +307,7 @@ public class UserDao {
 	}
 	
 	public Map queryUserNum(String sql) {
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> list = query.list();
