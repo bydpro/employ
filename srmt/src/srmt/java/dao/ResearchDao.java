@@ -8,9 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -19,6 +21,7 @@ import org.hibernate.Transaction;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import srmt.java.common.Constants;
 import srmt.java.entity.PatentInfo;
 import srmt.java.entity.ProjectInfo;
@@ -36,6 +39,13 @@ public class ResearchDao {
 		return sessionFactory.getCurrentSession();
 	}
 
+	/** 
+	 * @param request
+	 * @return good
+	 * @method hello
+	 * @author Instant
+	 * @time 2016年4月30日 下午3:26:54
+	 */
 	public List<Map> queryResearchList(HttpServletRequest request) {
 		String dictValue = request.getParameter("dictValue");
 		String researchName = request.getParameter("researchName");
@@ -84,7 +94,7 @@ public class ResearchDao {
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
 		String userType = (String) session.getAttribute("userType");
-		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
 		if (Constants.USER_TYPE_TEC.equals(userType)) {
 			sb.append("    AND SU.USER_NUM = :userNum4Curr        ");
 		}
@@ -164,7 +174,7 @@ public class ResearchDao {
 		String userNum = request.getParameter("userNum");
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
-		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
 		String userType = (String) session.getAttribute("userType");
 		String userId = (String) session.getAttribute("userId");
 		if (StringUtils.isNotEmpty(thesisId)) {
@@ -188,9 +198,9 @@ public class ResearchDao {
 			thesisInfo.setThesisType(thesisType);
 			getSession().save(thesisInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+			if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
-			}else{
+			} else {
 				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
 			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_THESIS);
@@ -249,7 +259,7 @@ public class ResearchDao {
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
-		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
 		String userType = (String) session.getAttribute("userType");
 		if (StringUtils.isNotEmpty(rewardId)) {
 			RewardInfo rewardInfo = (RewardInfo) getSession().get(RewardInfo.class, rewardId);
@@ -276,9 +286,9 @@ public class ResearchDao {
 			rewardInfo.setRewardFile(rewardFileUrl);
 			getSession().save(rewardInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+			if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
-			}else{
+			} else {
 				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
 			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_REWARD);
@@ -338,7 +348,7 @@ public class ResearchDao {
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
-		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
 		String userType = (String) session.getAttribute("userType");
 		if (StringUtils.isNotEmpty(patentId)) {
 			PatentInfo patentInfo = (PatentInfo) getSession().get(PatentInfo.class, patentId);
@@ -367,9 +377,9 @@ public class ResearchDao {
 			patentInfo.setPatentPeople(patentPeople);
 			getSession().save(patentInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+			if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
-			}else{
+			} else {
 				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
 			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_PATENT);
@@ -440,7 +450,7 @@ public class ResearchDao {
 		Transaction transaction = getSession().beginTransaction();
 		HttpSession session = request.getSession();
 		String userId = (String) session.getAttribute("userId");
-		BigInteger userNum4Curr = (BigInteger)session.getAttribute("userNum");
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
 		String userType = (String) session.getAttribute("userType");
 		if (StringUtils.isNotEmpty(projectId)) {
 			ProjectInfo projectInfo = (ProjectInfo) getSession().get(ProjectInfo.class, projectId);
@@ -471,9 +481,9 @@ public class ResearchDao {
 			projectInfo.setProectFile(projectFileUrl);
 			getSession().save(projectInfo);
 			SysUserResearch sysUserResearch = new SysUserResearch();
-			if(Constants.USER_TYPE_ADMIN.equals(userType)){
+			if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 				sysUserResearch.setResearchUserId(Long.parseLong(userNum));
-			}else{
+			} else {
 				sysUserResearch.setResearchUserId(userNum4Curr.longValue());
 			}
 			sysUserResearch.setResearchType(Constants.RESEARCH_TYPE_PROJECT);
@@ -627,7 +637,7 @@ public class ResearchDao {
 		query.setParameter("userId", userNum.toString());
 		List<Map> queryList = query.list();
 		double workloadSum = 0;
-		List<Map> list =new ArrayList<>();
+		List<Map> list = new ArrayList<>();
 		if (queryList != null && queryList.size() > 0) {
 			for (Map map : queryList) {
 				double workload = 0;
@@ -651,23 +661,25 @@ public class ResearchDao {
 					}
 					workloadSum = workloadSum + workload;
 					Map thesisMap = new HashMap<>();
-					thesisMap.put("thesisName",  (String) map.get("THESISNAME"));
+					thesisMap.put("thesisName", (String) map.get("THESISNAME"));
 					thesisMap.put("workload", workload);
 					list.add(thesisMap);
 				}
 			}
 		}
-		Map workMap = new  HashMap<>();
-		workMap.put("workloadSum", workloadSum);
+		Map workMap = new HashMap<>();
+		workMap.put("thesisName", "论文科研分");
+		workMap.put("workload", workloadSum);
 		list.add(workMap);
 		return list;
 	}
 
-	public double getCurrentProjectWorkload(String userId) {
+	public List<Map> getCurrentProjectWorkload4Tec(BigInteger userNum) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("  SELECT                                                            ");
+		sb.append("  	T.project_name projectname,                                 ");
 		sb.append("  	T.PROJECT_TYPE PROJECTTYPE,                                    ");
-		sb.append("    T.PROJECT_FUND PROJECTFUND                                      ");
+		sb.append("      T.PROJECT_FUND PROJECTFUND                                      ");
 		sb.append("  FROM                                                              ");
 		sb.append("  	SYS_USER_RESEARCH SUR                                          ");
 		sb.append("  LEFT JOIN PROJECT_INFO T ON SUR.RESEARCH_ID = T.PROJECT_ID        ");
@@ -678,30 +690,41 @@ public class ResearchDao {
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchProject", Constants.RESEARCH_TYPE_PROJECT);
-		query.setParameter("userId", userId);
+		query.setParameter("userId", userNum.toString());
 		List<Map> queryList = query.list();
 		double workloadSum = 0;
+		List<Map> list = new ArrayList<>();
 		if (queryList != null && queryList.size() > 0) {
 			for (Map map : queryList) {
 				double workload = 0;
 				String projectType = (String) map.get("PROJECTTYPE");
-				float projectFund = (float) map.get("PROJECTFUND");
+				double projectFund = (double) map.get("PROJECTFUND");
+				int i = (int) projectFund;
 				if (Constants.PROJECT_TYPE__GUO.equals(projectType)) {
-					workload = (projectFund * (12 / 200000)) * Constants.PROECT_TIAO_K;
+					workload = (i * (12 / 200000)) * Constants.PROECT_TIAO_K;
 				} else if (Constants.PROJECT_TYPE_SHEN.equals(projectType)) {
-					workload = (projectFund * (8 / 200000)) * Constants.PROECT_TIAO_K;
+					workload = (i * (8 / 200000)) * Constants.PROECT_TIAO_K;
 				} else if (Constants.PROJECT_TYPE_OTHER.equals(projectType)) {
-					workload = (projectFund * (5 / 200000)) * Constants.PROECT_TIAO_K;
+					workload = (i * (5 / 200000)) * Constants.PROECT_TIAO_K;
 				}
 				workloadSum = workloadSum + workload;
+				Map thesisMap = new HashMap<>();
+				thesisMap.put("projectName", (String) map.get("projectname"));
+				thesisMap.put("workload", workload);
+				list.add(thesisMap);
 			}
 		}
-		return workloadSum;
+		Map workMap = new HashMap<>();
+		workMap.put("projectName", "项目科研总分");
+		workMap.put("workload", workloadSum);
+		list.add(workMap);
+		return list;
 	}
 
-	public double getCurrentRewardWorkload(String userId) {
+	public List<Map> getCurrentRewardWorkload4Tec(BigInteger userNum) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("    SELECT                                                      ");
+		sb.append("    T.reward_name   rewardname,                                 ");
 		sb.append("    T.REWARD_TYPE   REWARDTYPE,                                 ");
 		sb.append("   T.REWARD_PLACE     REWARDPLACE                               ");
 		sb.append("    FROM                                                        ");
@@ -714,9 +737,10 @@ public class ResearchDao {
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchReward", Constants.RESEARCH_TYPE_REWARD);
-		query.setParameter("userId", userId);
+		query.setParameter("userId", userNum.toString());
 		List<Map> queryList = query.list();
 		double workloadSum = 0;
+		List<Map> list = new ArrayList<>();
 		if (queryList != null && queryList.size() > 0) {
 			for (Map map : queryList) {
 				String rewardType = (String) map.get("REWARDTYPE");
@@ -792,14 +816,23 @@ public class ResearchDao {
 				}
 
 				workloadSum = workloadSum + workload;
+				Map thesisMap = new HashMap<>();
+				thesisMap.put("rewardName", (String) map.get("rewardname"));
+				thesisMap.put("workload", workload);
+				list.add(thesisMap);
 			}
 		}
-		return workloadSum;
+		Map workMap = new HashMap<>();
+		workMap.put("rewardName", "奖励科研总分");
+		workMap.put("workload", workloadSum);
+		list.add(workMap);
+		return list;
 	}
 
-	public double getCurrentPatentWorkload(String userId) {
+	public List<Map> getCurrentPatentWorkload4Tec(BigInteger userNum) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("  SELECT                                                    ");
+		sb.append("  	T.patent_name patentname,                              ");
 		sb.append("  	T.PATENT_TYPE PATENTTYPE,                              ");
 		sb.append("  	T.PATENT_FIRST PATENTFIRST,                            ");
 		sb.append("  	T.PATENT_IS_TRANSFER PATENTISTRANSFER                  ");
@@ -813,9 +846,10 @@ public class ResearchDao {
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("researchPatent", Constants.RESEARCH_TYPE_PATENT);
-		query.setParameter("userId", userId);
+		query.setParameter("userId", userNum.toString());
 		List<Map> queryList = query.list();
 		double workloadSum = 0;
+		List<Map> list = new ArrayList<>();
 		if (queryList != null && queryList.size() > 0) {
 			for (Map map : queryList) {
 				String patenttype = (String) map.get("PATENTTYPE");
@@ -840,9 +874,17 @@ public class ResearchDao {
 					}
 				}
 				workloadSum = workloadSum + workload;
+				Map thesisMap = new HashMap<>();
+				thesisMap.put("patentName", (String) map.get("patentname"));
+				thesisMap.put("workload", workload);
+				list.add(thesisMap);
 			}
 		}
-		return workloadSum;
-		
+		Map workMap = new HashMap<>();
+		workMap.put("patentName", "专利科研总分");
+		workMap.put("workload", workloadSum);
+		list.add(workMap);
+		return list;
+
 	}
 }

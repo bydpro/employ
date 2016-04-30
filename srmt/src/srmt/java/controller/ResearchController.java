@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -201,8 +200,14 @@ public class ResearchController {
 		String msgView = "researchMng/workload4Tec";
 		HttpSession session = request.getSession();
 		BigInteger userNum = (BigInteger) session.getAttribute("userNum");
-		List<Map> sum = researchService.getCurrentThesisWorkload4Tec(userNum);
-		Model.addAttribute("thesisList", sum);
+		List<Map> thesisList = researchService.getCurrentThesisWorkload4Tec(userNum);
+		List<Map> projectList = researchService.getCurrentProjectWorkload4Tec(userNum);
+		List<Map> rewardList = researchService.getCurrentRewardWorkload4Tec(userNum);
+		List<Map> patentList = researchService.getCurrentPatentWorkload4Tec(userNum);
+		Model.addAttribute("thesisList", thesisList);
+		Model.addAttribute("projectList", projectList);
+		Model.addAttribute("rewardList", rewardList);
+		Model.addAttribute("patentList", patentList);
 		return new ModelAndView(msgView);
 	}
 }

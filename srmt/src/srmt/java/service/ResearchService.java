@@ -130,4 +130,16 @@ public class ResearchService {
 	public List<Map> getCurrentThesisWorkload4Tec(BigInteger userNum) {
 		return researchDao.getCurrentThesisWorkload4Tec(userNum);
 	}
+	
+	public List<Map> getCurrentProjectWorkload4Tec(BigInteger userNum) {
+		return researchDao.getCurrentProjectWorkload4Tec(userNum);
+	}
+	
+	public List<Map> getCurrentPatentWorkload4Tec(BigInteger userNum) {
+		return researchDao.getCurrentPatentWorkload4Tec(userNum);
+	}
+	
+	public List<Map> getCurrentRewardWorkload4Tec(BigInteger userNum) {
+		return researchDao.getCurrentRewardWorkload4Tec(userNum);
+	}
 }
