@@ -11,5 +11,9 @@
 		<class>srmt.java.entity.ThesisInfo</class>
 		<class>srmt.java.entity.ProjectInfo</class>
 		<class>srmt.java.entity.PatentInfo</class>
+		<class>srmt.java.entity.ThesisScore</class>
+		<class>srmt.java.entity.ProjectScore</class>
+		<class>srmt.java.entity.PatentScore</class>
+		<class>srmt.java.entity.RewardScore</class>
 	</persistence-unit>
 </persistence>

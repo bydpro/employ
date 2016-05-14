@@ -220,6 +220,30 @@
 
 	$(function() {
 		getData();
+		
+		
+		$('#ccOrgan')
+		.combobox(
+				{onSelect : function() {
+						$('#ccDept').combobox('clear');
+						var url = 'organMng/queryDept.do?organId='
+								+ $('#ccOrgan').combobox('getValue');
+						$('#ccDept').combobox(
+								'reload', url);
+					}
+				});
+		
+		$('#organ')
+		.combobox(
+				{onSelect : function() {
+						$('#dept').combobox('clear');
+						var url = 'organMng/queryDept.do?organId='
+								+ $('#organ').combobox('getValue');
+						$('#dept').combobox(
+								'reload', url);
+					}
+				});
+
 
 	})
 </script>
@@ -231,11 +255,14 @@
 		<input class="easyui-textbox" type="text" name="email" style="width:200px;height:30px;"/>
 		<label for="mobile">移动电话:</label>
 		<input class="easyui-textbox" type="text" name="mobile" style="width:200px;height:30px;"/>
-		<label for="organId">所属单位:</label>
-		<input id="cc" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOragn.do'">
+		<label for="organId">所属学院:</label>
+		<input id="organ" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
     </div>
      <div style="margin-bottom: 7px;">
+     	<label>所属院系:</label>
+		<input id="dept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
 		<label for="userNum">用户编号:</label>
 		<input class="easyui-textbox" type="text" name="userNum"  style="width:200px;height:30px;"/>
 		<label>是否有效:&nbsp;&nbsp;</label>
@@ -244,7 +271,7 @@
                 <input type="radio" name="isValid" value="0">否</input>
         </span>
 		<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
-				margin-left:440px " onclick="doSearch()">
+				margin-left:190px " onclick="doSearch()">
 		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
    	   
    	    <input  type="text" name="pageNum" hidden="true" id="pageNum"/>
@@ -268,7 +295,8 @@
 			<th field="SEX" width="50" formatter="formatSex">性别</th>
 			<th field="EMAIL" width="50">电子邮箱</th>
 			<th field="MOBILE" width="50">移动电话</th>
-			<th field="ORGANNAME" width="50">所属单位</th>
+			<th field="ORGANNAME" width="50">所属学院</th>
+			<th field="DEPTNAME" width="50">所属院系</th>
 			<th field="ISVALID" width="50" formatter="formatValue">是否有效</th>
 			<th field="BIRTHDAY" width="50">生日</th>
 		</tr>
@@ -284,7 +312,6 @@
 
 <div id="dlg" class="easyui-dialog" style="width:590px;height:300px;padding:10px 20px"
 		closed="true" buttons="#dlg-buttons">
-	<div class="ftitle">用户信息</div>
 	<form id="fm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="userId" hidden="true"/>
@@ -303,17 +330,21 @@
 			<input name="mobile" style="width:200px;height:30px;" data-options="required:true,validType:'mobile'">
 		</div>
 		<div  style="margin-bottom: 7px;">
-			<label>所属单位</label>
-			<input id="cc" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOragn.do'">
-			<label>生日日期</label>
-			<input type="text" class="easyui-datebox" style="width:200px;height:30px;" name="birhtday">
+			<label>所属学院</label>
+			<input id="ccOrgan" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',"
+    			>
+    		<label>所属院系</label>
+			<input id="ccDept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
 		</div>
 		<div  style="margin-bottom: 7px;">
 			<label>住&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
 			<input name="address" class="easyui-validatebox"  style="width:455px;height:30px;">
 		</div>
 		<div  style="margin-bottom: 7px;">
+			<label>生日日期</label>
+			<input type="text" class="easyui-datebox" style="width:200px;height:30px;" name="birhtday">
 		    <label>是否为管理员:</label>
 		    <span class="radioSpan">
                 <input type="radio" name="isAdmin" value="1">是</input>&nbsp;&nbsp;&nbsp;

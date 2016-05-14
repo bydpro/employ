@@ -82,4 +82,40 @@ public class OrganController {
 		Map map = organSevrvice.saveOrgan(request);
 		return map;
 	}
+	
+	@RequestMapping("/enterDeptMng.do")
+	public ModelAndView enterDeptMng() {
+
+		return new ModelAndView("organMng/departMng");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryDeptList.do")
+	public List<Map> queryDeptList(HttpServletRequest request) {
+		List<Map> list = organSevrvice.queryDeptList(request);
+		return list;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryOrgan4dept.do")
+	public List<Map> queryOrgan4dept(HttpServletRequest request) {
+		List<Map> list = organSevrvice.queryOrgan4dept(request);
+		return list;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveDept.do")
+	public Map saveDept(HttpServletRequest request) {;
+		Map map = organSevrvice.saveDept(request);
+		return map;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/queryDept.do")
+	public List<Map> queryDept(HttpServletRequest request) {
+		String parent = request.getParameter("organId");
+		List<Map> list = organSevrvice.queryDept(parent);
+		return list;
+	}
 }

@@ -62,10 +62,32 @@ public class SysUser implements Serializable {
 	@Column(name = "user_num")
 	private Long userNum;
 	
-
+	@Column(name = "dept")
+	private String dept;
+	
+	@Column(name = "pic_path")
+	private String picPath;
 
 	public SysUser() {
+	}	
+	
+	public String getPicPath() {
+		return picPath;
 	}
+
+	public void setPicPath(String picPath) {
+		this.picPath = picPath;
+	}
+
+	public String getDept() {
+		return dept;
+	}
+
+	public void setDept(String dept) {
+		this.dept = dept;
+	}
+
+
 
 	public String getUserId() {
 		return this.userId;

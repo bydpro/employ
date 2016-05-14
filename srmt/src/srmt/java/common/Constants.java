@@ -74,4 +74,13 @@ public class Constants {
 	
 	public static final Integer USER_NUM_MIN = 10000001;//用户号码最小
 	public static final Integer USER_NUM_MAX = 99999999;//用户号码最小
+	
+	public static final String ORGAN_TYPE_COLLEGE = "1";//单位类型学院
+	
+	public static final String ORGAN_TYPE_DEPT = "2";//单位类型院系
+	
+	public static final String THESIS_SCORE_ID = "402882e4544caa0401544cb505650000";//论文评分id
+	public static final String PROJECT_SCORE_ID = "21218cca77804d2ba1922c33e0151105";//项目评分id
+	public static final String PATENT_SCORE_ID = "402882e454a475ab0154a476e3370001";//专利评分id
+	public static final String REWARD_SCORE_ID = "402882e454a8f9310154a8fa9c1b0001";//奖励评分id
 }

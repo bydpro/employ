@@ -44,4 +44,23 @@ public class OrganService {
 		List<Map> list = organDao.queryOrgan(request);
 		return list;
 	}
+	
+	public List<Map> queryDeptList(HttpServletRequest request) {
+		List<Map> list = organDao.queryDeptList(request);
+		return list;
+	}
+	
+	public List<Map> queryOrgan4dept(HttpServletRequest request) {
+		List<Map> list = organDao.queryOrgan4dept(request);
+		return list;
+	}
+	
+	public Map saveDept(HttpServletRequest request) {
+		return organDao.saveDept(request);
+	}
+	
+	public List<Map> queryDept(String parent) {
+		List<Map> list = organDao.queryDept(parent);
+		return list;
+	}
 }

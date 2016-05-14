@@ -41,7 +41,7 @@ public class OrganDao {
 		sb.append("   SO.ORGAN_ADDRESS ORGANADDRESS,        ");
 		sb.append("   SO.IS_VALID ISVALID                               ");
 		sb.append(" FROM                                             ");
-		sb.append(" 	SYS_ORGAN SO    WHERE 1=1                                   ");
+		sb.append(" 	SYS_ORGAN SO    WHERE SO.ORGAN_TYPE= :organType       ");
 		if (StringUtils.isNotEmpty(organName)) {
 			sb.append(" and  SO.ORGAN_NAME LIKE :organName       ");
 		}
@@ -58,6 +58,7 @@ public class OrganDao {
 		}
 		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("organType", Constants.ORGAN_TYPE_COLLEGE);
 		if (StringUtils.isNotEmpty(organName)) {
 			organName = "%" + organName + "%";
 			query.setParameter("organName", organName);
@@ -114,6 +115,7 @@ public class OrganDao {
 			map.put("organName", sysOrgan.getOrganName());
 			map.put("isValid", sysOrgan.getIsValid());
 			map.put("address", sysOrgan.getOrganAddress());
+			map.put("parent", sysOrgan.getParent());
 		}
 		transaction.commit();
 		getSession().close();
@@ -129,7 +131,7 @@ public class OrganDao {
 		Map result = new HashMap();
 		if (isExitOrganCode(organCode, organId)) {
 			result.put("errorMsg", true);
-			result.put("msg", "单位代码不能重复");
+			result.put("msg", "学院代码不能重复");
 			return result;
 		}
 		Transaction transaction = getSession().beginTransaction();
@@ -146,6 +148,7 @@ public class OrganDao {
 			sysOrgan.setOrganAddress(address);
 			sysOrgan.setOrganCode(organCode);
 			sysOrgan.setOrganName(organName);
+			sysOrgan.setOrganType(Constants.ORGAN_TYPE_COLLEGE);
 			getSession().save(sysOrgan);
 		}
 		transaction.commit();
@@ -183,5 +186,127 @@ public class OrganDao {
 			flag = true;
 		}
 		return flag;
+	}
+	
+	
+	public List<Map> queryDeptList(HttpServletRequest request) {
+		String organName = request.getParameter("organName");
+		String organCode = request.getParameter("organCode");
+		String isValid = request.getParameter("isValid");
+		String organId = request.getParameter("organId");
+		StringBuffer sb = new StringBuffer();
+		sb.append(" SELECT                                    ");
+		sb.append(" 	SO.ORGAN_ID ORGANID,                      ");
+		sb.append("   SO.ORGAN_NAME ORGANNAME,              ");
+		sb.append("   (SELECT S.ORGAN_NAME FROM SYS_ORGAN S WHERE S.ORGAN_ID=SO.PARENT) PARENT,              ");
+		sb.append("   SO.ORGAN_CODE ORGANCODE,              ");
+		sb.append("   SO.ORGAN_ADDRESS ORGANADDRESS,        ");
+		sb.append("   SO.IS_VALID ISVALID                               ");
+		sb.append(" FROM                                             ");
+		sb.append(" 	SYS_ORGAN SO    WHERE SO.ORGAN_TYPE= :organType       ");
+		if (StringUtils.isNotEmpty(organId)) {
+			sb.append(" and  SO.PARENT = :organId       ");
+		}
+		if (StringUtils.isNotEmpty(organName)) {
+			sb.append(" and  SO.ORGAN_NAME LIKE :organName       ");
+		}
+		if (StringUtils.isNotEmpty(organCode)) {
+			sb.append("  and SO.ORGAN_CODE LIKE :organCode       ");
+		}
+		if (StringUtils.isNotEmpty(isValid)) {
+			if (isValid.equals(Constants.YES)) {
+				sb.append("  and SO.IS_VALID = :isValid       ");
+			} else {
+				isValid = Constants.YES;
+				sb.append("  and SO.IS_VALID != :isValid or SO.IS_VALID is null     ");
+			}
+		}
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("organType", Constants.ORGAN_TYPE_DEPT);
+		if (StringUtils.isNotEmpty(organName)) {
+			organName = "%" + organName + "%";
+			query.setParameter("organName", organName);
+		}
+		if (StringUtils.isNotEmpty(organCode)) {
+			organCode = "%" + organCode + "%";
+			query.setParameter("organCode", organCode);
+		}
+		if (StringUtils.isNotEmpty(isValid)) {
+			query.setParameter("isValid", isValid);
+		}
+		if (StringUtils.isNotEmpty(organId)) {
+			query.setParameter("organId", organId);
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		return queryList;
+	}
+	
+	public List<Map> queryOrgan4dept(HttpServletRequest request) {
+		String sql = "SELECT SO.ORGAN_ID  ORGANID ,SO.ORGAN_NAME ORGANNAME FROM SYS_ORGAN SO WHERE SO.ORGAN_TYPE=:organType ";
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sql);
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		query.setParameter("organType", Constants.ORGAN_TYPE_COLLEGE);
+		List<Map> queryList = query.list();
+		transaction.commit();
+		getSession().close();
+		return queryList;
+	}
+	
+	
+	public Map saveDept(HttpServletRequest request) {
+		String organId = request.getParameter("organId");
+		String organName = request.getParameter("organName");
+		String organCode = request.getParameter("organCode");
+		String isValid = request.getParameter("isValid");
+		String parent = request.getParameter("parent");
+		Map result = new HashMap();
+		if (isExitOrganCode(organCode, organId)) {
+			result.put("errorMsg", true);
+			result.put("msg", "院系代码不能重复");
+			return result;
+		}
+		Transaction transaction = getSession().beginTransaction();
+		if (StringUtils.isNotEmpty(organId)) {
+			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
+			sysOrgan.setIsValid(isValid);
+			sysOrgan.setOrganCode(organCode);
+			sysOrgan.setOrganName(organName);
+			sysOrgan.setOrganName(organName);
+			sysOrgan.setParent(parent);
+			getSession().update(sysOrgan);
+		} else {
+			SysOrgan sysOrgan = new SysOrgan();
+			sysOrgan.setIsValid(isValid);
+			sysOrgan.setOrganCode(organCode);
+			sysOrgan.setOrganName(organName);
+			sysOrgan.setParent(parent);
+			sysOrgan.setOrganType(Constants.ORGAN_TYPE_DEPT);
+			getSession().save(sysOrgan);
+		}
+		transaction.commit();
+		getSession().close();
+		result.put("success", true);
+		return result;
+	}
+	
+	public List<Map> queryDept(String parent) {
+		String sql = "SELECT SO.ORGAN_ID  ORGANID ,SO.ORGAN_NAME ORGANNAME FROM SYS_ORGAN SO WHERE SO.ORGAN_TYPE=:organType ";
+		if(StringUtils.isNotEmpty(parent)){
+			sql = sql + "  AND SO.PARENT = :parent ";
+		}
+		Transaction transaction = getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sql);
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		query.setParameter("organType", Constants.ORGAN_TYPE_DEPT);
+		if(StringUtils.isNotEmpty(parent)){
+			query.setParameter("parent",parent);
+		}
+		List<Map> queryList = query.list();
+		transaction.commit();
+		getSession().close();
+		return queryList;
 	}
 }

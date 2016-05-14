@@ -81,7 +81,7 @@
 				},
 				async : true,
 				success : function(data) {
-					$('#organDlg').dialog('open').dialog('setTitle', '修改单位');
+					$('#organDlg').dialog('open').dialog('setTitle', '修改学院');
 					$('#submitForm').form('load', data);
 				},
 			})
@@ -93,7 +93,7 @@
 	function delOrgan() {
 		var row = $('#organDg').datagrid('getSelected');
 		if (row) {
-			$.messager.confirm('Confirm', '确认删除所选单位么?', function(r) {
+			$.messager.confirm('Confirm', '确认删除所选学院么?', function(r) {
 				if (r) {
 					$.post('organMng/delOrgan.do', {
 						organId : row.ORGANID
@@ -149,10 +149,10 @@
 		var row = $('#organDg').datagrid('getSelected');
 		if (row) {
 			if (row.ISVALID == 0) {
-				$.messager.alert('提示', '当前单位已经处于无效状态，无需再次注销!');
+				$.messager.alert('提示', '当前学院已经处于无效状态，无需再次注销!');
 				return;
 			}
-			$.messager.confirm('Confirm', '确认将选中单位设置为无效么?', function(r) {
+			$.messager.confirm('Confirm', '确认将选中学院设置为无效么?', function(r) {
 				if (r) {
 					$.post('organMng/layoutOrgan.do', {
 						organId : row.ORGANID
@@ -178,10 +178,10 @@
 		var row = $('#organDg').datagrid('getSelected');
 		if (row) {
 			if (row.ISVALID == 1) {
-				$.messager.alert('提示', '当前单位已经处于有效状态，无需再次取消注销!');
+				$.messager.alert('提示', '当前学院已经处于有效状态，无需再次取消注销!');
 				return;
 			}
-			$.messager.confirm('Confirm', '确认将选中单位设置为有效么?', function(r) {
+			$.messager.confirm('Confirm', '确认将选中学院设置为有效么?', function(r) {
 				if (r) {
 					$.post('organMng/unLayoutOrgan.do', {
 						organId : row.ORGANID
@@ -204,15 +204,15 @@
 	}
 
 	function addOrgan() {
-		$('#organDlg').dialog('open').dialog('setTitle', '新增单位');
+		$('#organDlg').dialog('open').dialog('setTitle', '新增学院');
 		$('#submitForm').form('clear');
 	}
 </script>
 <form id="organFf" method="post">
      <div style="margin-bottom: 7px;">
-		<label for="organName">单位名称:</label>
+		<label for="organName">学院名称:</label>
 		<input class="easyui-textbox" type="text" name="organName"  style="width:200px;height:30px;"/>
-		<label for="organCode">单位代码:</label>
+		<label for="organCode">学院代码:</label>
 		<input class="easyui-textbox" type="text" name="organCode"  style="width:200px;height:30px;"/>
 		<label>是否有效:&nbsp;&nbsp;</label>
         <span class="radioSpan">
@@ -225,7 +225,7 @@
     </div>
     
 </form>
-<table id="organDg" title="单位列表" 
+<table id="organDg" title="学院列表" 
 	style="width: 1050px; height: 85%;" toolbar="#toolbar4Organ" data-options="
 				rownumbers:true,
 				singleSelect:true,
@@ -235,10 +235,10 @@
 				pageSize:10">
 	<thead>
 		<tr>
-			<th field="ORGANNAME" width="50">单位名称</th>
+			<th field="ORGANNAME" width="50">学院名称</th>
 			<th field="ORGANID" width="50" hidden="true">ORGANID</th>
-			<th field="ORGANCODE" width="50">单位代码</th>
-			<th field="ORGANADDRESS" width="50">单位地址</th>
+			<th field="ORGANCODE" width="50">学院代码</th>
+			<th field="ORGANADDRESS" width="50">学院地址</th>
 			<th field="ISVALID" width="50" formatter="formatValue">是否有效</th>
 		</tr>
 	</thead>
@@ -256,15 +256,15 @@
 	<form id="submitForm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="organId" hidden="true"/>
-			<label>单位名称：</label>
+			<label>学院名称：</label>
 			<input name="organName" class="easyui-validatebox" required="true" style="width:200px;height:30px;">
 		</div>
  		<div style="margin-bottom: 7px;">	
- 			<label>单位代码：</label>
+ 			<label>学院代码：</label>
 			<input name="organCode" class="easyui-validatebox" data-options="required:true" style="width:200px;height:30px;">
  		</div>
 		<div style="margin-bottom: 7px;">
-			<label>单位地址：</label>
+			<label>学院地址：</label>
 			<input name="address" style="width:200px;height:30px;">
 		</div>
 		<div  style="margin-bottom: 7px;">

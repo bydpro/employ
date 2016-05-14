@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="shortcut icon" href="./image/infomation.ico" type="image/x-icon" />
 <meta charset="utf-8" />
 <title>高校教师科研信息管理系统</title>
 <link href="./css/themes/metro-orange/easyui.css" rel="stylesheet" />
@@ -39,26 +40,84 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			},
 			iconCls : "icon-group"
 		}, {
-			text : "单位管理",
+			text : "学院管理",
 			attributes : {
 				url : "organMng/enterOrganMng.do"
 			},
 			iconCls : "icon-overlays"
-		} ];
+		},{
+			text : "院系管理",
+			attributes : {
+				url : "organMng/enterDeptMng.do"
+			},
+			iconCls : "icon-overlays"
+		}
+		];
 
-		var tree2Data = [ {
-			text : "教师科研信息管理",
+		var tree2Data = [{
+			text : "科研信息管理",
+			attributes : {
+				url : "research/enterResearchMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		},{
+			text : "论文管理",
+			attributes : {
+				url : "research/enterThesisMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		}, {
+			text : "项目管理",
+			attributes : {
+				url : "research/enterProjectMng.do"
+			},
+			iconCls : "icon-teacher_tong"
+		},{
+			text : "奖励管理",
+			attributes : {
+				url : "research/enterRewardMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		} ,{
+			text : "专利管理",
+			attributes : {
+				url : "research/enterPatentMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		}];
+		
+		var tree5Data = [{
+			text : "科研信息统计",
+			attributes : {
+				url : "research/enterResearchMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		},{
+			text : "论文信息统计",
 			attributes : {
 				url : "research/enterResearchMng.do"
 			},
 			iconCls : "icon-teacher_info"
 		}, {
-			text : "教师科研信息统计",
+			text : "项目信息统计",
 			attributes : {
 				url : "research/enterWorkload4Tec.do"
 			},
 			iconCls : "icon-teacher_tong"
-		} ];
+		},{
+			text : "奖励信息统计",
+			attributes : {
+				url : "research/enterResearchMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		} ,{
+			text : "专利信息统计",
+			attributes : {
+				url : "research/enterResearchMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		}];
+		
 		var tree3Data = [ {
 			text : "修改个人信息",
 			attributes : {
@@ -66,6 +125,43 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			},
 			iconCls : "icon-myuser"
 		} ];
+		
+		var tree6Data = [{
+			text : "论文评分标准",
+			attributes : {
+				url : "research/enterThieisScore.do"
+			},
+			iconCls : "icon-teacher_info"
+		}, {
+			text : "项目评分标准",
+			attributes : {
+				url : "research/enterProjectScore.do"
+			},
+			iconCls : "icon-teacher_tong"
+		},{
+			text : "奖励评分标准",
+			attributes : {
+				url : "research/enterRewardScore.do"
+			},
+			iconCls : "icon-teacher_info"
+		} ,{
+			text : "专利评分标准",
+			attributes : {
+				url : "research/enterPatentScore.do"
+			},
+			iconCls : "icon-teacher_info"
+		}];
+		
+		//实例化树形菜单
+		$("#tree6").tree({
+			data : tree6Data,
+			lines : true,
+			onClick : function(node) {
+				if (node.attributes) {
+					Open(node.text, node.attributes.url);
+				}
+			}
+		});
 		//实例化树形菜单
 		$("#tree4").tree({
 			data : tree4Data,
@@ -98,6 +194,19 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 				}
 			}
 		});
+		
+		
+		//实例化树形菜单
+		$("#tree5").tree({
+			data : tree5Data,
+			lines : true,
+			onClick : function(node) {
+				if (node.attributes) {
+					Open(node.text, node.attributes.url);
+				}
+			}
+		});
+		
 
 		//在右边center区域打开菜单，新增tab
 		function Open(text, url) {
@@ -177,7 +286,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 </script>
 </head>
 <body class="easyui-layout">
-	<div region="north" class="north" border="true">
+	<div region="north" class="north" border="true" style="height: 60px;">
 		<div align="right">
 			<form>
 				<label>欢迎你：</label> <label>${username}</label>&nbsp;&nbsp;<a
@@ -197,9 +306,17 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 				style="overflow: auto; padding: 10px;">
 				<ul id="tree4"></ul>
 			</div>
-			<div title="教师科研信息管理" data-options="iconCls:'icon-teacher'"
+			<div title="科研信息管理" data-options="iconCls:'icon-teacher'"
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
+			</div>
+			<div title="科研信息统计" data-options="iconCls:'icon-teacher'"
+				style="padding: 10px;">
+				<ul id="tree5"></ul>
+			</div>
+			<div title="科研分统计标准" data-options="iconCls:'icon-teacher'"
+				style="padding: 10px;">
+				<ul id="tree6"></ul>
 			</div>
 			<div title="个人信息管理" data-options="iconCls:'icon-man'"
 				style="overflow: auto; padding: 10px;">

@@ -458,68 +458,11 @@
 		</tr>
 	</thead>
 </table>
-<div id="toolbar4resTec">
-	<a href="#" class="easyui-menubutton" plain="true" data-options="menu:'#mm2',iconCls:'icon-add'">新增</a> 
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editResearch()">修改</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delResearch()">移除</a>
-</div>
 <div id="mm2" style="width: 100px;">
 	<div><a href="#" class="easyui-linkbutton"  plain="true" onclick="addThesis()">论&nbsp;&nbsp;&nbsp;文</a></div>
 	<div><a href="#" class="easyui-linkbutton"  plain="true" onclick="addProjec()">项&nbsp;&nbsp;&nbsp;目</a></div>
 	<div><a href="#" class="easyui-linkbutton"  plain="true" onclick="addPatent()">专&nbsp;&nbsp;&nbsp;利</a></div>
 	<div><a href="#" class="easyui-linkbutton"  plain="true" onclick="addReward()">奖&nbsp;&nbsp;&nbsp;励</a></div>
-</div>
-
-<div id="thesisDlg" class="easyui-dialog" style="width:590px;height:580px;padding:10px 20px"
-		closed="true" buttons="#thesisDlg-buttons" align="center">
-	<form id="thesisForm" method="post" enctype="multipart/form-data" >
-		<div  style="margin-bottom: 7px;">
-			<div id="userStr4thesis" align="left">
-				<label style="margin-left: 25px;">用户编号：</label>
-				<label id="userNumStr4thesis" style="margin-left: 120px;"></label>
-			</div>
-			<div id="user4thesis">
-				<label style="margin-right: 120px;">用户编号：</label>
-				<input name="userNum" class="easyui-numberbox" required="true" style="width:300px;height:30px;"  data-options="precision:0,min :201610000001,max:999999999999">
-			</div>
-		</div>
-		<div  style="margin-bottom: 7px;">
-			<input name="thesisId" hidden="true"/>
-			<label>论文名称：</label>
-			<input name="thesisName" class="easyui-validatebox" required="true" style="width:300px;height:30px;margin-left: 120px;">
-		</div>
-		<div style="margin-bottom: 7px;">
-			<label style="margin-right: 120px;">论文类别：</label>
-			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width:300px;height:30px;margin-left:120px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do'" required="true" >
-		</div>
- 		<div style="margin-bottom: 7px;">	
- 			<label>全部作者(","号隔开)：</label>
-			<input name="thesisAuthor" class="easyui-validatebox" data-options="required:true" style="width:300px;height:30px;margin-left: 60px;">
- 		</div>
-		<div style="margin-bottom: 7px;">
-			<label>论文收录情况（SCI、EI、ISTP)：</label>
-		    <input id="thesisPeriodical" class="easyui-combobox" name="thesisPeriodical" style="width:300px;height:30px;margin-left: 120px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisIncluded.do',multiple:true" required="true" >
-		 	<input id="thesisPeriodicalStr" name="thesisPeriodicalStr" hidden="true">
-		</div>
-		<div style="margin-bottom: 7px;">
-			<label>发表期刊、卷、期、页码，日期：</label>
-			<input name="thesisRecord" style="width:300px;height: 100px;" class="easyui-textbox" data-options="multiline:true" required="true">
-		</div>
-		<div style="margin-bottom: 7px;">
-			<label style="margin-right: 120px;">论文摘要：</label>
-			<input name="thesisAbstract" style="width:300px;height: 100px;" class="easyui-textbox" data-options="multiline:true" required="true">
-		</div>
-		<div style="margin-bottom: 7px; " align="left">
-			<input type="file" name="thesisFile" id="thesisFile" width="360px"/>
-			<input name="thesisFileUrl" hidden="true" id="thesisFileUrl"/>
-		</div>
-	</form>
-</div>
-<div id="thesisDlg-buttons">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveThesis()">保存</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#thesisDlg').dialog('close')">取消</a>
 </div>
 
 <div id="rewardDlg" class="easyui-dialog" style="width:590px;height:500px;padding:10px 20px"

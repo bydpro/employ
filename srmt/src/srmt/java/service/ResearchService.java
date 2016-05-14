@@ -3,6 +3,8 @@ package srmt.java.service;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +109,10 @@ public class ResearchService {
 	public String saveFile(MultipartFile multipartFile) {
 
 		String filePath = Constants.FILE_UPLOAD_PATH;
-		File file = new File(filePath, multipartFile.getOriginalFilename());
+		Date date = new Date();
+	    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");	
+		String dateString = formatter.format(date);
+		File file = new File(filePath,dateString+multipartFile.getOriginalFilename());
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
@@ -122,8 +127,7 @@ public class ResearchService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		return file.getAbsolutePath();
+		return file.getPath();
 	}
 
 	public List<Map> getCurrentThesisWorkload4Tec(BigInteger userNum) {
@@ -140,5 +144,57 @@ public class ResearchService {
 	
 	public List<Map> getCurrentRewardWorkload4Tec(BigInteger userNum) {
 		return researchDao.getCurrentRewardWorkload4Tec(userNum);
+	}
+	
+	public List<Map> queryThesisList(HttpServletRequest request) {
+		List<Map> list = researchDao.queryThesisList(request);
+		return list;
+	}
+	
+	public List<Map> queryProjectList(HttpServletRequest request) {
+		List<Map> list = researchDao.queryProjectList(request);
+		return list;
+	}
+	
+	public List<Map> queryRewardList(HttpServletRequest request) {
+		List<Map> list = researchDao.queryRewardList(request);
+		return list;
+	}
+	
+	public List<Map> queryPatentList(HttpServletRequest request) {
+		List<Map> list = researchDao.queryPatentList(request);
+		return list;
+	}
+	
+	public Map getThesisScore() {
+		return researchDao.getThesisScore();
+	}
+	
+	public void saveThesisScore(HttpServletRequest request) {
+		researchDao.saveThesisScore(request);
+	}
+	
+	public Map getProjectScore() {
+		return researchDao.getProjectScore();
+	}
+	
+	public void saveProjectScore(HttpServletRequest request) {
+		researchDao.saveProjectScore(request);
+	}
+	
+	public Map getPatentScore() {
+		return researchDao.getPatentScore();
+	}
+	
+	public void savetPatentScore(HttpServletRequest request) {
+		researchDao.savetPatentScore(request);
+	}
+	
+	public Map getRewardScore() {
+		return researchDao.getRewardScore();
+	}
+	
+	public void savetRewardScore(HttpServletRequest request) {
+		researchDao.savetRewardScore(request);
 	}
 }

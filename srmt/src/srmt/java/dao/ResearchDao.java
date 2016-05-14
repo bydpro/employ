@@ -24,10 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import srmt.java.common.Constants;
 import srmt.java.entity.PatentInfo;
+import srmt.java.entity.PatentScore;
 import srmt.java.entity.ProjectInfo;
+import srmt.java.entity.ProjectScore;
 import srmt.java.entity.RewardInfo;
+import srmt.java.entity.RewardScore;
 import srmt.java.entity.SysUserResearch;
 import srmt.java.entity.ThesisInfo;
+import srmt.java.entity.ThesisScore;
 
 @Repository
 @Transactional
@@ -39,7 +43,7 @@ public class ResearchDao {
 		return sessionFactory.getCurrentSession();
 	}
 
-	/** 
+	/**
 	 * @param request
 	 * @return good
 	 * @method hello
@@ -887,4 +891,562 @@ public class ResearchDao {
 		return list;
 
 	}
+
+	public List<Map> queryThesisList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String thesisName = request.getParameter("thesisName");
+		String thesisType = request.getParameter("thesisType");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("  SELECT                                                       ");
+		sb.append("  	SUR.RID,                                                  ");
+		sb.append("    SU.USER_NUM USERNUM,                                       ");
+		sb.append("    SU.USERNAME ,                                              ");
+		sb.append("    SU.USER_ID USERID,                                         ");
+		sb.append("    SU.MOBILE,                                                 ");
+		sb.append("    SU.EMAIL,                                                  ");
+		sb.append("    TI.THESIS_ID THESISID,                                     ");
+		sb.append("    TI.THESIS_AUTHOR THESISAUTHOR,                             ");
+		sb.append("    TI.THESIS_NAME THESISNAME,                                 ");
+		sb.append(
+				"    (SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.THESIS_TYPE) THESISTYPE,                                 ");
+		sb.append("    TI.THESIS_PERIODICAL THESISPERIODICAL,                     ");
+		sb.append("    TI.THESIS_RECORD   THESISRECORD                            ");
+		sb.append("  FROM                                                         ");
+		sb.append("  	SYS_USER_RESEARCH SUR                                     ");
+		sb.append("  LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID  ");
+		sb.append("  LEFT JOIN THESIS_INFO TI ON TI.THESIS_ID = SUR.RESEARCH_ID   ");
+		sb.append("  WHERE                                                        ");
+		sb.append("  	SUR.RESEARCH_TYPE = :researchThesis                       ");
+		
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(thesisName)){
+			sb.append(" AND TI.THESIS_NAME LIKE :thesisName ");
+		}
+		if(StringUtils.isNotEmpty(thesisType)){
+			sb.append(" AND TI.THESIS_TYPE = :thesisType ");
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchThesis", Constants.RESEARCH_TYPE_THESIS);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(thesisName)){
+			query.setParameter("thesisName", "%"+thesisName+"%");
+		}
+		if(StringUtils.isNotEmpty(thesisType)){
+			query.setParameter("thesisType", thesisType);
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		if (queryList != null && queryList.size() > 0) {
+			for (Map map : queryList) {
+				String thesisPeriodical = (String) map.get("THESISPERIODICAL");
+				if (StringUtils.isNotEmpty(thesisPeriodical)) {
+					String[] str = thesisPeriodical.split(",");
+					StringBuffer sql = new StringBuffer();
+					sql.append("select GROUP_CONCAT(S.DICT_NAME) DICTNAME FROM SYS_DICT S WHERE S.DICT_VALUE IN(");
+					int length = str.length;
+					int i = 0;
+					for (String strSql : str) {
+						i++;
+						strSql = "'" + strSql + "'";
+						if (i == length) {
+							sql.append(strSql);
+						} else {
+							sql.append(strSql + ",");
+						}
+					}
+					sql.append("  ) ");
+					SQLQuery querySql = getSession().createSQLQuery(sql.toString());
+					querySql.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+					List<Map> list = querySql.list();
+					if (list != null && list.size() > 0) {
+						Map mapStr = list.get(0);
+						String dictName = (String) mapStr.get("DICTNAME");
+						map.put("THESISPERIODICAL", dictName);
+					}
+				}
+			}
+		}
+		return queryList;
+	}
+	
+	public List<Map> queryProjectList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String projectName = request.getParameter("projectName");
+		String projectType = request.getParameter("projectType");
+		String startTime = request.getParameter("startTime");
+		String endTime = request.getParameter("endTime");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" SELECT                                                          ");
+		sb.append(" 	SUR.RID,                                                    ");
+		sb.append(" 	SU.USER_NUM USERNUM ,                                       ");
+		sb.append(" 	SU.USERNAME,                                                ");
+		sb.append(" 	SU.USER_ID USERID,                                          ");
+		sb.append(" 	SU.MOBILE,                                                  ");
+		sb.append(" 	SU.EMAIL,                                                   ");
+		sb.append(" 	TI.PROJECT_ID PROJECTID,                                    ");
+		sb.append(" 	TI.PROJECT_NAME PROJECTNAME,                                ");
+		sb.append(" 	TI.START_TIME STARTTIME,                                    ");
+		sb.append(" 	TI.END_TIME ENDTIME,                                        ");
+		sb.append(" 	TI.PROJECT_FUND PROJECTFUND,                                ");
+		sb.append(" 	(SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.PROJECT_TYPE) PROJECTTYPE,                                ");
+		sb.append(" 	TI.PROJECT_SOURCE PROJECTSOURCE                             ");
+		sb.append(" FROM                                                            ");
+		sb.append(" 	SYS_USER_RESEARCH SUR                                       ");
+		sb.append(" LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID     ");
+		sb.append(" LEFT JOIN PROJECT_INFO TI ON TI.PROJECT_ID = SUR.RESEARCH_ID    ");
+		sb.append(" WHERE                                                           ");              
+		sb.append(" 	SUR.RESEARCH_TYPE = :researchProject                        ");  
+
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(projectName)){
+			sb.append(" AND TI.PROJECT_NAME LIKE :projectName ");
+		}
+		if(StringUtils.isNotEmpty(projectType)){
+			sb.append(" AND TI.PROJECT_TYPE = :projectType ");
+		}
+		if(StringUtils.isNotEmpty(startTime)){
+			sb.append(" AND TI.START_TIME = :startTime ");
+		}
+		if(StringUtils.isNotEmpty(endTime)){
+			sb.append(" AND TI.END_TIME = :endTime ");
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchProject", Constants.RESEARCH_TYPE_PROJECT);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(projectName)){
+			query.setParameter("projectName", "%"+projectName+"%");
+		}
+		if(StringUtils.isNotEmpty(projectType)){
+			query.setParameter("projectType", projectType);
+		}
+		if(StringUtils.isNotEmpty(startTime)){
+			query.setParameter("startTime", startTime);
+		}
+		if(StringUtils.isNotEmpty(endTime)){
+			query.setParameter("endTime", endTime);
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		return queryList;
+	}
+	
+	public List<Map> queryRewardList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String rewardName = request.getParameter("rewardName");
+		String rewardType = request.getParameter("rewardType");
+		String rewardOrgan = request.getParameter("rewardOrgan");
+		String rewardTime = request.getParameter("rewardTime");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" SELECT                                                           ");  
+		sb.append(" 	SUR.RID,                                                     ");  
+		sb.append(" 	SU.USER_NUM USERNUM,                                         ");  
+		sb.append(" 	SU.USERNAME,                                                 ");  
+		sb.append(" 	SU.USER_ID USERID,                                           ");  
+		sb.append(" 	SU.MOBILE,                                                   ");  
+		sb.append(" 	SU.EMAIL,                                                    ");  
+		sb.append(" 	TI.REWARD_ID REWARDID,                                       ");  
+		sb.append(" 	TI.REWARD_NAME REWARDNAME,                                   ");   
+		sb.append(" 	TI.REWARD_TIME REWARDTIME,                                   ");  
+		sb.append("     (SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.REWARD_TYPE)REWARDTYPE,                                   ");  
+		sb.append(" 	TI.REWARD_ORGAN REWARDORGAN,                                 ");  
+		sb.append(" 	TI.REWARD_USER REWARDUSER                                    ");  
+		sb.append(" FROM                                                             ");  
+		sb.append(" 	SYS_USER_RESEARCH SUR                                        ");  
+		sb.append(" LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID      ");  
+		sb.append(" LEFT JOIN REWARD_INFO TI ON TI.REWARD_ID = SUR.RESEARCH_ID       ");  
+		sb.append(" WHERE                                                            ");  
+		sb.append(" 	SUR.RESEARCH_TYPE = :researchReward                          ");  
+
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(rewardName)){
+			sb.append(" AND TI.REWARD_NAME LIKE :rewardName ");
+		}
+		if(StringUtils.isNotEmpty(rewardType)){
+			sb.append(" AND TI.REWARD_TYPE = :rewardType ");
+		}
+		if(StringUtils.isNotEmpty(rewardOrgan)){
+			sb.append(" AND TI.REWARD_ORGAN LIKE :rewardOrgan ");
+		}
+		if(StringUtils.isNotEmpty(rewardTime)){
+			sb.append(" AND TI.REWARD_TIME = :rewardTime ");
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchReward", Constants.RESEARCH_TYPE_REWARD);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(rewardName)){
+			query.setParameter("rewardName", "%"+rewardName+"%");
+		}
+		if(StringUtils.isNotEmpty(rewardType)){
+			query.setParameter("rewardType", rewardType);
+		}
+		if(StringUtils.isNotEmpty(rewardOrgan)){
+			query.setParameter("rewardOrgan", "%"+rewardOrgan+"%");
+		}
+		if(StringUtils.isNotEmpty(rewardTime)){
+			query.setParameter("rewardTime", rewardTime);
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		return queryList;
+	}
+	
+	public List<Map> queryPatentList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String patentName = request.getParameter("patentName");
+		String patentType = request.getParameter("patentType");
+		String patentPeople = request.getParameter("patentPeople");
+		String patentDate = request.getParameter("patentDate");
+		String patentFirst = request.getParameter("patentFirst");
+		String patentIsTransfer = request.getParameter("patentIsTransfer");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" SELECT                                                         ");  
+		sb.append(" 	SUR.RID,                                                   ");  
+		sb.append(" 	SU.USER_NUM USERNUM,                                       ");  
+		sb.append(" 	SU.USERNAME,                                               ");  
+		sb.append(" 	SU.USER_ID USERID,                                         ");  
+		sb.append(" 	SU.MOBILE,                                                 ");  
+		sb.append(" 	SU.EMAIL,                                                  ");  
+		sb.append(" 	TI.PATENT_ID PATENTID,                                     "); 
+		sb.append(" 	TI.PATENT_CREATER PATENTCREATER,                           ");
+		sb.append(" 	(SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.PATENT_TYPE) PATENTTYPE,                                 ");  
+		sb.append(" 	TI.PATENT_NAME PATENTNAME,                                 ");  
+		sb.append(" 	(SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.PATENT_PEOPLE) PATENTPEOPLE,                             ");  
+		sb.append(" 	TI.PATENT_DATE PATENTDATE,                                 ");  
+		sb.append(" 	TI.PATENT_FIRST PATENTFIRST,                               ");  
+		sb.append(" 	TI.PATENT_IS_TRANSFER PATENTISTRANSFER                     ");  
+		sb.append(" FROM                                                           ");  
+		sb.append(" 	SYS_USER_RESEARCH SUR                                      ");  
+		sb.append(" LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID    ");  
+		sb.append(" LEFT JOIN PATENT_INFO TI ON TI.PATENT_ID = SUR.RESEARCH_ID     ");  
+		sb.append(" WHERE                                                          ");  
+        sb.append(" 	SUR.RESEARCH_TYPE = :researchPatent                        ");  
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(patentName)){
+			sb.append(" AND TI.PATENT_NAME LIKE :patentName ");
+		}
+		if(StringUtils.isNotEmpty(patentType)){
+			sb.append(" AND TI.PATENT_TYPE = :patentType ");
+		}
+		if(StringUtils.isNotEmpty(patentPeople)){
+			sb.append(" AND TI.PATENT_PEOPLE = :patentPeople ");
+		}
+		if(StringUtils.isNotEmpty(patentDate)){
+			sb.append(" AND TI.PATENT_DATE = :patentDate ");
+		}
+		if(StringUtils.isNotEmpty(patentFirst)){
+			if (patentFirst.equals(Constants.YES)) {
+				sb.append("  AND TI.PATENT_FIRST = :patentFirst       ");
+			} else {
+				patentFirst = Constants.YES;
+				sb.append("  AND TI.PATENT_FIRST != :patentFirst     ");
+			}
+		}
+		if(StringUtils.isNotEmpty(patentIsTransfer)){
+			if (patentIsTransfer.equals(Constants.YES)) {
+				sb.append("  AND TI.PATENT_IS_TRANSFER = :patentIsTransfer       ");
+			} else {
+				patentIsTransfer = Constants.YES;
+				sb.append("  AND TI.PATENT_IS_TRANSFER != :patentIsTransfer      ");
+			}
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchPatent", Constants.RESEARCH_TYPE_PATENT);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(patentName)){
+			query.setParameter("patentName", "%"+patentName+"%");
+		}
+		if(StringUtils.isNotEmpty(patentType)){
+			query.setParameter("patentType", patentType);
+		}
+		if(StringUtils.isNotEmpty(patentPeople)){
+			query.setParameter("patentPeople", patentPeople);
+		}
+		if(StringUtils.isNotEmpty(patentDate)){
+			query.setParameter("patentDate", patentDate);
+		}
+		if(StringUtils.isNotEmpty(patentFirst)){
+			query.setParameter("patentFirst", patentFirst);
+		}
+		if(StringUtils.isNotEmpty(patentIsTransfer)){
+			query.setParameter("patentIsTransfer", patentIsTransfer);
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		return queryList;
+	}
+	
+	public Map getThesisScore() {
+		Map map = new HashMap();
+		Transaction transaction = getSession().beginTransaction();
+
+		ThesisScore thesisScore = (ThesisScore) getSession().get(ThesisScore.class, Constants.THESIS_SCORE_ID);
+		map.put("thesisChinese", thesisScore.getThesisChinese());
+		map.put("thesisEishou", thesisScore.getThesisEishou());
+		map.put("thesisEishoulu", thesisScore.getThesisEishoulu());
+		map.put("thesisEiyuan", thesisScore.getThesisEiyuan());
+		map.put("thesisGuoji",thesisScore.getThesisGuoji());
+		map.put("thesisJiaowu", thesisScore.getThesisJiaowu());
+		map.put("thesisOther", thesisScore.getThesisOther());
+		map.put("thesisShousci", thesisScore.getThesisShousci());
+		map.put("thesisShoulu", thesisScore.getThesisShoulu());
+
+		transaction.commit();
+		getSession().close();
+		return map;
+	}
+	
+	
+	public void saveThesisScore(HttpServletRequest request) {
+		String thesisChinese = request.getParameter("thesisChinese");
+		String thesisEishou = request.getParameter("thesisEishou");
+		String thesisEishoulu = request.getParameter("thesisEishoulu");
+		String thesisEiyuan = request.getParameter("thesisEiyuan");
+		String thesisGuoji = request.getParameter("thesisGuoji");
+		String thesisJiaowu = request.getParameter("thesisJiaowu");
+		String thesisOther = request.getParameter("thesisOther");
+		String thesisShousci = request.getParameter("thesisShousci");
+		String thesisShoulu = request.getParameter("thesisShoulu");
+		
+		Transaction transaction = getSession().beginTransaction();
+		
+		ThesisScore thesisScore = (ThesisScore) getSession().get(ThesisScore.class, Constants.THESIS_SCORE_ID);
+		thesisScore.setThesisChinese(Double.parseDouble(thesisChinese));
+		thesisScore.setThesisEishou(Double.parseDouble(thesisEishou));
+		thesisScore.setThesisEishoulu(Double.parseDouble(thesisEishoulu));
+		thesisScore.setThesisEiyuan(Double.parseDouble(thesisEiyuan));
+		thesisScore.setThesisGuoji(Double.parseDouble(thesisGuoji));
+		thesisScore.setThesisJiaowu(Double.parseDouble(thesisJiaowu));
+		thesisScore.setThesisOther(Double.parseDouble(thesisOther));
+		thesisScore.setThesisShoulu(Double.parseDouble(thesisShoulu));
+		thesisScore.setThesisShousci(Double.parseDouble(thesisShousci));
+		transaction.commit();
+		
+	}
+	
+	public Map getProjectScore() {
+		Map map = new HashMap();
+		Transaction transaction = getSession().beginTransaction();
+
+		ProjectScore projectScore = (ProjectScore) getSession().get(ProjectScore.class, Constants.PROJECT_SCORE_ID);
+		map.put("guoK", projectScore.getGuoK());
+		map.put("guoFund", projectScore.getGuoFund());
+		map.put("guoFundLast", projectScore.getGuoFundLast());
+		map.put("otherK", projectScore.getOtherK());
+		map.put("otherFund",projectScore.getOtherFund());
+		map.put("otherFundLast", projectScore.getOtherFundLast());
+		map.put("shenFund", projectScore.getShenFund());
+		map.put("shenFundLast", projectScore.getShenFundLast());
+		map.put("shenK", projectScore.getShenK());
+		transaction.commit();
+		getSession().close();
+		return map;
+	}
+	
+	public void saveProjectScore(HttpServletRequest request) {
+		String guoK = request.getParameter("guoK");
+		String guoFund = request.getParameter("guoFund");
+		String guoFundLast = request.getParameter("guoFundLast");
+		String otherK = request.getParameter("otherK");
+		String otherFund = request.getParameter("otherFund");
+		String otherFundLast = request.getParameter("otherFundLast");
+		String shenFund = request.getParameter("shenFund");
+		String shenFundLast = request.getParameter("shenFundLast");
+		String shenK = request.getParameter("shenK");
+		
+		Transaction transaction = getSession().beginTransaction();
+		
+		ProjectScore projectScore = (ProjectScore) getSession().get(ProjectScore.class, Constants.PROJECT_SCORE_ID);
+		projectScore.setGuoFund(Double.parseDouble(guoFund));
+		projectScore.setGuoFundLast(Double.parseDouble(guoFundLast));
+		projectScore.setGuoK(Double.parseDouble(guoK));
+		projectScore.setOtherFund(Double.parseDouble(otherFund));
+		projectScore.setOtherFundLast(Double.parseDouble(otherFundLast));
+		projectScore.setOtherK(Double.parseDouble(otherK));
+		projectScore.setShenFund(Double.parseDouble(shenFund));
+		projectScore.setShenFundLast(Double.parseDouble(shenFundLast));
+		projectScore.setShenK(Double.parseDouble(shenK));
+		transaction.commit();
+		
+	}
+	
+	public Map getPatentScore() {
+		Map map = new HashMap();
+		Transaction transaction = getSession().beginTransaction();
+
+		PatentScore patentScore = (PatentScore) getSession().get(PatentScore.class, Constants.PATENT_SCORE_ID);
+		map.put("inventFist", patentScore.getInventFist());
+		map.put("inventIsMove",patentScore.getInventIsMove());
+		map.put("practicalFirst", patentScore.getPracticalFirst());
+		map.put("practicalIsMove", patentScore.getPracticalIsMove());
+		map.put("viewFirst",patentScore.getViewFirst());
+		map.put("viewIsMove", patentScore.getViewIsMove());
+		map.put("softFirst",patentScore.getSoftFirst());
+		map.put("softIsMove", patentScore.getViewIsMove());
+		transaction.commit();
+		getSession().close();
+		return map;
+	}
+	
+	public void savetPatentScore(HttpServletRequest request) {
+		String inventFist = request.getParameter("inventFist");
+		String inventIsMove = request.getParameter("inventIsMove");
+		String practicalFirst = request.getParameter("practicalFirst");
+		String practicalIsMove = request.getParameter("practicalIsMove");
+		String viewFirst = request.getParameter("viewFirst");
+		String viewIsMove = request.getParameter("viewIsMove");
+		String softFirst = request.getParameter("softFirst");
+		String softIsMove = request.getParameter("softIsMove");
+		
+		Transaction transaction = getSession().beginTransaction();
+		
+		PatentScore patentScore = (PatentScore) getSession().get(PatentScore.class, Constants.PATENT_SCORE_ID);
+		patentScore.setInventFist(Double.parseDouble(inventFist));
+		patentScore.setInventIsMove(Double.parseDouble(inventIsMove));
+		patentScore.setViewFirst(Double.parseDouble(viewFirst));
+		patentScore.setViewIsMove(Double.parseDouble(viewIsMove));
+		patentScore.setPracticalFirst(Double.parseDouble(practicalFirst));
+		patentScore.setPracticalIsMove(Double.parseDouble(practicalIsMove));
+		patentScore.setSoftFirst(Double.parseDouble(softFirst));
+		patentScore.setSoftIsMove(Double.parseDouble(softIsMove));
+		
+		transaction.commit();
+		
+	}
+	
+	public Map getRewardScore() {
+		Map map = new HashMap();
+		Transaction transaction = getSession().beginTransaction();
+
+		RewardScore rewardScore = (RewardScore) getSession().get(RewardScore.class, Constants.REWARD_SCORE_ID);
+		map.put("dishiFirst", rewardScore.getDishiFirst());
+		map.put("dishiSecond",  rewardScore.getDishiSecond());
+		map.put("dishiThird", rewardScore.getDishiThird());
+		map.put("dishi2First", rewardScore.getDishi2First());
+		map.put("dishi2Third", rewardScore.getDishi2Third());
+		map.put("dishi2Second",  rewardScore.getDishi2Second());
+		map.put("dishi3First", rewardScore.getDishi3First());
+		map.put("dishi3Second", rewardScore.getDishi3Second());
+		map.put("dishi3Third", rewardScore.getDishi3Third());
+		map.put("shenFifth", rewardScore.getShenFifth());
+		map.put("shenFirst", rewardScore.getShenFirst());
+		map.put("shenFourth", rewardScore.getShenFourth());
+		map.put("shenThird", rewardScore.getShenThird());
+		map.put("shenSecond", rewardScore.getShenSecond());
+		map.put("shen2Fifth", rewardScore.getShen2Fifth());
+		map.put("shen2First", rewardScore.getShen2First());
+		map.put("shen2Fourth", rewardScore.getShen2Fourth());
+		map.put("shen2Third", rewardScore.getShen2Third());
+		map.put("shen2Second", rewardScore.getShen2Second());
+		map.put("shen3Fifth", rewardScore.getShen3Fifth());
+		map.put("shen3First", rewardScore.getShen3First());
+		map.put("shen3Fourth", rewardScore.getShen3Fourth());
+		map.put("shen3Third", rewardScore.getShen3Third());
+		map.put("shen3Second", rewardScore.getShen3Second());
+		map.put("schoolSecond", rewardScore.getSchoolSecond());
+		map.put("schoolThird", rewardScore.getSchoolThird());
+		map.put("schoolFirst", rewardScore.getSchoolFirst());
+		map.put("youxiuJiaoxue", rewardScore.getYouxiuJiaoxue());
+		map.put("yongTeach", rewardScore.getYongTeach());
+		transaction.commit();
+		getSession().close();
+		return map;
+	}
+	
+	
+	public void savetRewardScore(HttpServletRequest request) {
+		String dishiFirst = request.getParameter("dishiFirst");
+		String dishiSecond = request.getParameter("dishiSecond");
+		String dishiThird = request.getParameter("dishiThird");
+		String dishi2First = request.getParameter("dishi2First");
+		String dishi2Third = request.getParameter("dishi2Third");
+		String dishi2Second = request.getParameter("dishi2Second");
+		String dishi3First = request.getParameter("dishi3First");
+		String dishi3Second = request.getParameter("dishi3Second");
+		String dishi3Third = request.getParameter("dishi3Third");
+		String shenFifth = request.getParameter("shenFifth");
+		String shenFirst = request.getParameter("shenFirst");
+		String shenFourth = request.getParameter("shenFourth");
+		String shenThird = request.getParameter("shenThird");
+		String shenSecond = request.getParameter("shenSecond");
+		String shen2Fifth = request.getParameter("shen2Fifth");
+		String shen2First = request.getParameter("shen2First");
+		String shen2Fourth = request.getParameter("shen2Fourth");
+		String shen2Third = request.getParameter("shen2Third");
+		String shen2Second = request.getParameter("shen2Second");
+		String shen3Fifth = request.getParameter("shen3Fifth");
+		String shen3First = request.getParameter("shen3First");
+		String shen3Fourth = request.getParameter("shen3Fourth");
+		String shen3Third = request.getParameter("shen3Third");
+		String shen3Second = request.getParameter("shen3Second");
+		String youxiuJiaoxue = request.getParameter("youxiuJiaoxue");
+		String yongTeach = request.getParameter("yongTeach");
+		String schoolSecond = request.getParameter("schoolSecond");
+		String schoolThird = request.getParameter("schoolThird");
+		String schoolFirst = request.getParameter("schoolFirst");
+		
+		Transaction transaction = getSession().beginTransaction();
+		
+		RewardScore rewardScore = (RewardScore) getSession().get(RewardScore.class, Constants.REWARD_SCORE_ID);
+		rewardScore.setSchoolFirst(Double.parseDouble(schoolFirst));
+		rewardScore.setSchoolSecond(Double.parseDouble(schoolSecond));
+		rewardScore.setSchoolThird(Double.parseDouble(schoolThird));
+		rewardScore.setDishiFirst(Double.parseDouble(dishiFirst));
+		rewardScore.setDishiSecond(Double.parseDouble(dishiSecond));
+		rewardScore.setDishiThird(Double.parseDouble(dishiThird));
+		rewardScore.setDishi2First(Double.parseDouble(dishi2First));
+		rewardScore.setDishi2Second(Double.parseDouble(dishi2Second));
+		rewardScore.setDishi2Third(Double.parseDouble(dishi2Third));
+		rewardScore.setDishi3First(Double.parseDouble(dishi3First));
+		rewardScore.setDishi3Second(Double.parseDouble(dishi3Second));
+		rewardScore.setDishi3Third(Double.parseDouble(dishi3Third));
+		rewardScore.setShenFirst(Double.parseDouble(shenFirst));
+		rewardScore.setShenSecond(Double.parseDouble(shenSecond));
+		rewardScore.setShenThird(Double.parseDouble(shenThird));
+		rewardScore.setShenFourth(Double.parseDouble(shenFourth));
+		rewardScore.setShenFifth(Double.parseDouble(shenFifth));
+		rewardScore.setShen2First(Double.parseDouble(shen2First));
+		rewardScore.setShen2Second(Double.parseDouble(shen2Second));
+		rewardScore.setShen2Third(Double.parseDouble(shen2Third));
+		rewardScore.setShen2Fourth(Double.parseDouble(shen2Fourth));
+		rewardScore.setShen2Fifth(Double.parseDouble(shen2Fifth));
+		rewardScore.setShen3First(Double.parseDouble(shen3First));
+		rewardScore.setShen3Second(Double.parseDouble(shen3Second));
+		rewardScore.setShen3Third(Double.parseDouble(shen3Third));
+		rewardScore.setShen3Fourth(Double.parseDouble(shen3Fourth));
+		rewardScore.setShen3Fifth(Double.parseDouble(shen3Fifth));
+		rewardScore.setYouxiuJiaoxue(Double.parseDouble(youxiuJiaoxue));
+		rewardScore.setYongTeach(Double.parseDouble(yongTeach));
+		transaction.commit();
+		
+		
+	}
+	
 }

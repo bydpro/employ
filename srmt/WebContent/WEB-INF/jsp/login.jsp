@@ -2,20 +2,21 @@
 	pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>
 <head>
+<link rel="shortcut icon" href="./image/infomation.ico" type="image/x-icon" />
 <meta charset="utf-8" />
 <title>登陆</title>
 <link href="./css/easyui.css" rel="stylesheet" />
 <link href="./css/bootstrap.min.css" rel="stylesheet" />
+<link href="./css/style.css" rel="stylesheet" />
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/json2.js"></script>
-<script type="text/javascript"> 
-	
-	function changVaildCode(){
-		$("#verificationCodeImg").attr("src", "randValidateCode.do?"+Math.random());
+<script type="text/javascript">
+	function changVaildCode() {
+		$("#verificationCodeImg").attr("src",
+				"randValidateCode.do?" + Math.random());
 	}
-	
+
 	function showErrorMsg(msg) {
 		$("#loginErrorMsg").text(msg);
 		$("#loginErrorMsg").show("slow");
@@ -25,11 +26,11 @@
 		$("#loginErrorMsg").text("");
 		$("#loginErrorMsg").hide();
 	}
-	
-	$(function (){
+
+	$(function() {
 		hiddenErrorMsg();
 	})
-	
+
 	function onSubmit() {
 		var loginId = $("#loginId").val();
 		if (loginId == "") {
@@ -51,70 +52,57 @@
 			$("#validateCode").focus();
 			return;
 		}
-		
+
 		$.ajax({
-			type: "POST",
-            dataType: "json",
-            url: "loginIn.do",
-            data: $('#loginForm').serialize(),
-            async:true,
-            success: function (flag) {
-            	if(flag.msg=="1"){
-            		var  jsp = "enterMainPage.do";
-            		window.location.href = jsp;
-            	}else if(flag.msg=="0"){
-            		showErrorMsg("用户名或密码错误！");
+			type : "POST",
+			dataType : "json",
+			url : "loginIn.do",
+			data : $('#loginForm').serialize(),
+			async : true,
+			success : function(flag) {
+				if (flag.msg == "1") {
+					var jsp = "enterMainPage.do";
+					window.location.href = jsp;
+				} else if (flag.msg == "0") {
+					showErrorMsg("用户名或密码错误！");
 					$("#loginId").focus();
-            	}else {
-            		showErrorMsg(flag.msg);
-            	}
-            },
+				} else {
+					showErrorMsg(flag.msg);
+				}
+			},
 		})
 	}
 </script>
 </head>
 <body>
-	<div>
-		<img src="./image/head.png" width="100%" height="100px">
-	</div>
-	<div style="margin-top: 100px;margin-left: 500px;margin-right: 50px;width: 1000px">
-		<form class="form-horizontal" method="post" id="loginForm">
-			<div class="form-group">
-				<label for="loginId" class="col-sm-2 control-label">用户名</label>
-				<div class="col-sm-3">
-					<input type="text" class="form-control" id="loginId"
-						placeholder="手机/邮箱/用户名" name="loginId">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="password" class="col-sm-2 control-label">密码</label>
-				<div class="col-sm-3">
-					<input type="password" class="form-control" id="password"
-						placeholder="密码" name="password">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="validateCode" class="col-sm-2 control-label">验证码</label>
-				<div class="col-sm-2 ">
-					<input id="validateCode" type="text" placeholder="验证码"
-						class="form-control" name="validateCode">
-				</div>
-				<span> <img id="verificationCodeImg"
-					src="randValidateCode.do?+'Math.random()'" title="看不清楚，换一张"
-					onclick="changVaildCode()" style="width:90px;height: 30px"/>
+
+	<div class="login-form" style="margin-top: 130px;margin-left: 700px;">
+		<div class="head-info">
+			<label class="lbl-1"> </label> <label class="lbl-2"> </label> <label
+				class="lbl-3"> </label>
+		</div>
+		<div class="clear"></div>
+		<div class="avtar">
+			<img src="./image/avtar.png" />
+		</div>
+		<form id="loginForm" method="post">
+			<input type="text" class="text loginText inputText" id="loginId"
+				placeholder="手机/邮箱/卡号" name="loginId"> <input
+				type="password" id="password" placeholder="密码" name="password">
+			<input type="text" class="validateCode codeText" width="38%"
+				placeholder="验证码" name="validateCode" id="validateCode"> 
+				<span>
+					<img id="verificationCodeImg"
+						src="randValidateCode.do?+'Math.random()'" title="看不清楚，换一张"
+						onclick="changVaildCode()" style="width: 120px; height: 35px;" />
 				</span>
-			</div>
-			<div class="form-group">
-				<div id="loginErrorMsg" class="col-sm-2 col-sm-offset-2"
-					style="color: #F00"></div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-3">
-					<button type="submit" class="btn btn-primary"
-						onclick="onSubmit();return false;" style="width: 100px;">登陆</button>
-					<button type="reset" class="btn btn-primary" style="width: 100px;">重置</button>
-				</div>
-			</div>
 		</form>
+		<div class="form-group" style="margin-top: 4px;">
+			<div id="loginErrorMsg" class="col-sm-8 col-sm-offset-2"
+				style="color: #F00"></div>
+		</div>
+		<div class="signin">
+			<input type="submit" value="Login" onclick="onSubmit();return false;">
+		</div>
 	</div>
 </body>

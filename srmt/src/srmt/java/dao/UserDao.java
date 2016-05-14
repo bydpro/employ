@@ -40,7 +40,8 @@ public class UserDao {
 		String organId = request.getParameter("organId");
 		String userNum = request.getParameter("userNum");
 		String isValid = request.getParameter("isValid");
-
+		String deptId = request.getParameter("deptId");
+		
 		StringBuffer sb = new StringBuffer();
 		sb.append(" SELECT                                               									");
 		sb.append(" 		SU.USERNAME,                                    							    ");
@@ -51,6 +52,7 @@ public class UserDao {
 		sb.append(" 		SU.EMAIL,                                                                         ");
 		sb.append(" 		SU.MOBILE,                                                                      ");
 		sb.append(" 		SO.ORGAN_NAME ORGANNAME,                                     ");
+		sb.append(" 		(SELECT S.ORGAN_NAME FROM SYS_ORGAN S  WHERE S.ORGAN_ID =SU.DEPT)  DEPTNAME,   ");
 		sb.append(" 		SU.IS_VALID       ISVALID,                                                ");
 		sb.append("     SU.ADRESS,                                                                       ");
 		sb.append("     DATE_FORMAT(SU.BIRTHDAY,'%Y-%m-%d')   BIRTHDAY           ");
@@ -59,6 +61,9 @@ public class UserDao {
 		sb.append(" 	LEFT JOIN SYS_ORGAN SO ON SU.ORGAN_ID = SO.ORGAN_ID  where 1=1 ");
 		if (StringUtils.isNotEmpty(userName)) {
 			sb.append(" and su.USERNAME like :userName   ");
+		}
+		if (StringUtils.isNotEmpty(deptId)) {
+			sb.append(" and su.dept = :deptId   ");
 		}
 		if (StringUtils.isNotEmpty(email)) {
 			sb.append(" and su.EMAIL like :email   ");
@@ -74,7 +79,7 @@ public class UserDao {
 				sb.append("  and su.IS_VALID = :isValid       ");
 			} else {
 				isValid = Constants.YES;
-				sb.append("  and su.IS_VALID != :isValid or su.IS_VALID is null     ");
+				sb.append("  and su.IS_VALID != :isValid      ");
 			}
 		}
 		if (StringUtils.isNotEmpty(userNum)) {
@@ -103,6 +108,9 @@ public class UserDao {
 		if (StringUtils.isNotEmpty(userNum)) {
 			query.setParameter("userNum", userNum);
 		}
+		if (StringUtils.isNotEmpty(deptId)) {
+			query.setParameter("deptId", deptId);
+		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> queryList = query.list();
 		return queryList;
@@ -126,6 +134,7 @@ public class UserDao {
 		String birhtdayStr = request.getParameter("birhtday");
 		String address = request.getParameter("address");
 		String isAdmin = request.getParameter("isAdmin");
+		String deptId = request.getParameter("deptId");
 
 		Map result = new HashMap();
 		if (isExitEmail(email, userId)) {
@@ -158,6 +167,7 @@ public class UserDao {
 			sysUser.setAdress(address);
 			sysUser.setIsAdmin(isAdmin);
 			sysUser.setBirthday(birthday);
+			sysUser.setDept(deptId);
 			getSession().update(sysUser);
 		} else {
 			SysUser sysUser = new SysUser();
@@ -172,6 +182,7 @@ public class UserDao {
 			sysUser.setIsValid(Constants.YES);
 			sysUser.setBirthday(birthday);
 			sysUser.setPassword(MyUtil.getMd5(Constants.DEFULT_PASSWORD));
+			sysUser.setDept(deptId);
 			getSession().save(sysUser);
 		}
 		transaction.commit();
@@ -194,6 +205,8 @@ public class UserDao {
 			userMap.put("sex", sysUser.getSex());
 			userMap.put("isAdmin", sysUser.getIsAdmin());
 			userMap.put("birhtday", sysUser.getBirthday());
+			userMap.put("deptId", sysUser.getDept());
+			userMap.put("picPath", sysUser.getPicPath());
 		}
 		transaction.commit();
 		getSession().close();

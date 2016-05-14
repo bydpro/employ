@@ -246,4 +246,156 @@ public class ResearchController {
 		Model.addAttribute("sumMap", sumMap);
 		return new ModelAndView(msgView);
 	}
+	
+	@RequestMapping("/enterThesisMng.do")
+	public ModelAndView enterThesisMng(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String userType = (String) session.getAttribute("userType");
+		String msgView = "researchMng/thesisMng4Tec";
+		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
+			msgView = "researchMng/thesisMng";
+		}
+		return new ModelAndView(msgView);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryThesisList.do")
+	public List<Map> queryThesisList(HttpServletRequest request) {
+		List<Map> list = researchService.queryThesisList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterProjectMng.do")
+	public ModelAndView enterProjectMng(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String userType = (String) session.getAttribute("userType");
+		String msgView = "researchMng/proectMng4Tec";
+		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
+			msgView = "researchMng/projectMng";
+		}
+		return new ModelAndView(msgView);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryProjectList.do")
+	public List<Map> queryProjectList(HttpServletRequest request) {
+		List<Map> list = researchService.queryProjectList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterRewardMng.do")
+	public ModelAndView enterRewardMng(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String userType = (String) session.getAttribute("userType");
+		String msgView = "researchMng/proectMng4Tec";
+		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
+			msgView = "researchMng/rewardMng";
+		}
+		return new ModelAndView(msgView);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryRewardList.do")
+	public List<Map> queryRewardList(HttpServletRequest request) {
+		List<Map> list = researchService.queryRewardList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterPatentMng.do")
+	public ModelAndView enterPatentMng(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String userType = (String) session.getAttribute("userType");
+		String msgView = "researchMng/proectMng4Tec";
+		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
+			msgView = "researchMng/patentMng";
+		}
+		return new ModelAndView(msgView);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryPatentList.do")
+	public List<Map> queryPatentList(HttpServletRequest request) {
+		List<Map> list = researchService.queryPatentList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterThieisScore.do")
+	public ModelAndView enterThieisScore(HttpServletRequest request) {
+		return new ModelAndView("researchScore/thieis");
+	}
+	
+	@RequestMapping("/enterProjectScore.do")
+	public ModelAndView enterProjectScore(HttpServletRequest request) {
+		return new ModelAndView("researchScore/project");
+	}
+	
+	@RequestMapping("/enterRewardScore.do")
+	public ModelAndView enterRewardScore(HttpServletRequest request) {
+		return new ModelAndView("researchScore/reward");
+	}
+	
+	@RequestMapping("/enterPatentScore.do")
+	public ModelAndView enterPatentScore(HttpServletRequest request) {
+		return new ModelAndView("researchScore/patent");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getThesisScore.do")
+	public Map getThesisScore(HttpServletRequest request) {
+		return researchService.getThesisScore();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveThesisScore.do")
+	public Map saveThesisScore(HttpServletRequest request) {
+		researchService.saveThesisScore(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getProjectScore.do")
+	public Map getProjectScore(HttpServletRequest request) {
+		return researchService.getProjectScore();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveProjectScore.do")
+	public Map saveProjectScore(HttpServletRequest request) {
+		researchService.saveProjectScore(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getPatentScore.do")
+	public Map getPatentScore(HttpServletRequest request) {
+		return researchService.getPatentScore();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/savetPatentScore.do")
+	public Map savetPatentScore(HttpServletRequest request) {
+		researchService.savetPatentScore(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getRewardScore.do")
+	public Map getRewardScore(HttpServletRequest request) {
+		return researchService.getRewardScore();
+	}
+	
+	@ResponseBody
+	@RequestMapping("/savetRewardScore.do")
+	public Map savetRewardScore(HttpServletRequest request) {
+		researchService.savetRewardScore(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
+	}
 }

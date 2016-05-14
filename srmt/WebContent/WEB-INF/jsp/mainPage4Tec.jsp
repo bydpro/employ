@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="shortcut icon" href="./image/infomation.ico" type="image/x-icon" />
 <meta charset="utf-8" />
 <title>高校教师科研信息管理系统</title>
 <link href="./css/themes/metro-orange/easyui.css" rel="stylesheet" />
@@ -192,7 +193,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 	<div region="west" class="west" title="菜单">
 		<div id="RightAccordion" class="easyui-accordion" border="false"
 			data-options="multiple:true">
-			<div title="教师科研信息管理" data-options="iconCls:'icon-teacher'"
+			<div title="科研信息管理" data-options="iconCls:'icon-teacher'"
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
 			</div>
