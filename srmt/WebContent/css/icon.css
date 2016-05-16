@@ -110,6 +110,10 @@
 	background:url('icons/teacher_info.png') no-repeat center center;
 }
 
+.icon-research_tec{
+	background:url('icons/research_tec.png') no-repeat center center;
+}
+
 
 .icon-mini-add{
 	background:url('icons/mini_add.png') no-repeat center center;
@@ -135,4 +139,47 @@
 }
 .icon-large-chart{
 	background:url('icons/large_chart.png') no-repeat center center;
+}
+
+.icon-thesis{
+	background:url('icons/thesis.png') no-repeat center center;
+}
+.icon-project{
+	background:url('icons/project.png') no-repeat center center;
+}
+.icon-reward{
+	background:url('icons/reward.png') no-repeat center center;
+}
+.icon-patent{
+	background:url('icons/patent.png') no-repeat center center;
+}
+.icon-mobile_statistics{
+	background:url('icons/mobile_statistics.png') no-repeat center center;
+}
+.icon-research{
+	background:url('icons/research.png') no-repeat center center;
+}
+.icon-people_information{
+	background:url('icons/people_information.png') no-repeat center center;
+}
+.icon-school{
+	background:url('icons/school.png') no-repeat center center;
+}
+.icon-score_mng{
+	background:url('icons/score_mng.png') no-repeat center center;
+}
+.icon-thesis_score{
+	background:url('icons/thesis_score.png') no-repeat center center;
+}
+.icon-project_score{
+	background:url('icons/project_score.png') no-repeat center center;
+}
+.icon-reward_score{
+	background:url('icons/reward_score.png') no-repeat center center;
+}
+.icon-patent_score{
+	background:url('icons/patent_score.png') no-repeat center center;
+}
+.icon-mobile_tong{
+	background:url('icons/mobile_tong.png') no-repeat center center;
 }

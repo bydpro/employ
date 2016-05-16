@@ -168,10 +168,10 @@
 					data-options="required:true,validType:'mobile'">
 			</div>
 			<div style="margin-bottom: 7px;">
-				<label>所属单位</label> <input id="organId" class="easyui-combobox"
+				<label>所属学院</label> <input id="organId" class="easyui-combobox"
 					name="organId" style="width: 200px; height: 30px;"
 					data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
-					<label>所属院系</label>
+				<label>所属院系</label>
 				<input id="dept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
     			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
 			</div>

@@ -200,6 +200,14 @@ public class ResearchController {
 		String msgView = "researchMng/workload4Tec";
 		HttpSession session = request.getSession();
 		BigInteger userNum = (BigInteger) session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
+		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
+			msgView = "researchMng/workload";
+			String userNumStr = request.getParameter("userNum");
+			BigInteger bi = new BigInteger(userNumStr);
+			userNum = bi;
+		}
+		Map userInfo = researchService.getUserInfo(userNum.toString());
 		List<Map> thesisList = researchService.getCurrentThesisWorkload4Tec(userNum);
 		List<Map> projectList = researchService.getCurrentProjectWorkload4Tec(userNum);
 		List<Map> rewardList = researchService.getCurrentRewardWorkload4Tec(userNum);
@@ -244,6 +252,7 @@ public class ResearchController {
 		Model.addAttribute("rewardList", rewardList);
 		Model.addAttribute("patentList", patentList);
 		Model.addAttribute("sumMap", sumMap);
+		Model.addAttribute("userInfo", userInfo);
 		return new ModelAndView(msgView);
 	}
 	
@@ -269,7 +278,7 @@ public class ResearchController {
 	public ModelAndView enterProjectMng(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		String userType = (String) session.getAttribute("userType");
-		String msgView = "researchMng/proectMng4Tec";
+		String msgView = "researchMng/projectMng4Tec";
 		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 			msgView = "researchMng/projectMng";
 		}
@@ -287,7 +296,7 @@ public class ResearchController {
 	public ModelAndView enterRewardMng(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		String userType = (String) session.getAttribute("userType");
-		String msgView = "researchMng/proectMng4Tec";
+		String msgView = "researchMng/rewardMng4Tec";
 		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 			msgView = "researchMng/rewardMng";
 		}
@@ -305,7 +314,7 @@ public class ResearchController {
 	public ModelAndView enterPatentMng(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		String userType = (String) session.getAttribute("userType");
-		String msgView = "researchMng/proectMng4Tec";
+		String msgView = "researchMng/patentMng4Tec";
 		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 			msgView = "researchMng/patentMng";
 		}
@@ -397,5 +406,17 @@ public class ResearchController {
 		Map map = new HashMap();
 		map.put("success", true);
 		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryScore4Tong.do")
+	public List<Map> queryScore4Tong(HttpServletRequest request) {
+		List<Map> list = researchService.queryScore4Tong(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterScore4Tong.do")
+	public ModelAndView enterScore4Tong(HttpServletRequest request) {
+		return new ModelAndView("researchMng/researchTong");
 	}
 }

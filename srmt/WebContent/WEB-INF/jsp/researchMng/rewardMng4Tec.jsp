@@ -169,8 +169,6 @@
 	function addReward() {
 		$('#rewardDlg').dialog('open').dialog('setTitle', '新增奖励');
 		$('#rewardForm').form('clear');
-		$("#userStr4reward").hide();
-		$("#user4reward").show();
 	}
 	function editReward() {
 		var row = $('#rewardDg').datagrid('getSelected');
@@ -181,9 +179,6 @@
 			openDlg = '#rewardDlg';
 			url = 'research/getRewardInfo.do';
 			openForm = '#rewardForm';
-			$("#userStr4reward").show();
-			$("#user4reward").hide();
-			$("#userNumStr4reward").html(row.USERNUM);
 			$.ajax({
 				type : "POST",
 				dataType : "json",
@@ -205,8 +200,6 @@
 </script>
 <form id="queryRewardForm" method="post">
 	<div style="margin-bottom: 7px;">
-		<label for="projectName">用户编号:</label> <input class="easyui-textbox"
-			type="text" name="userNum" style="width: 200px; height: 30px;" />
 		<label for="rewardName">奖励名称:</label> <input class="easyui-textbox"
 			type="text" name="rewardName" style="width: 200px; height: 30px;" />
 		<label>获奖类别：</label>
@@ -214,12 +207,13 @@
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do'">
 		<label for="rewardOrgan">奖励单位:</label> 
 		<input class="easyui-textbox"	type="text" name="rewardOrgan" style="width: 200px; height: 30px;" />
-	</div>
-	<div style="margin-bottom: 7px;">
 		<label>	获奖时间:</label>
 		<input name="rewardTime" type="text" style="width:200px;height:30px;" class="easyui-datebox"/>
+	</div>
+	<div style="margin-bottom: 7px;">
+	
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 585px"
+			style="width: 98px; height: 30px; margin-left: 845px"
 			onclick="doSearch()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
@@ -258,17 +252,6 @@
 <div id="rewardDlg" class="easyui-dialog" style="width:590px;height:500px;padding:10px 20px"
 		closed="true" buttons="#rewardDlg-buttons" align="center">
 	<form id="rewardForm" method="post">
-		<div style="margin-bottom: 7px;">
-			<div id="userStr4reward" align="left">
-				<label style="margin-left: 5px;">用户编号：</label>
-				<label id="userNumStr4reward"></label>
-			</div>
-			<div id="user4reward">
-				<label>用户编号：</label> <input name="userNum" class="easyui-numberbox"
-					required="true" style="width: 460px;; height: 30px;"
-					data-options="precision:0,min :201610000001,max:999999999999">
-			</div>
-		</div>
 		<div  style="margin-bottom: 7px;">
 			<input name="rewardId" hidden="true"/>
 			<label>获奖名称：</label>

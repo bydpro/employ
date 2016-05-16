@@ -3,39 +3,24 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <meta charset="utf-8" />
-<script type="text/javascript">
-	$(function() {
-		$.ajax({
-			type : "POST",
-			dataType : "json",
-			url : "research/getCurrentThesisWorkload4Tec.do",
-			async : true,
-			success : function(data) {
-
-			},
-		});
-	});
-</script>
 <body>
 	<table class="table table-bordered table-hover table-striped"
 		style="margin-bottom: 0px;">
-		<caption style="padding-top: 0px; padding-bottom: 0px;">
-			<h2>我的科研信息统计</h2>
-		</caption>
 		<thead>
+		<caption style="padding-top: 0px; padding-bottom: 0px;">
+			<h2>教师信息</h2>
+		</caption>
 			<tr>
-				<td align="center">论文数量</td>
-				<td align="center">项目数量</td>
-				<td align="center">专利数量</td>
-				<td align="center">奖励数量</td>
-				<td align="center">科研信息总分</td>
+				<td align="center">教师编号</td>
+				<td align="center">姓名</td>
+				<td align="center">电子邮箱</td>
+				<td align="center">手机号码</td>
 			</tr>
 			<tr>
-				<td align="center" class="warning">${sumMap.thesisSize}</td>
-				<td align="center" class="warning">${sumMap.projectSize}</td>
-				<td align="center" class="warning">${sumMap.rewardSize}</td>
-				<td align="center" class="warning">${sumMap.patentSize}</td>
-				<td align="center" class="warning">${sumMap.sumWorkload}</td>
+				<td align="center" class="warning">${userInfo.userNum}</td>
+				<td align="center" class="warning">${userInfo.userName}</td>
+				<td align="center" class="warning">${userInfo.email}</td>
+				<td align="center" class="warning">${userInfo.mobile}</td>
 			</tr>
 		</thead>
 	</table>

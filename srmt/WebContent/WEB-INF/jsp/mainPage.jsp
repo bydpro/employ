@@ -50,7 +50,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			attributes : {
 				url : "organMng/enterDeptMng.do"
 			},
-			iconCls : "icon-overlays"
+			iconCls : "icon-school"
 		}
 		];
 
@@ -65,33 +65,33 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			attributes : {
 				url : "research/enterThesisMng.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-thesis"
 		}, {
 			text : "项目管理",
 			attributes : {
 				url : "research/enterProjectMng.do"
 			},
-			iconCls : "icon-teacher_tong"
+			iconCls : "icon-project"
 		},{
 			text : "奖励管理",
 			attributes : {
 				url : "research/enterRewardMng.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-reward"
 		} ,{
 			text : "专利管理",
 			attributes : {
 				url : "research/enterPatentMng.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-patent"
 		}];
 		
 		var tree5Data = [{
 			text : "科研信息统计",
 			attributes : {
-				url : "research/enterResearchMng.do"
+				url : "research/enterScore4Tong.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-mobile_tong"
 		},{
 			text : "论文信息统计",
 			attributes : {
@@ -131,25 +131,25 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			attributes : {
 				url : "research/enterThieisScore.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-thesis_score"
 		}, {
 			text : "项目评分标准",
 			attributes : {
 				url : "research/enterProjectScore.do"
 			},
-			iconCls : "icon-teacher_tong"
+			iconCls : "icon-project_score"
 		},{
 			text : "奖励评分标准",
 			attributes : {
 				url : "research/enterRewardScore.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-reward_score"
 		} ,{
 			text : "专利评分标准",
 			attributes : {
 				url : "research/enterPatentScore.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-patent_score"
 		}];
 		
 		//实例化树形菜单
@@ -306,19 +306,19 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 				style="overflow: auto; padding: 10px;">
 				<ul id="tree4"></ul>
 			</div>
-			<div title="科研信息管理" data-options="iconCls:'icon-teacher'"
+			<div title="科研信息管理" data-options="iconCls:'icon-research'"
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
 			</div>
-			<div title="科研信息统计" data-options="iconCls:'icon-teacher'"
+			<div title="科研信息统计" data-options="iconCls:'icon-mobile_statistics'"
 				style="padding: 10px;">
 				<ul id="tree5"></ul>
 			</div>
-			<div title="科研分统计标准" data-options="iconCls:'icon-teacher'"
+			<div title="科研分统计标准" data-options="iconCls:'icon-score_mng'"
 				style="padding: 10px;">
 				<ul id="tree6"></ul>
 			</div>
-			<div title="个人信息管理" data-options="iconCls:'icon-man'"
+			<div title="个人信息管理" data-options="iconCls:'icon-people_information'"
 				style="overflow: auto; padding: 10px;">
 				<ul id="tree3"></ul>
 			</div>

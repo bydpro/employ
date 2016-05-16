@@ -221,7 +221,7 @@
 	</div>
 
 </form>
-<table id="thesisDg" title="教师科研信息列表" 
+<table id="thesisDg" title="论文信息列表" 
 	style="width: 1050px; height: 85%;" toolbar="#thesisDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,

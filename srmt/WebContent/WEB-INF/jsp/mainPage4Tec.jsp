@@ -33,33 +33,6 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 <script type="text/javascript">
 	$(function() {
 		//动态菜单数据
-		var tree4Data = [ {
-			text : "用户管理",
-			attributes : {
-				url : "userMng/enterUserMng.do"
-			},
-			iconCls : "icon-group"
-		}, {
-			text : "单位管理",
-			attributes : {
-				url : "organMng/enterOrganMng.do"
-			},
-			iconCls : "icon-overlays"
-		} ];
-
-		var tree2Data = [ {
-			text : "教师科研信息管理",
-			attributes : {
-				url : "research/enterResearchMng.do"
-			},
-			iconCls : "icon-teacher_info"
-		}, {
-			text : "教师科研信息统计",
-			attributes : {
-				url : "research/enterWorkload4Tec.do"
-			},
-			iconCls : "icon-teacher_tong"
-		} ];
 		var tree3Data = [ {
 			text : "修改个人信息",
 			attributes : {
@@ -67,16 +40,47 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			},
 			iconCls : "icon-myuser"
 		} ];
-		//实例化树形菜单
-		$("#tree4").tree({
-			data : tree4Data,
-			lines : true,
-			onClick : function(node) {
-				if (node.attributes) {
-					Open(node.text, node.attributes.url);
-				}
-			}
-		});
+		
+		var tree2Data = [{
+			text : "科研信息管理",
+			attributes : {
+				url : "research/enterResearchMng.do"
+			},
+			iconCls : "icon-teacher_info"
+		},{
+			text : "论文管理",
+			attributes : {
+				url : "research/enterThesisMng.do"
+			},
+			iconCls : "icon-thesis"
+		}, {
+			text : "项目管理",
+			attributes : {
+				url : "research/enterProjectMng.do"
+			},
+			iconCls : "icon-project"
+		},{
+			text : "奖励管理",
+			attributes : {
+				url : "research/enterRewardMng.do"
+			},
+			iconCls : "icon-reward"
+		} ,{
+			text : "专利管理",
+			attributes : {
+				url : "research/enterPatentMng.do"
+			},
+			iconCls : "icon-patent"
+		}];
+		
+		
+		var tree4Data = [ {
+			text : "我的科研信息统计",
+			attributes : {
+				url : "research/enterWorkload4Tec.do"
+			},
+			iconCls : "icon-research_tec"
+		} ];
 
 		//实例化树形菜单
 		$("#tree2").tree({
@@ -92,6 +96,17 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 		//实例化树形菜单
 		$("#tree3").tree({
 			data : tree3Data,
+			lines : true,
+			onClick : function(node) {
+				if (node.attributes) {
+					Open(node.text, node.attributes.url);
+				}
+			}
+		});
+		
+		//实例化树形菜单
+		$("#tree5").tree({
+			data : tree4Data,
 			lines : true,
 			onClick : function(node) {
 				if (node.attributes) {
@@ -177,7 +192,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 </script>
 </head>
 <body class="easyui-layout">
-	<div region="north" class="north" border="true">
+	<div region="north" class="north" border="true" style="height: 60px;">
 		<div align="right">
 			<form>
 				<label>欢迎你：</label> <label>${username}</label>&nbsp;&nbsp;<a
@@ -193,11 +208,15 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 	<div region="west" class="west" title="菜单">
 		<div id="RightAccordion" class="easyui-accordion" border="false"
 			data-options="multiple:true">
-			<div title="科研信息管理" data-options="iconCls:'icon-teacher'"
+			<div title="科研信息管理" data-options="iconCls:'icon-research'"
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
 			</div>
-			<div title="个人信息管理" data-options="iconCls:'icon-man'"
+			<div title="科研信息统计" data-options="iconCls:'icon-mobile_statistics'"
+				style="padding: 10px;">
+				<ul id="tree5"></ul>
+			</div>
+			<div title="个人信息管理" data-options="iconCls:'icon-people_information'"
 				style="overflow: auto; padding: 10px;">
 				<ul id="tree3"></ul>
 			</div>
