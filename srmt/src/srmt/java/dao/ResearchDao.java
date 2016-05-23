@@ -1,5 +1,6 @@
 package srmt.java.dao;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -55,6 +56,8 @@ public class ResearchDao {
 		String dictValue = request.getParameter("dictValue");
 		String researchName = request.getParameter("researchName");
 		String userNum = request.getParameter("userNum");
+		String userName = request.getParameter("userName");
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("   SELECT                                                             ");
 		sb.append("   	SU.USER_ID USERID,                                               ");
@@ -111,6 +114,9 @@ public class ResearchDao {
 		if (StringUtils.isNotEmpty(userNum)) {
 			sb.append("  AND SU.USER_NUM = :userNum   ");
 		}
+		if (StringUtils.isNotEmpty(userName)) {
+			sb.append("  AND SU.USERNAME LIKE :userName   ");
+		}
 		sb.append("   ORDER BY SU.USER_NUM ASC  ");
 		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
@@ -126,6 +132,10 @@ public class ResearchDao {
 		if (StringUtils.isNotEmpty(researchName)) {
 			query.setParameter("researchName", "%" + researchName + "%");
 		}
+		if (StringUtils.isNotEmpty(userName)) {
+			query.setParameter("userName", "%" + userName + "%");
+		}
+		
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> queryList = query.list();
 		return queryList;
@@ -795,15 +805,20 @@ public class ResearchDao {
 				}
 
 				workloadSum = workloadSum + workload4project;
+				BigDecimal   b   =   new   BigDecimal(workload4project);  
+				double   f1   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue();  
+				
 				Map thesisMap = new HashMap<>();
 				thesisMap.putAll(map);
-				thesisMap.put("workload", workload4project);
+				thesisMap.put("workload", f1);
 				list.add(thesisMap);
 			}
 		}
 		Map workMap = new HashMap<>();
+		BigDecimal   b2   =   new   BigDecimal(workloadSum);  
+		double   f2   =   b2.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue();  
 		workMap.put("PROJECTNAME", "项目科研总分");
-		workMap.put("workload", workloadSum);
+		workMap.put("workload", f2);
 		list.add(workMap);
 		return list;
 	}
@@ -1031,6 +1046,7 @@ public class ResearchDao {
 		String userNum = request.getParameter("userNum");
 		String thesisName = request.getParameter("thesisName");
 		String thesisType = request.getParameter("thesisType");
+		String userName = request.getParameter("userName");
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("  SELECT                                                       ");
@@ -1068,6 +1084,9 @@ public class ResearchDao {
 		if(StringUtils.isNotEmpty(thesisType)){
 			sb.append(" AND TI.THESIS_TYPE = :thesisType ");
 		}
+		if(StringUtils.isNotEmpty(userName)){
+			sb.append(" AND SU.USERNAME LIKE :userName ");
+		}
 
 		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
@@ -1083,6 +1102,9 @@ public class ResearchDao {
 		}
 		if(Constants.USER_TYPE_TEC.equals(userType)){
 			query.setParameter("userNumTec", userNum4Curr);
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			query.setParameter("userName", "%"+userName+"%");
 		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> queryList = query.list();
@@ -1778,11 +1800,6 @@ public class ResearchDao {
 	}
 	
 	
-	public void queryThesisTong(HttpServletRequest requst){
-		StringBuilder sb = new StringBuilder();
-		
-	}
-	
 	public Map getUserInfo(String userNum) {
 		getSession().beginTransaction();
 
@@ -1811,6 +1828,602 @@ public class ResearchDao {
 		}
 		getSession().close();
 		return userMap;
+	}
+	
+	
+	public List<Map> queryThesisTongList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String thesisName = request.getParameter("thesisName");
+		String thesisType = request.getParameter("thesisType");
+		String userName = request.getParameter("userName");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("  SELECT                                                       ");
+		sb.append("  	SUR.RID,                                                  ");
+		sb.append("    SU.USER_NUM USERNUM,                                       ");
+		sb.append("    SU.USERNAME ,                                              ");
+		sb.append("    SU.USER_ID USERID,                                         ");
+		sb.append("    SU.MOBILE,                                                 ");
+		sb.append("    SU.EMAIL,                                                  ");
+		sb.append("    TI.THESIS_ID THESISID,                                     ");
+		sb.append("    TI.THESIS_AUTHOR THESISAUTHOR,                             ");
+		sb.append("    TI.THESIS_NAME THESISNAME,                                 ");
+		sb.append("    (SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.THESIS_TYPE) THESISTYPE,                                 ");
+		sb.append("    TI.THESIS_PERIODICAL THESISPERIODICAL,                     ");
+		sb.append("    TI.THESIS_RECORD   THESISRECORD                            ");
+		sb.append("  FROM                                                         ");
+		sb.append("  	SYS_USER_RESEARCH SUR                                     ");
+		sb.append("  LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID  ");
+		sb.append("  LEFT JOIN THESIS_INFO TI ON TI.THESIS_ID = SUR.RESEARCH_ID   ");
+		sb.append("  WHERE                                                        ");
+		sb.append("  	SUR.RESEARCH_TYPE = :researchThesis                       ");
+		
+		HttpSession session = request.getSession();
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			sb.append(" AND SU.USER_NUM = :userNumTec  ");
+		}
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(thesisName)){
+			sb.append(" AND TI.THESIS_NAME LIKE :thesisName ");
+		}
+		if(StringUtils.isNotEmpty(thesisType)){
+			sb.append(" AND TI.THESIS_TYPE = :thesisType ");
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			sb.append(" AND SU.USERNAME LIKE :userName ");
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchThesis", Constants.RESEARCH_TYPE_THESIS);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(thesisName)){
+			query.setParameter("thesisName", "%"+thesisName+"%");
+		}
+		if(StringUtils.isNotEmpty(thesisType)){
+			query.setParameter("thesisType", thesisType);
+		}
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			query.setParameter("userNumTec", userNum4Curr);
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			query.setParameter("userName", "%"+userName+"%");
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		Map theisScore = getThesisScore();
+		if (queryList != null && queryList.size() > 0) {
+			for (Map map : queryList) {
+				double workload = 0;
+				String thesisPeriodical = (String) map.get("THESISPERIODICAL");
+				if (StringUtils.isNotEmpty(thesisPeriodical)) {
+					if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_SHOUSCI)) {
+						if ((double) theisScore.get("thesisShousci") > workload)
+							;
+						{
+							workload = (double) theisScore.get("thesisShousci");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EIYUAN)) {
+						if ((double) theisScore.get("thesisEiyuan") > workload)
+							;
+						{
+							workload = (double) theisScore.get("thesisEiyuan");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EISHOU)) {
+						if ((double) theisScore.get("thesisEishou") > workload)
+							;
+						{
+							workload = (double) theisScore.get("thesisEishou");
+						}
+					}
+				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_JIAOWU)) {
+					if ((double) theisScore.get("thesisJiaowu") > workload)
+						;
+					{
+						workload = (double) theisScore.get("thesisJiaowu");
+					}
+				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EISHOULU)) {
+					if ((double) theisScore.get("thesisEishoulu") > workload)
+						;
+					{
+						workload = (double) theisScore.get("thesisEishoulu");
+					}
+				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_SHOULU)) {
+					if ((double) theisScore.get("thesisShoulu") > workload)
+						;
+					{
+						workload = (double) theisScore.get("thesisShoulu");
+					}
+				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_CHINESE)) {
+					if ((double) theisScore.get("thesisChinese") > workload)
+						;
+					{
+						workload = (double) theisScore.get("thesisChinese");
+					}
+				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_GUOJI)) {
+					if ((double) theisScore.get("thesisGuoji") > workload)
+						;
+					{
+						workload = (double) theisScore.get("thesisGuoji");
+					}
+				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_OTHER)) {
+					if ((double) theisScore.get("thesisOther") > workload)
+						;
+					{
+						workload = (double) theisScore.get("thesisOther");
+					}
+				}
+				map.put("workload", workload);
+				if (StringUtils.isNotEmpty(thesisPeriodical)) {
+					String[] str = thesisPeriodical.split(",");
+					StringBuilder sql = new StringBuilder();
+					sql.append("select GROUP_CONCAT(S.DICT_NAME) DICTNAME FROM SYS_DICT S WHERE S.DICT_VALUE IN(");
+					int length = str.length;
+					int i = 0;
+					for (String strSql : str) {
+						i++;
+						strSql = "'" + strSql + "'";
+						if (i == length) {
+							sql.append(strSql);
+						} else {
+							sql.append(strSql + ",");
+						}
+					}
+					sql.append("  ) ");
+					getSession().beginTransaction();
+					SQLQuery querySql = getSession().createSQLQuery(sql.toString());
+					querySql.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+					List<Map> list = querySql.list();
+					if (list != null && list.size() > 0) {
+						Map mapStr = list.get(0);
+						String dictName = (String) mapStr.get("DICTNAME");
+						map.put("THESISPERIODICAL", dictName);
+					}
+				}
+			}
+		}
+		return queryList;
+	}
+	
+	public List<Map> queryProjecTongtList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String projectName = request.getParameter("projectName");
+		String projectType = request.getParameter("projectType");
+		String startTime = request.getParameter("startTime");
+		String endTime = request.getParameter("endTime");
+		String userName = request.getParameter("userName");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" SELECT                                                          ");
+		sb.append(" 	SUR.RID,                                                    ");
+		sb.append(" 	SU.USER_NUM USERNUM ,                                       ");
+		sb.append(" 	SU.USERNAME,                                                ");
+		sb.append(" 	SU.USER_ID USERID,                                          ");
+		sb.append(" 	SU.MOBILE,                                                  ");
+		sb.append(" 	SU.EMAIL,                                                   ");
+		sb.append(" 	TI.PROJECT_ID PROJECTID,                                    ");
+		sb.append(" 	TI.PROJECT_NAME PROJECTNAME,                                ");
+		sb.append(" 	TI.START_TIME STARTTIME,                                    ");
+		sb.append(" 	TI.END_TIME ENDTIME,                                        ");
+		sb.append(" 	TI.PROJECT_FUND PROJECTFUND,                                ");
+		sb.append(" 	TI.PROJECT_TYPE PROJECT,                                    ");
+		sb.append(" 	(SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.PROJECT_TYPE) PROJECTTYPE,                                ");
+		sb.append(" 	TI.PROJECT_SOURCE PROJECTSOURCE                             ");
+		sb.append(" FROM                                                            ");
+		sb.append(" 	SYS_USER_RESEARCH SUR                                       ");
+		sb.append(" LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID     ");
+		sb.append(" LEFT JOIN PROJECT_INFO TI ON TI.PROJECT_ID = SUR.RESEARCH_ID    ");
+		sb.append(" WHERE                                                           ");              
+		sb.append(" 	SUR.RESEARCH_TYPE = :researchProject                        ");  
+
+		HttpSession session = request.getSession();
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			sb.append(" AND SU.USER_NUM = :userNumTec  ");
+		}
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(projectName)){
+			sb.append(" AND TI.PROJECT_NAME LIKE :projectName ");
+		}
+		if(StringUtils.isNotEmpty(projectType)){
+			sb.append(" AND TI.PROJECT_TYPE = :projectType ");
+		}
+		if(StringUtils.isNotEmpty(startTime)){
+			sb.append(" AND TI.START_TIME = :startTime ");
+		}
+		if(StringUtils.isNotEmpty(endTime)){
+			sb.append(" AND TI.END_TIME = :endTime ");
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			sb.append(" AND SU.USERNAME LIKE :userName ");
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchProject", Constants.RESEARCH_TYPE_PROJECT);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(projectName)){
+			query.setParameter("projectName", "%"+projectName+"%");
+		}
+		if(StringUtils.isNotEmpty(projectType)){
+			query.setParameter("projectType", projectType);
+		}
+		if(StringUtils.isNotEmpty(startTime)){
+			query.setParameter("startTime", startTime);
+		}
+		if(StringUtils.isNotEmpty(endTime)){
+			query.setParameter("endTime", endTime);
+		}
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			query.setParameter("userNumTec", userNum4Curr);
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			query.setParameter("userName", "%"+userName+"%");
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		Map projectScore = getProjectScore();
+		if (!queryList.isEmpty()) {
+			for (Map map : queryList) {
+				double workload4project = 0;
+				String project = (String) map.get("PROJECT");
+				double projectFund = (double) map.get("PROJECTFUND");
+				int i = (int) projectFund;
+				if (Constants.PROJECT_TYPE__GUO.equals(project)) {
+					workload4project = (i
+							* ((double) projectScore.get("guoFund") / (double) projectScore.get("guoFundLast")))
+							* (double) projectScore.get("guoK");
+				} else if (Constants.PROJECT_TYPE_SHEN.equals(project)) {
+					workload4project = (i
+							* ((double) projectScore.get("shenFund") / (double) projectScore.get("shenFundLast")))
+							* (double) projectScore.get("shenK");
+				} else if (Constants.PROJECT_TYPE_OTHER.equals(project)) {
+					workload4project = (i
+							* ((double) projectScore.get("otherFund") / (double) projectScore.get("otherFundLast")))
+							* (double) projectScore.get("otherK");
+				}
+				BigDecimal   b   =   new   BigDecimal(workload4project);  
+				double   f1   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue();  
+				map.put("workload", f1);
+				
+			}
+		}
+		
+		return queryList;
+	}
+	
+	
+	public List<Map> queryRewardTongList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String rewardName = request.getParameter("rewardName");
+		String rewardType = request.getParameter("rewardType");
+		String rewardOrgan = request.getParameter("rewardOrgan");
+		String rewardTime = request.getParameter("rewardTime");
+		String userName = request.getParameter("userName");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" SELECT                                                           ");  
+		sb.append(" 	SUR.RID,                                                     ");  
+		sb.append(" 	SU.USER_NUM USERNUM,                                         ");  
+		sb.append(" 	SU.USERNAME,                                                 ");  
+		sb.append(" 	SU.USER_ID USERID,                                           ");  
+		sb.append(" 	SU.MOBILE,                                                   ");  
+		sb.append(" 	SU.EMAIL,                                                    ");  
+		sb.append(" 	TI.REWARD_ID REWARDID,                                       ");  
+		sb.append(" 	TI.REWARD_NAME REWARDNAME,                                   ");   
+		sb.append(" 	TI.REWARD_TIME REWARDTIME,                                   ");  
+		sb.append(" 	TI.REWARD_TYPE TYPE,                                         ");
+		sb.append("     (SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.REWARD_TYPE)REWARDTYPE,                                   ");  
+		sb.append(" 	TI.REWARD_ORGAN REWARDORGAN,                                 "); 
+		sb.append(" 	TI.REWARD_PLACE REWARDPLACE,                                 "); 
+		sb.append(" 	TI.REWARD_USER REWARDUSER                                    ");  
+		sb.append(" FROM                                                             ");  
+		sb.append(" 	SYS_USER_RESEARCH SUR                                        ");  
+		sb.append(" LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID      ");  
+		sb.append(" LEFT JOIN REWARD_INFO TI ON TI.REWARD_ID = SUR.RESEARCH_ID       ");  
+		sb.append(" WHERE                                                            ");  
+		sb.append(" 	SUR.RESEARCH_TYPE = :researchReward                          ");  
+
+		HttpSession session = request.getSession();
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			sb.append(" AND SU.USER_NUM = :userNumTec  ");
+		}
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(rewardName)){
+			sb.append(" AND TI.REWARD_NAME LIKE :rewardName ");
+		}
+		if(StringUtils.isNotEmpty(rewardType)){
+			sb.append(" AND TI.REWARD_TYPE = :rewardType ");
+		}
+		if(StringUtils.isNotEmpty(rewardOrgan)){
+			sb.append(" AND TI.REWARD_ORGAN LIKE :rewardOrgan ");
+		}
+		if(StringUtils.isNotEmpty(rewardTime)){
+			sb.append(" AND TI.REWARD_TIME = :rewardTime ");
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			sb.append(" AND SU.USERNAME LIKE :userName ");
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchReward", Constants.RESEARCH_TYPE_REWARD);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(rewardName)){
+			query.setParameter("rewardName", "%"+rewardName+"%");
+		}
+		if(StringUtils.isNotEmpty(rewardType)){
+			query.setParameter("rewardType", rewardType);
+		}
+		if(StringUtils.isNotEmpty(rewardOrgan)){
+			query.setParameter("rewardOrgan", "%"+rewardOrgan+"%");
+		}
+		if(StringUtils.isNotEmpty(rewardTime)){
+			query.setParameter("rewardTime", rewardTime);
+		}
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			query.setParameter("userNumTec", userNum4Curr);
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			query.setParameter("userName", "%"+userName+"%");
+		}
+		
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		
+		Map rewardScore = getRewardScore();
+		if (!queryList.isEmpty()) {
+			for (Map map : queryList) {
+				String type = (String) map.get("TYPE");
+				String rewardPlace = (String) map.get("REWARDPLACE");
+				double workload4reward = 0;
+				if (Constants.REWARD_TYPE_SHEN1.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shenFirst");
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shenSecond");
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shenThird");
+					} else if (Constants.PLACE_TYPE_FOURTH.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shenFourth");
+					} else {
+						workload4reward = (double)rewardScore.get("shenFifth");
+					}
+				} else if (Constants.REWARD_TYPE_SHEN2.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen2First");
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen2Second");
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen2Third");
+					} else if (Constants.PLACE_TYPE_FOURTH.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen2Fourth");
+					} else {
+						workload4reward = (double)rewardScore.get("shen2Fifth");
+					}
+				} else if (Constants.REWARD_TYPE_SHEN3.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen3First");
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen3Second");
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen3Third");
+					} else if (Constants.PLACE_TYPE_FOURTH.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("shen3Fourth");
+					}else{
+						workload4reward = (double)rewardScore.get("shen3Fifth");
+					}
+				} else if (Constants.REWARD_TYPE_DISHI1.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishiFirst");
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishiSecond");
+					} else if (Constants.PLACE_TYPE_THIRD.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishiFhird");
+					}
+				} else if (Constants.REWARD_TYPE_DISHI2.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishi2First");
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishi2Second");
+					}else{
+						workload4reward = (double)rewardScore.get("dishi2Third");
+					}
+				} else if (Constants.REWARD_TYPE_DISHI3.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishi3First");
+					} else if (Constants.PLACE_TYPE_SECOND.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("dishi3Second");
+					}else{
+						workload4reward = (double)rewardScore.get("dishi3Third");
+					}
+				} else if (Constants.REWARD_TYPE_XIAO1.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("schoolFirst");
+					}
+				} else if (Constants.REWARD_TYPE_XIAO2.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("schoolSecond");
+					}
+				} else if (Constants.REWARD_TYPE_XIAO3.equals(type)) {
+					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+						workload4reward = (double)rewardScore.get("schoolThird");
+					}
+				} else if (Constants.REWARD_TYPE_JIAO.equals(type)){
+					workload4reward = (double)rewardScore.get("youxiuJiaoxue");
+				}else if ( Constants.REWARD_TYPE_QING.equals(type)) {
+					workload4reward = (double)rewardScore.get("yongTeach");
+				}
+				map.put("workload", workload4reward);
+			}
+		}
+		return queryList;
+	}
+	
+	public List<Map> queryPatentTongList(HttpServletRequest request) {
+		String userNum = request.getParameter("userNum");
+		String patentName = request.getParameter("patentName");
+		String patentType = request.getParameter("patentType");
+		String patentPeople = request.getParameter("patentPeople");
+		String patentDate = request.getParameter("patentDate");
+		String patentFirst = request.getParameter("patentFirst");
+		String patentIsTransfer = request.getParameter("patentIsTransfer");
+		String userName = request.getParameter("userName");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" SELECT                                                         ");  
+		sb.append(" 	SUR.RID,                                                   ");  
+		sb.append(" 	SU.USER_NUM USERNUM,                                       ");  
+		sb.append(" 	SU.USERNAME,                                               ");  
+		sb.append(" 	SU.USER_ID USERID,                                         ");  
+		sb.append(" 	SU.MOBILE,                                                 ");  
+		sb.append(" 	SU.EMAIL,                                                  ");  
+		sb.append(" 	TI.PATENT_ID PATENTID,                                     "); 
+		sb.append(" 	TI.PATENT_CREATER PATENTCREATER,                           ");
+		sb.append(" 	TI.PATENT_TYPE TYPE,                                       ");
+		sb.append(" 	(SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.PATENT_TYPE) PATENTTYPE,                                 ");  
+		sb.append(" 	TI.PATENT_NAME PATENTNAME,                                 ");  
+		sb.append(" 	(SELECT S.DICT_NAME FROM SYS_DICT S WHERE S.DICT_VALUE=TI.PATENT_PEOPLE) PATENTPEOPLE,                             ");  
+		sb.append(" 	TI.PATENT_DATE PATENTDATE,                                 ");  
+		sb.append(" 	TI.PATENT_FIRST PATENTFIRST,                               ");  
+		sb.append(" 	TI.PATENT_IS_TRANSFER PATENTISTRANSFER                     ");  
+		sb.append(" FROM                                                           ");  
+		sb.append(" 	SYS_USER_RESEARCH SUR                                      ");  
+		sb.append(" LEFT JOIN SYS_USER SU ON SU.USER_NUM = SUR.RESEARCH_USER_ID    ");  
+		sb.append(" LEFT JOIN PATENT_INFO TI ON TI.PATENT_ID = SUR.RESEARCH_ID     ");  
+		sb.append(" WHERE                                                          ");  
+        sb.append(" 	SUR.RESEARCH_TYPE = :researchPatent                        ");  
+        
+		HttpSession session = request.getSession();
+		BigInteger userNum4Curr = (BigInteger) session.getAttribute("userNum");
+		String userType = (String) session.getAttribute("userType");
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			sb.append(" AND SU.USER_NUM = :userNumTec  ");
+		}
+		if(StringUtils.isNotEmpty(userNum)){
+			sb.append(" AND SU.USER_NUM = :userNum ");
+		}
+		if(StringUtils.isNotEmpty(patentName)){
+			sb.append(" AND TI.PATENT_NAME LIKE :patentName ");
+		}
+		if(StringUtils.isNotEmpty(patentType)){
+			sb.append(" AND TI.PATENT_TYPE = :patentType ");
+		}
+		if(StringUtils.isNotEmpty(patentPeople)){
+			sb.append(" AND TI.PATENT_PEOPLE = :patentPeople ");
+		}
+		if(StringUtils.isNotEmpty(patentDate)){
+			sb.append(" AND TI.PATENT_DATE = :patentDate ");
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			sb.append(" AND SU.USERNAME LIKE :userName ");
+		}
+		if(StringUtils.isNotEmpty(patentFirst)){
+			if (patentFirst.equals(Constants.YES)) {
+				sb.append("  AND TI.PATENT_FIRST = :patentFirst       ");
+			} else {
+				patentFirst = Constants.YES;
+				sb.append("  AND TI.PATENT_FIRST != :patentFirst     ");
+			}
+		}
+		if(StringUtils.isNotEmpty(patentIsTransfer)){
+			if (patentIsTransfer.equals(Constants.YES)) {
+				sb.append("  AND TI.PATENT_IS_TRANSFER = :patentIsTransfer       ");
+			} else {
+				patentIsTransfer = Constants.YES;
+				sb.append("  AND TI.PATENT_IS_TRANSFER != :patentIsTransfer      ");
+			}
+		}
+
+		getSession().beginTransaction();
+		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		query.setParameter("researchPatent", Constants.RESEARCH_TYPE_PATENT);
+		if(StringUtils.isNotEmpty(userNum)){
+			query.setParameter("userNum", userNum);
+		}
+		if(StringUtils.isNotEmpty(patentName)){
+			query.setParameter("patentName", "%"+patentName+"%");
+		}
+		if(StringUtils.isNotEmpty(patentType)){
+			query.setParameter("patentType", patentType);
+		}
+		if(StringUtils.isNotEmpty(patentPeople)){
+			query.setParameter("patentPeople", patentPeople);
+		}
+		if(StringUtils.isNotEmpty(patentDate)){
+			query.setParameter("patentDate", patentDate);
+		}
+		if(StringUtils.isNotEmpty(patentFirst)){
+			query.setParameter("patentFirst", patentFirst);
+		}
+		if(StringUtils.isNotEmpty(patentIsTransfer)){
+			query.setParameter("patentIsTransfer", patentIsTransfer);
+		}
+		if(StringUtils.isNotEmpty(userName)){
+			query.setParameter("userName", "%"+userName+"%");
+		}
+		if(Constants.USER_TYPE_TEC.equals(userType)){
+			query.setParameter("userNumTec", userNum4Curr);
+		}
+		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map> queryList = query.list();
+		Map patentScore = getPatentScore();
+		if (!queryList.isEmpty()) {
+			for (Map map : queryList) {
+				String type = (String) map.get("TYPE");
+				String first = (String) map.get("PATENTFIRST");
+				String isTransfer = (String) map.get("PATENTISTRANSFER");
+				double workload4Patent = 0;
+				if (Constants.PATENT_TYPE_FAMING.equals(type)) {
+					if (Constants.YES.equals(first)) {
+						workload4Patent = (double) patentScore.get("inventFist");
+						if (Constants.YES.equals(isTransfer)) {
+							workload4Patent = workload4Patent + (double) patentScore.get("inventIsMove");
+						}
+					}
+				} else if (Constants.PATENT_TYPE_SHIYONG.equals(type)) {
+					if (Constants.YES.equals(first)) {
+						workload4Patent = (double) patentScore.get("practicalFirst");
+						if (Constants.YES.equals(isTransfer)) {
+							workload4Patent = workload4Patent + (double) patentScore.get("practicalIsMove");
+						}
+					}
+				} else if (Constants.PATENT_TYPE_WAIGAUAN.equals(type)) {
+					if (Constants.YES.equals(first)) {
+						workload4Patent = (double) patentScore.get("viewFirst");
+						if (Constants.YES.equals(isTransfer)) {
+							workload4Patent = workload4Patent + (double) patentScore.get("viewIsMove");
+						}
+					}
+				} else if (Constants.PATENT_TYPE_SOFTWAR.equals(type)) {
+					if (Constants.YES.equals(first)) {
+						workload4Patent = (double) patentScore.get("softFirst");
+						if (Constants.YES.equals(isTransfer)) {
+							workload4Patent = workload4Patent + (double) patentScore.get("softIsMove");
+						}
+					}
+				}
+				map.put("workload",workload4Patent);
+			}
+		}
+		return queryList;
 	}
 
 }

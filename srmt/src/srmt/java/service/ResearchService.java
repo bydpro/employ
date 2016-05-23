@@ -2,6 +2,7 @@ package srmt.java.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -338,6 +339,7 @@ public class ResearchService {
 		List<Map> projectList = researchDao.getCurrentProject4UserNum(userNum);
 		Map projectScore = researchDao.getProjectScore();
 		double workloadSum4project = 0;
+		double   workloadSum4pro = 0;
 		int projectSzie = 0;
 		if (projectList != null && projectList.size() > 0) {
 			projectSzie = projectList.size();
@@ -357,8 +359,13 @@ public class ResearchService {
 							* (double)projectScore.get("otherK");
 				}
 				workloadSum4project = workloadSum4project + workload4project;
+				BigDecimal   b   =   new   BigDecimal(workload4project);  
+			    workloadSum4pro   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue(); 
+			    if(workloadSum4pro == 0){
+			    	workloadSum4pro = 0;
+			    }
 			}
-			scoreMap.put("project", projectSzie + "/" + workloadSum4project);
+			scoreMap.put("project", projectSzie + "/" + workloadSum4pro);
 		}else{
 			scoreMap.put("project", "0/0");
 		}
@@ -456,7 +463,7 @@ public class ResearchService {
 			}
 			scoreMap.put("reward", rewardSzie + "/" + workloadSum4reward);
 			
-			sum = workloadSum +workloadSum4Patent +workloadSum4project + workloadSum4reward;
+			sum = workloadSum +workloadSum4Patent +workloadSum4pro + workloadSum4reward;
 			scoreMap.put("sum", sum);
 		}else{
 			scoreMap.put("reward", "0/0");
@@ -468,5 +475,21 @@ public class ResearchService {
 	
 	public Map getUserInfo(String userNum) {
 		return researchDao.getUserInfo(userNum);
+	}
+	
+	public List<Map> queryThesisTongList(HttpServletRequest request) {
+		return researchDao.queryThesisTongList(request);
+	}
+	
+	public List<Map> queryProjecTongtList(HttpServletRequest request) {
+		return researchDao.queryProjecTongtList(request);
+	}
+	
+	public List<Map> queryRewardTongList(HttpServletRequest request) {
+		return researchDao.queryRewardTongList(request);
+	}
+	
+	public List<Map> queryPatentTongList(HttpServletRequest request) {
+		return researchDao.queryPatentTongList(request);
 	}
 }

@@ -1,5 +1,6 @@
 package srmt.java.controller;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -72,9 +74,14 @@ public class ResearchController {
 
 	@ResponseBody
 	@RequestMapping("/getThesisInfo.do")
-	public Map getThesisInfo(HttpServletRequest request) {
+	public Map getThesisInfo(HttpServletRequest request , Model model) {
 		String researchId = request.getParameter("researchId");
-		return researchService.getThesisInfo(researchId);
+		Map map = researchService.getThesisInfo(researchId);
+		String url = (String)map.get("thesisFile");
+		if(StringUtils.isNotEmpty(url)){
+			url = url.substring(2, url.length()-1);
+		}
+		return map;
 	}
 
 	@ResponseBody
@@ -227,7 +234,9 @@ public class ResearchController {
         	projectSize = projectList.size()-1;
         	Map map = projectList.get(projectList.size()-1);
         	double workload =(double) map.get("workload");
-        	sumWorkload = sumWorkload + workload;
+        	BigDecimal   b   =   new   BigDecimal(workload);  
+        	double workload4str   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue(); 
+            sumWorkload = workload4str + sumWorkload;
         }
         if(rewardList!=null&&rewardList.size()>0){
         	rewardSize = rewardList.size()-1;
@@ -418,5 +427,53 @@ public class ResearchController {
 	@RequestMapping("/enterScore4Tong.do")
 	public ModelAndView enterScore4Tong(HttpServletRequest request) {
 		return new ModelAndView("researchMng/researchTong");
+	}
+	
+	@RequestMapping("/enterThesisTong.do")
+	public ModelAndView enterThesisTong(HttpServletRequest request) {
+		return new ModelAndView("researchMng/thsisTong");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryThesisTongList.do")
+	public List<Map> queryThesisTongList(HttpServletRequest request) {
+		List<Map> list = researchService.queryThesisTongList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterProjectTong.do")
+	public ModelAndView enterProjectTong(HttpServletRequest request) {
+		return new ModelAndView("researchMng/projectTong");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryProjecTongtList.do")
+	public List<Map> queryProjecTongtList(HttpServletRequest request) {
+		List<Map> list = researchService.queryProjecTongtList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterRewardTong.do")
+	public ModelAndView enterRewardTong(HttpServletRequest request) {
+		return new ModelAndView("researchMng/rewardTong");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryRewardTongList.do")
+	public List<Map> queryRewardTongList(HttpServletRequest request) {
+		List<Map> list = researchService.queryRewardTongList(request);
+		return list;
+	}
+	
+	@RequestMapping("/enterPatentTong.do")
+	public ModelAndView enterPatentTong(HttpServletRequest request) {
+		return new ModelAndView("researchMng/patentTong");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/queryPatentTongList.do")
+	public List<Map> queryPatentTongList(HttpServletRequest request) {
+		List<Map> list = researchService.queryPatentTongList(request);
+		return list;
 	}
 }

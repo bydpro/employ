@@ -183,7 +183,7 @@
 					removeCompleted : false,
 					debug : true,
 					onCancel : function(event, ID, fileObj, data) {
-						alert("cancle")
+						
 					},
 					onUploadStart : function(file) {
 						var param = {};
@@ -202,19 +202,34 @@
 					}
 				});
 	});
+	
+
+	
+    function doc_filedownload1(a) {
+    	debugger
+    	$.fileDownload($(a).attr('href'), {
+            failCallback: function(responseHtml, url) {
+            	if (responseHtml.trim().startsWith('{')) responseHtml = responseHtml.toObj()
+                $(a).bjuiajax('ajaxDone', responseHtml)
+            }
+        })
+    }
 </script>
-<form id="queryThesisForm" method="post">
+<!-- url 直接指向文件地址，或返回正确的文件地址 -->
+<form id="queryThesisForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
-		<label for="thesisName">用户编号:</label> <input class="easyui-textbox"
+		<label for="thesisName">教师编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
+		<label for="researchName">教师姓名:</label> <input class="easyui-textbox"
+			type="text" name="userName" style="width: 200px; height: 30px;" />
 		<label for="thesisName">论文名称:</label> <input class="easyui-textbox"
 			type="text" name="thesisName" style="width: 200px; height: 30px;" />
 			
 			<label >论文类别：</label>
-			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width: 200px; height: 30px;" "
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do'">
+			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width: 200px; height: 30px;" 
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do',editable:false">
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 73px"
+			style="width: 98px; height: 30px; margin-left: 842px"
 			onclick="doSearch()"> <input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
 			onclick="clearForm()" />
@@ -222,22 +237,22 @@
 
 </form>
 <table id="thesisDg" title="论文信息列表" 
-	style="width: 1050px; height: 85%;" toolbar="#thesisDgBar" data-options="
+	style="width: 1050px; height: 82%;" toolbar="#thesisDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
-			<th field="USERNUM" width="50">用户编号</th>
-			<th field="USERNAME" width="50">姓名</th>
-			<th field="THESISNAME" width="50">论文名称</th>
-			<th field="THESISTYPE" width="50">论文类型</th>
-			<th field="THESISAUTHOR" width="50">全部作者</th>
-			<th field="THESISRECORD" width="50">发表期刊</th>
-			<th field="THESISPERIODICAL" width="50">论文收录情况</th>
+			<th field="USERNUM" width="30px" align="center">用户编号</th>
+			<th field="USERNAME" width="30px">姓名</th>
+			<th field="THESISNAME" width="60px">论文名称</th>
+			<th field="THESISTYPE" width="30px" align="center">论文类型</th>
+			<th field="THESISAUTHOR" width="50px">全部作者</th>
+			<th field="THESISRECORD" width="60px">发表期刊</th>
+			<th field="THESISPERIODICAL" width="100px">论文收录情况</th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
@@ -248,8 +263,8 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editThesis()">修改</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delThesis()">移除</a>
 </div>
-<div id="thesisDlg" class="easyui-dialog" style="width:590px;height:580px;padding:10px 20px"
-		closed="true" buttons="#thesisDlg-buttons" align="center">
+<div id="thesisDlg" class="easyui-dialog" style="width:590px;height:590px;padding:10px 20px"
+		closed="true" buttons="#thesisDlg-buttons" align="center" modal="true">
 	<form id="thesisForm" method="post" enctype="multipart/form-data" >
 		<div  style="margin-bottom: 7px;">
 			<div id="userStr4thesis" align="left">
@@ -269,7 +284,7 @@
 		<div style="margin-bottom: 7px;">
 			<label style="margin-right: 120px;">论文类别：</label>
 			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width:300px;height:30px;margin-left:120px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do'" required="true" >
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do',editable:false" required="true" >
 		</div>
  		<div style="margin-bottom: 7px;">	
  			<label>全部作者(","号隔开)：</label>
@@ -278,7 +293,7 @@
 		<div style="margin-bottom: 7px;">
 			<label>论文收录情况（SCI、EI、ISTP)：</label>
 		    <input id="thesisPeriodical" class="easyui-combobox" name="thesisPeriodical" style="width:300px;height:30px;margin-left: 120px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisIncluded.do',multiple:true" required="true" >
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisIncluded.do',multiple:true,editable:false" required="true" >
 		 	<input id="thesisPeriodicalStr" name="thesisPeriodicalStr" hidden="true">
 		</div>
 		<div style="margin-bottom: 7px;">

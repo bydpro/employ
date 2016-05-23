@@ -6,16 +6,16 @@
 <link rel="shortcut icon" href="./image/infomation.ico" type="image/x-icon" />
 <meta charset="utf-8" />
 <title>高校教师科研信息管理系统</title>
-<link href="./css/themes/metro-orange/easyui.css" rel="stylesheet" />
-<link href="./css/icon.css" rel="stylesheet" />
 <link href="./css/bootstrap.min.css" rel="stylesheet" />
+<link href="./css/themes/metro-blue/easyui.css" rel="stylesheet" />
+<link href="./css/icon.css" rel="stylesheet" />
 <link href="./uploadify/uploadify.css" rel="stylesheet" />
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="./js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/json2.js"></script>
 <script type="text/javascript" src="./js/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="./js/json2.js"></script>
 <script type="text/javascript" src="./uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="./js/jquery.fileDownload.js"></script>
 <style>
 article, aside, figure, footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -192,7 +192,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 </script>
 </head>
 <body class="easyui-layout">
-	<div region="north" class="north" border="true" style="height: 60px;">
+	<div region="north" class="north" border="true" style="height: 60px;background-image:url(./image/head_pic.jpg); background-repeat:no-repeat;">
 		<div align="right">
 			<form>
 				<label>欢迎你：</label> <label>${username}</label>&nbsp;&nbsp;<a

@@ -208,15 +208,15 @@
 		$('#submitForm').form('clear');
 	}
 </script>
-<form id="deptFf" method="post">
-     <div style="margin-bottom: 7px;">
+<form id="deptFf" method="post" style="margin-top: 20px;">
+     <div style="margin-bottom: 7px;" >
 		<label for="organName" style="margin-left: 20px;">院系名称:</label>
 		<input class="easyui-textbox" type="text" name="organName"  style="width:200px;height:30px;"/>
 		<label for="organCode" style="margin-left: 20px;">院系代码:</label>
 		<input class="easyui-textbox" type="text" name="organCode"  style="width:200px;height:30px;"/>
 		<label for="organId" style="margin-left: 20px;">所属学院:</label>
 		<input id="cc" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
 		<label style="margin-left: 20px;">是否有效:&nbsp;&nbsp;</label>
         <span class="radioSpan">
                 <input type="radio" name="isValid" value="1">是</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -237,7 +237,7 @@
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
 			<th field="ORGANNAME" width="50">院系名称</th>
@@ -257,7 +257,7 @@
 </div>
 
 <div id="deptDlg" class="easyui-dialog" style="width:390px;height:250px;padding:10px 20px"
-		closed="true" buttons="#deptDlg-buttons" align="center">
+		closed="true" buttons="#deptDlg-buttons" align="center" modal="true">
 	<form id="submitForm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="organId" hidden="true"/>
@@ -272,7 +272,7 @@
 			<label>所属学院：</label> <input
 				class="easyui-combobox" name="parent"
 				style="width: 200px; height: 30px;"
-				data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
+				data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false ">
 		</div>
 		<div  style="margin-bottom: 7px;">
 		    <label>是否有效:</label>

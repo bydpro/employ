@@ -108,49 +108,20 @@
 			return false;
 		}
 	}
+	
+	$.extend($.fn.validatebox.defaults.rules, {    
+	    phoneNum: { //验证手机号   
+	        validator: function(value, param){ 
+	         return /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/.test(value);
+	        },    
+	        message: '请输入正确的手机号码'   
+	    }
+		});
 
-	function showPic() {
-		debugger
-		var url = $("#pic").val();
-		$("#pic").attr("src", url);
-	}
-
-	$("#pic")
-			.uploadify(
-					{
-						height : 30,
-						swf : './uploadify/uploadify.swf',
-						uploader : 'research/saveFile.do',
-						width : 210,
-						auto : true,
-						fileDataName : 'file',
-						buttonText : '修改头像',
-						fileTypeExts : '*.jpg; *.bmp; *.gif; *.png',
-						multi : false,
-						method : 'post',
-						fileSizeLimit : '200000KB',
-						uploadLimit : 1,
-						removeCompleted : false,
-						debug : true,
-						onCancel : function(event, ID, fileObj, data) {
-							alert("cancle")
-						},
-						onUploadSuccess : function(file, data, response) {
-							var flag = JSON.parse(data);
-							debugger
-							$("#pic").val(flag.url);
-							$('#showPic').attr('src',flag.url);
-						},
-						onUploadError : function(file, errorCode, errorMsg,
-								errorString) {
-							alert('The file ' + file.name
-									+ ' could not be uploaded: ' + errorString);
-						}
-					});
 </script>
 <div>
-	<form id="myUserForm" method="post">
-		<div style="float: left;">
+	<form id="myUserForm" method="post" style="margin-top: 50px;">
+	
 			<div style="margin-bottom: 7px;">
 				<input name="userId" hidden="true" /> <label>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label>
 				<input name="userName" class="easyui-validatebox" required="true"
@@ -163,9 +134,10 @@
 			<div style="margin-bottom: 7px;">
 				<label>电子邮箱</label> <input name="email" class="easyui-validatebox"
 					data-options="required:true,validType:'email'"
-					style="width: 200px; height: 30px;"> <label>移动电话</label> <input
+					style="width: 200px; height: 30px;"> 
+					<label>移动电话</label> <input
 					name="mobile" style="width: 200px; height: 30px;"
-					data-options="required:true,validType:'mobile'">
+					data-options="required:true,validType:'phoneNum'" class="easyui-validatebox">
 			</div>
 			<div style="margin-bottom: 7px;">
 				<label>所属学院</label> <input id="organId" class="easyui-combobox"
@@ -180,7 +152,7 @@
 					style="width: 200px; height: 30px;" name="birhtday">
 				<label>住&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label> <input
 					name="address" class="easyui-validatebox"
-					style="width: 355px; height: 30px;">
+					style="width: 205px; height: 30px;">
 			</div>
 			<div style="margin-bottom: 7px;" align="left">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-ok"
@@ -188,11 +160,7 @@
 				<a href="#" class="easyui-linkbutton" iconCls="icon-ok"
 					onclick="resetPass()" style="width: 100px;">修改密码</a>
 			</div>
-		</div>
-		<div style="float: left;">
-			<img src="" id="showPic" style="width: 100px;height: 100px;">	
-			<input class="easyui-filebox" id ="pic" name="file2">		
-		</div>
+		
 	</form>
 </div>
 

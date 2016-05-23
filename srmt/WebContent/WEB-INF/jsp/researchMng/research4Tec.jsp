@@ -70,7 +70,7 @@
 		return data;
 	}
 </script>
-<form id="resTecFf" method="post">
+<form id="resTecFf" method="post" style="margin-top: 20px;">
      <div style="margin-bottom: 7px;">
     	 <label for="researchName">科研名称:</label>
 		<input class="easyui-textbox" type="text" name="researchName"  style="width:200px;height:30px;"/>
@@ -90,7 +90,7 @@
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
 			<th field="USERNUM" width="50">用户编号</th>

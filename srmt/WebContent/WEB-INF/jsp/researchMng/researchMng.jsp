@@ -81,18 +81,22 @@
 		return data;
 	}
 </script>
-<form id="resTecFf" method="post">
+<form id="resTecFf" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
-		<label for="researchName">用户编号:</label> <input class="easyui-textbox"
+		<label for="researchName">教师编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
+		<label for="researchName">教师姓名:</label> <input class="easyui-textbox"
+			type="text" name="userName" style="width: 200px; height: 30px;" />
 		<label for="researchName">科研名称:</label> <input class="easyui-textbox"
 			type="text" name="researchName" style="width: 200px; height: 30px;" />
 		<label for="organName">科研类型:</label> <input id="cc"
 			class="easyui-combobox" name="dictValue"
 			style="width: 200px; height: 30px;"
-			data-options="valueField:'dictvalue',textField:'dictname',url:'research/queryResearchType.do'">
+			data-options="valueField:'dictvalue',textField:'dictname',url:'research/queryResearchType.do',editable:false">
+		</div>
+		<div style="margin-bottom: 7px;">
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 73px"
+			style="width: 98px; height: 30px; margin-left: 833px"
 			onclick="doSearch()"> <input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
 			onclick="clearForm()" />
@@ -100,13 +104,13 @@
 
 </form>
 <table id="resTecDg" title="教师科研信息列表" 
-	style="width: 1050px; height: 85%;" toolbar="#toolbar4resTec" data-options="
+	style="width: 1050px; height: 81%;" toolbar="#toolbar4resTec" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
 			<th field="USERNUM" width="50">用户编号</th>

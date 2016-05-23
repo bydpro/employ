@@ -76,7 +76,7 @@
 </head>
 <body>
 
-	<div class="login-form" style="margin-top: 130px;margin-left: 700px;">
+	<div class="login-form" style="margin-top: 130px;margin-left: 760px;">
 		<div class="head-info">
 			<label class="lbl-1"> </label> <label class="lbl-2"> </label> <label
 				class="lbl-3"> </label>

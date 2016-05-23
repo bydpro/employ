@@ -1,12 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <meta charset="utf-8" />
-<style>
-#text-box {
-	width: 200px;
-	height: 30px;
-}
-</style>
 <script type="text/javascript">
 	$.fn.serializeObject = function() {
 		var o = {};
@@ -246,25 +240,35 @@
 
 
 	})
+	
+	$.extend($.fn.validatebox.defaults.rules, {    
+    phoneNum: { //验证手机号   
+        validator: function(value, param){ 
+         return /(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/.test(value);
+        },    
+        message: '请输入正确的手机号码'   
+    }
+	});
+    
 </script>
-<form id="ff" method="post">
+<form id="ff" method="post" style="margin-top: 20px;">
     <div style="margin-bottom: 7px">
+    	<label for="userNum">用户编号:</label>
+		<input class="easyui-textbox" type="text" name="userNum"  style="width:200px;height:30px;"/>
 		<label for="username">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
 		<input class="easyui-textbox" type="text" name="userName"  style="width:200px;height:30px;"/>
 		<label for="email">电子邮箱:</label>
 		<input class="easyui-textbox" type="text" name="email" style="width:200px;height:30px;"/>
 		<label for="mobile">移动电话:</label>
 		<input class="easyui-textbox" type="text" name="mobile" style="width:200px;height:30px;"/>
-		<label for="organId">所属学院:</label>
-		<input id="organ" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
     </div>
      <div style="margin-bottom: 7px;">
+     	<label for="organId">所属学院:</label>
+		<input id="organ" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
      	<label>所属院系:</label>
 		<input id="dept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
     			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
-		<label for="userNum">用户编号:</label>
-		<input class="easyui-textbox" type="text" name="userNum"  style="width:200px;height:30px;"/>
 		<label>是否有效:&nbsp;&nbsp;</label>
         <span class="radioSpan">
                 <input type="radio" name="isValid" value="1">是</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -273,9 +277,6 @@
 		<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
 				margin-left:190px " onclick="doSearch()">
 		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
-   	   
-   	    <input  type="text" name="pageNum" hidden="true" id="pageNum"/>
-   	    <input  type="text" name="pageSize" hidden="true" id="pageSize"/>
     </div>
     
 </form>
@@ -286,19 +287,19 @@
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
-			<th field="USERID" width="50" hidden="true">USERID</th>
-			<th field="USERNUM" width="50">用户编号</th>
-			<th field="USERNAME" width="50">姓名</th>
-			<th field="SEX" width="50" formatter="formatSex">性别</th>
-			<th field="EMAIL" width="50">电子邮箱</th>
-			<th field="MOBILE" width="50">移动电话</th>
-			<th field="ORGANNAME" width="50">所属学院</th>
-			<th field="DEPTNAME" width="50">所属院系</th>
-			<th field="ISVALID" width="50" formatter="formatValue">是否有效</th>
-			<th field="BIRTHDAY" width="50">生日</th>
+			<th field="USERID"  hidden="true">USERID</th>
+			<th field="USERNUM" width="40px;" align="center">用户编号</th>
+			<th field="USERNAME" width="40px;">姓名</th>
+			<th field="SEX"  formatter="formatSex" width="20px;" align="center">性别</th>
+			<th field="EMAIL" width="60px;">电子邮箱</th>
+			<th field="MOBILE" width="60px;" align="center">移动电话</th>
+			<th field="ORGANNAME" width="60px;">所属学院</th>
+			<th field="DEPTNAME" width="60px;">所属院系</th>
+			<th field="ISVALID"  formatter="formatValue" align="center" width="20px;">是否有效</th>
+			<th field="BIRTHDAY" align="center" width="30px;">生日</th>
 		</tr>
 	</thead>
 </table>
@@ -311,12 +312,12 @@
 </div>
 
 <div id="dlg" class="easyui-dialog" style="width:590px;height:300px;padding:10px 20px"
-		closed="true" buttons="#dlg-buttons">
-	<form id="fm" method="post">
+		closed="true" buttons="#dlg-buttons" modal="true">
+	<form id="fm" method="post" class="easyui-form">
 		<div  style="margin-bottom: 7px;">
 			<input name="userId" hidden="true"/>
 			<label>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label>
-			<input name="userName" class="easyui-validatebox" required="true" style="width:200px;height:30px;">
+			<input name="userName" class="easyui-textbox" required="true" style="width:200px;height:30px;" >
 			<label>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别:</label>
             <span class="radioSpan">
                 <input type="radio" name="sex" value="1">男</input>&nbsp;&nbsp;&nbsp;
@@ -325,18 +326,19 @@
  		</div>
 		<div style="margin-bottom: 7px;">
 			<label>电子邮箱</label>
-			<input name="email" class="easyui-validatebox" data-options="required:true,validType:'email'" style="width:200px;height:30px;">
+			<input name="email" class="easyui-textbox" data-options="required:true,validType:'email' " style="width:200px;height:30px;"
+			>
 			<label>移动电话</label>
-			<input name="mobile" style="width:200px;height:30px;" data-options="required:true,validType:'mobile'">
+			<input name="mobile" class="easyui-textbox" style="width:200px;height:30px;" data-options="required:true,validType:'phoneNum'">
 		</div>
 		<div  style="margin-bottom: 7px;">
 			<label>所属学院</label>
 			<input id="ccOrgan" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false "
     			>
     		<label>所属院系</label>
 			<input id="ccDept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false ">
 		</div>
 		<div  style="margin-bottom: 7px;">
 			<label>住&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>

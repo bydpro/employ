@@ -6,16 +6,16 @@
 <link rel="shortcut icon" href="./image/infomation.ico" type="image/x-icon" />
 <meta charset="utf-8" />
 <title>高校教师科研信息管理系统</title>
-<link href="./css/themes/metro-orange/easyui.css" rel="stylesheet" />
-<link href="./css/icon.css" rel="stylesheet" />
 <link href="./css/bootstrap.min.css" rel="stylesheet" />
+<link href="./css/themes/metro-blue/easyui.css" rel="stylesheet" />
+<link href="./css/icon.css" rel="stylesheet" />
 <link href="./uploadify/uploadify.css" rel="stylesheet" />
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <script type="text/javascript" src="./js/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="./js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/json2.js"></script>
 <script type="text/javascript" src="./js/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="./js/json2.js"></script>
 <script type="text/javascript" src="./uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="./js/jquery.fileDownload.js"></script>
 <style>
 article, aside, figure, footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -95,27 +95,27 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 		},{
 			text : "论文信息统计",
 			attributes : {
-				url : "research/enterResearchMng.do"
+				url : "research/enterThesisTong.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-projecttong"
 		}, {
 			text : "项目信息统计",
 			attributes : {
-				url : "research/enterWorkload4Tec.do"
+				url : "research/enterProjectTong.do"
 			},
-			iconCls : "icon-teacher_tong"
+			iconCls : "icon-project_tong"
 		},{
 			text : "奖励信息统计",
 			attributes : {
-				url : "research/enterResearchMng.do"
+				url : "research/enterRewardTong.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-reward_tong"
 		} ,{
 			text : "专利信息统计",
 			attributes : {
-				url : "research/enterResearchMng.do"
+				url : "research/enterPatentTong.do"
 			},
-			iconCls : "icon-teacher_info"
+			iconCls : "icon-patent_tong"
 		}];
 		
 		var tree3Data = [ {
@@ -286,11 +286,11 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 </script>
 </head>
 <body class="easyui-layout">
-	<div region="north" class="north" border="true" style="height: 60px;">
+	<div region="north" class="north" border="true" style="height: 60px;background-image:url(./image/head_pic.jpg); background-repeat:no-repeat;">
 		<div align="right">
 			<form>
 				<label>欢迎你：</label> <label>${username}</label>&nbsp;&nbsp;<a
-					href="javascript:void(0)" onclick="loginOut()">退出</a>
+					href="javascript:void(0)" onclick="loginOut()" style="color: blue; ">退出</a>
 			</form>
 		</div>
 	</div>
@@ -302,11 +302,11 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 	<div region="west" class="west" title="菜单">
 		<div id="RightAccordion" class="easyui-accordion" border="false"
 			data-options="multiple:true">
-			<div title="基本信息管理" data-options="iconCls:'icon-information_list',selected:true"
+			<div title="基本信息管理" data-options="iconCls:'icon-information_list'"
 				style="overflow: auto; padding: 10px;">
 				<ul id="tree4"></ul>
 			</div>
-			<div title="科研信息管理" data-options="iconCls:'icon-research'"
+			<div title="科研信息管理" data-options="iconCls:'icon-research',selected:true"
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
 			</div>

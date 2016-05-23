@@ -93,9 +93,9 @@
 
 	}
 </script>
-<form id="queryScoreTongFf" method="post">
-	<div style="margin-bottom: 7px;">
-		<label for="userNum">用户编号:</label> 
+<form id="queryScoreTongFf" method="post" style="margin-top: 20px;">
+	<div style="margin-bottom: 7px;" >
+		<label for="userNum">教师编号:</label> 
 		<input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
 		<input class="easyui-linkbutton" type="button" value="查询"
@@ -117,7 +117,7 @@
 				pageSize:10">
 	<thead>
 		<tr>
-			<th field="USERNUM" width="50">用户编号</th>
+			<th field="USERNUM" width="50">教师编号</th>
 			<th field="USERNAME" width="50">姓名</th>
 			<th field="thesis" width="50">论文数量和科研分</th>
 			<th field="patent" width="50">专利数量和科研分</th>

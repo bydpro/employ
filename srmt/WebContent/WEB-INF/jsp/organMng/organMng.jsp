@@ -208,7 +208,7 @@
 		$('#submitForm').form('clear');
 	}
 </script>
-<form id="organFf" method="post">
+<form id="organFf" method="post" style="margin-top: 20px;">
      <div style="margin-bottom: 7px;">
 		<label for="organName">学院名称:</label>
 		<input class="easyui-textbox" type="text" name="organName"  style="width:200px;height:30px;"/>
@@ -232,7 +232,7 @@
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
 			<th field="ORGANNAME" width="50">学院名称</th>
@@ -252,7 +252,7 @@
 </div>
 
 <div id="organDlg" class="easyui-dialog" style="width:390px;height:250px;padding:10px 20px"
-		closed="true" buttons="#organDlg-buttons" align="center">
+		closed="true" buttons="#organDlg-buttons" align="center" modal="true">
 	<form id="submitForm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="organId" hidden="true"/>

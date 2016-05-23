@@ -20,7 +20,7 @@
 	}
 	
 	function clearForm() {
-		$('#queryThesisTongFf').form('clear');
+		$('#queryThesisTongForm').form('clear');
 	}
 
 	function doSearch() {
@@ -35,8 +35,9 @@
 	
 
 	function getData() {
-		$.post('research/queryScore4Tong.do?' + Math.random(), $('#queryThesisTongFf').serializeObject(), function(data) {
-			$('#thsisTongDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+		$.post('research/queryThesisTongList.do?' + Math.random(), $('#queryThesisTongForm').serializeObject(), function(data) {
+			$('#thesisTongDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$("#size").html(data.length);
 		});
 	}
 
@@ -47,7 +48,7 @@
 				rows : data
 			}
 		}
-		var dg = $('#thsisTongDg');
+		var dg = $('#thesisTongDg');
 		var opts = dg.datagrid('options');
 		var pager = dg.datagrid('getPager');
 		pager.pagination({
@@ -70,39 +71,46 @@
 		return data;
 	}
 </script>
-<form id="queryThesisTongFf" method="post">
+<form id="queryThesisTongForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
-		<label for="userNum">用户编号:</label> 
-		<input class="easyui-textbox"
+		<label for="thesisName">教师编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
-		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 573px"
-			onclick="doSearch()">
-		<input class="easyui-linkbutton"
-			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+		<label for="thesisName">教师姓名:</label> <input class="easyui-textbox"
+			type="text" name="userName" style="width: 200px; height: 30px;" />
+		<label for="thesisName">论文名称:</label> <input class="easyui-textbox"
+			type="text" name="thesisName" style="width: 200px; height: 30px;" />
+			
+			<label >论文类别：</label>
+			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width: 200px; height: 30px;"
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do'">
+    		</div>	
+    <div style="margin-bottom: 7px;">
+		<input class="easyui-linkbutton" type="button" value="检索"
+			style="width: 198px; height: 30px; margin-left: 843px"
+			onclick="doSearch()"> 
 	</div>
 
 </form>
-<table id="thsisTongDg" title="教师科研统计列表" 
-	style="width: 1050px; height: 85%;" toolbar="#toolbar4resTec" data-options="
+<div style="color: blue;"><font size="5">共检索到</font> <font id="size" size="5"></font><font size="5">条记录</font></div>
+<table id="thesisTongDg" title="论文信息统计列表" 
+	style="width: 1050px; height: 70%;" toolbar="#thesisDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:10">
+				pageSize:20">
 	<thead>
 		<tr>
-			<th field="USERNUM" width="50">用户编号</th>
-			<th field="USERNAME" width="50">姓名</th>
-			<th field="thesis" width="50">论文数量和科研分</th>
-			<th field="patent" width="50">专利数量和科研分</th>
-			<th field="project" width="50">项目数量和科研分</th>
-			<th field="reward" width="50" >奖励数量和科研分</th>
-			<th field="sum" width="50" >科研总分</th>
+			<th field="USERNUM" width="40px" align="center">教师编号</th>
+			<th field="USERNAME" width="40px">姓名</th>
+			<th field="THESISNAME" width="60px">论文名称</th>
+			<th field="THESISTYPE" width="40px" align="center">论文类型</th>
+			<th field="THESISAUTHOR" width="50px">全部作者</th>
+			<th field="THESISRECORD" width="60px">发表期刊</th>
+			<th field="THESISPERIODICAL" width="80px">论文收录情况</th>
+			<th field="workload" width="25px" align="center">论文科研分</th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
-			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
 	</thead>
 </table>

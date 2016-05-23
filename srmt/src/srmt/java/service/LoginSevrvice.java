@@ -35,7 +35,7 @@ public class LoginSevrvice {
 			if (!validateCode.toUpperCase().equals(oldValidateCode.toUpperCase())) {
 				msg = "—È÷§¬Î ‰»Î¥ÌŒÛ";
 			} else {
-				String sql = "select * from sys_user su where (su.login_Id=:loginId or su.email =:loginId or su.mobile =  :loginId) and su.password=:password";
+				String sql = "select * from sys_user su where (su.user_num=:loginId or su.email =:loginId or su.mobile =  :loginId) and su.password=:password";
 				msg = loginDao.loginIn(sql, loginId, MyUtil.getMd5(password),request);
 			}
 		}
