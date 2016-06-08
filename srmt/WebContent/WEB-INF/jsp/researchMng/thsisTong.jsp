@@ -93,7 +93,7 @@
 </form>
 <div style="color: blue;"><font size="5">共检索到</font> <font id="size" size="5"></font><font size="5">条记录</font></div>
 <table id="thesisTongDg" title="论文信息统计列表" 
-	style="width: 1050px; height: 70%;" toolbar="#thesisDgBar" data-options="
+	style="width: 1050px; height: 70%;" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,

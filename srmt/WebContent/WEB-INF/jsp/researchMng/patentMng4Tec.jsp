@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <meta charset="utf-8" />
-<%@ page language="java" import="srmt.java.common.Constants"%>
 <style type="text/css">
 .uploadify-button {
 	background-color: transparent;
@@ -144,6 +143,7 @@
 	function addPatent() {
 		$('#patentDlg').dialog('open').dialog('setTitle', '新增专利');
 		$('#patentForm').form('clear');
+		$("#patentDown").remove();
 	}
 	
 	function delPatent() {
@@ -194,6 +194,14 @@
 					$(openDlg).dialog('open').dialog('setTitle', '修改');
 					$(openForm).form('clear');
 					$(openForm).form('load', data);
+					$("#patentDown").remove();
+					if (data.patentFile) {
+						$("#patentPath")
+								.append(
+										"<div  style='margin-bottom: 7px;' align='center' id='patentDown'><a href=research/download.do?path="
+												+ data.patentFile
+												+ ">点击下载专利文件</a></div>");
+					}
 				},
 			})
 		} else {
@@ -202,7 +210,7 @@
 	}
 </script>
 
-<form id="queryPatentForm" method="post">
+<form id="queryPatentForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
 		<label for="patentName">知识产权名称:</label> <input class="easyui-textbox"
 			type="text" name="patentName" style="width: 180px; height: 30px;" />
@@ -268,7 +276,7 @@
 
 
 <div id="patentDlg" class="easyui-dialog" style="width:560px;height:530px;padding:10px 20px"
-		closed="true" buttons="#patentDlg-buttons" align="center">
+		closed="true" buttons="#patentDlg-buttons" align="center" modal="true">
 	<form id="patentForm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="patentId" hidden="true"/>
@@ -309,7 +317,7 @@
                 <input type="radio" name="patentIsTransfer" value="0">否</input>
             </span>
 		</div>
-		<div style="margin-bottom: 7px;" align="center">
+		<div style="margin-bottom: 7px;" align="center" id="patentPath">
 			<input type="file" name="patentFile" id="patentFile"/>
 			<input name="patentFileUrl" hidden="true" id="patentFileUrl"/>
 		</div>

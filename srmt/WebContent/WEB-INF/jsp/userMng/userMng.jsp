@@ -29,6 +29,11 @@
 	function addUser() {
 		$('#dlg').dialog('open').dialog('setTitle', '新增用户');
 		$('#fm').form('clear');
+		$('[name="userType"]:radio').each(function() {   
+            if (this.value == '1'){   
+               this.checked = true;   
+            }       
+         });   
 	}
 
 	function editUser() {
@@ -115,6 +120,14 @@
 		}
 	}
 
+	function formatUserType(val, row) {
+		if (val == 1) {
+			return '系统管理员';
+		} else {
+			return '教师';
+		}
+	}
+	
 	function layoutUser() {
 		var row = $('#dg').datagrid('getSelected');
 		if (row) {
@@ -274,14 +287,21 @@
                 <input type="radio" name="isValid" value="1">是</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="radio" name="isValid" value="0">否</input>
         </span>
+        <label style="margin-left: 130px;">用户类型:&nbsp;&nbsp;</label>
+        <span class="radioSpan">
+            <input type="radio" name="usertype" value="1"/>系统管理员&nbsp;&nbsp;&nbsp;
+			<input type="radio" name="usertype" value="2"/>教师
+        </span>
+        </div>
+       <div style="margin-bottom: 7px;">
 		<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
-				margin-left:190px " onclick="doSearch()">
+				margin-left:820px " onclick="doSearch()">
 		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
     </div>
     
 </form>
 <table id="dg" title="用户列表" 
-	style="width: 1050px; height: 78%;" toolbar="#toolbar" data-options="
+	style="width: 1080px; height: 73%;" toolbar="#toolbar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
@@ -295,9 +315,10 @@
 			<th field="USERNAME" width="40px;">姓名</th>
 			<th field="SEX"  formatter="formatSex" width="20px;" align="center">性别</th>
 			<th field="EMAIL" width="60px;">电子邮箱</th>
-			<th field="MOBILE" width="60px;" align="center">移动电话</th>
+			<th field="MOBILE" width="40px;" align="center">移动电话</th>
 			<th field="ORGANNAME" width="60px;">所属学院</th>
 			<th field="DEPTNAME" width="60px;">所属院系</th>
+			<th field="USERTYPE" formatter="formatUserType" width="30px;">用户类型</th>
 			<th field="ISVALID"  formatter="formatValue" align="center" width="20px;">是否有效</th>
 			<th field="BIRTHDAY" align="center" width="30px;">生日</th>
 		</tr>
@@ -313,14 +334,14 @@
 
 <div id="dlg" class="easyui-dialog" style="width:590px;height:300px;padding:10px 20px"
 		closed="true" buttons="#dlg-buttons" modal="true">
-	<form id="fm" method="post" class="easyui-form">
+	<form id="fm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="userId" hidden="true"/>
 			<label>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label>
 			<input name="userName" class="easyui-textbox" required="true" style="width:200px;height:30px;" >
 			<label>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别:</label>
             <span class="radioSpan">
-                <input type="radio" name="sex" value="1">男</input>&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="sex" value="1" >男</input>&nbsp;&nbsp;&nbsp;
                 <input type="radio" name="sex" value="0">女</input>
             </span>
  		</div>
@@ -344,14 +365,14 @@
 			<label>住&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
 			<input name="address" class="easyui-validatebox"  style="width:455px;height:30px;">
 		</div>
-		<div  style="margin-bottom: 7px;">
-			<label>生日日期</label>
-			<input type="text" class="easyui-datebox" style="width:200px;height:30px;" name="birhtday">
-		    <label>是否为管理员:</label>
-		    <span class="radioSpan">
-                <input type="radio" name="isAdmin" value="1">是</input>&nbsp;&nbsp;&nbsp;
-                <input type="radio" name="isAdmin" value="0">否</input>
-            </span>
+		<div style="margin-bottom: 7px;">
+			<label>生日日期</label> <input type="text" class="easyui-datebox"
+				style="width: 200px; height: 30px;" name="birhtday"> 
+			<label>用户类型:</label>
+		
+			<input type="radio" name="userType" value="1" checked="true" id="usertype"/>系统管理员&nbsp;&nbsp;&nbsp;
+			<input type="radio" name="userType" value="2"/>教师
+			
 		</div>
 	</form>
 </div>

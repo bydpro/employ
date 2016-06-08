@@ -41,13 +41,15 @@ public class UserDao {
 		String userNum = request.getParameter("userNum");
 		String isValid = request.getParameter("isValid");
 		String deptId = request.getParameter("deptId");
+		String usertype = request.getParameter("usertype");
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append(" SELECT                                               									");
 		sb.append(" 		SU.USERNAME,                                    							    ");
-		sb.append(" 		SU.USER_ID     USERID,                          						    ");
+		sb.append(" 		SU.USER_ID     USERID,                          						       ");
 		sb.append(" 		SU.LOGIN_ID LOGINID,                            							");
 		sb.append(" 		SU.USER_NUM USERNUM,                         						");
+		sb.append(" 		SU.USER_TYPE USERTYPE,                         						");
 		sb.append(" 		SU.SEX,                                                 							");
 		sb.append(" 		SU.EMAIL,                                                                         ");
 		sb.append(" 		SU.MOBILE,                                                                      ");
@@ -85,6 +87,9 @@ public class UserDao {
 		if (StringUtils.isNotEmpty(userNum)) {
 			sb.append(" and su.user_num = :userNum   ");
 		}
+		if (StringUtils.isNotEmpty(usertype)) {
+			sb.append(" and su.user_type = :usertype   ");
+		}
 		sb.append(" ORDER BY SU.USER_NUM ASC ");
 		getSession().beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sb.toString());
@@ -111,6 +116,9 @@ public class UserDao {
 		if (StringUtils.isNotEmpty(deptId)) {
 			query.setParameter("deptId", deptId);
 		}
+		if (StringUtils.isNotEmpty(usertype)) {
+			query.setParameter("usertype", usertype);
+		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> queryList = query.list();
 		return queryList;
@@ -133,7 +141,7 @@ public class UserDao {
 		String organId = request.getParameter("organId");
 		String birhtdayStr = request.getParameter("birhtday");
 		String address = request.getParameter("address");
-		String isAdmin = request.getParameter("isAdmin");
+		String userType = request.getParameter("userType");
 		String deptId = request.getParameter("deptId");
 
 		Map result = new HashMap();
@@ -165,9 +173,9 @@ public class UserDao {
 			sysUser.setMobile(mobile);
 			sysUser.setOrganId(organId);
 			sysUser.setAdress(address);
-			sysUser.setIsAdmin(isAdmin);
 			sysUser.setBirthday(birthday);
 			sysUser.setDept(deptId);
+			sysUser.setUserType(userType);
 			getSession().update(sysUser);
 		} else {
 			SysUser sysUser = new SysUser();
@@ -178,7 +186,7 @@ public class UserDao {
 			sysUser.setMobile(mobile);
 			sysUser.setOrganId(organId);
 			sysUser.setAdress(address);
-			sysUser.setIsAdmin(isAdmin);
+			sysUser.setUserType(userType);
 			sysUser.setIsValid(Constants.YES);
 			sysUser.setBirthday(birthday);
 			sysUser.setPassword(MyUtil.getMd5(Constants.DEFULT_PASSWORD));
@@ -192,7 +200,7 @@ public class UserDao {
 	}
 
 	public Map getUserInfo(String userId) {
-		Transaction transaction = getSession().beginTransaction();
+		getSession().beginTransaction();
 		Map userMap = new HashMap<>();
 		if (StringUtils.isNoneEmpty(userId)) {
 			SysUser sysUser = (SysUser) getSession().get(SysUser.class, userId);
@@ -203,12 +211,11 @@ public class UserDao {
 			userMap.put("mobile", sysUser.getMobile());
 			userMap.put("organId", sysUser.getOrganId());
 			userMap.put("sex", sysUser.getSex());
-			userMap.put("isAdmin", sysUser.getIsAdmin());
+			userMap.put("userType", sysUser.getUserType());
 			userMap.put("birhtday", sysUser.getBirthday());
 			userMap.put("deptId", sysUser.getDept());
 			userMap.put("picPath", sysUser.getPicPath());
 		}
-		transaction.commit();
 		getSession().close();
 		return userMap;
 	}

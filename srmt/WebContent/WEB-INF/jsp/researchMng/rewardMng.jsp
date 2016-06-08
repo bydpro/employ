@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <meta charset="utf-8" />
-<%@ page language="java" import="srmt.java.common.Constants"%>
 <style type="text/css">
 .uploadify-button {
 	background-color: transparent;
@@ -161,6 +160,7 @@
 					$.messager.alert('提示', '保存成功!');
 					$('#rewardDlg').dialog('close'); // close the dialog
 					$('#rewardDg').datagrid('reload', getData()); // reload the user data
+					
 				}
 			}
 		});
@@ -171,6 +171,7 @@
 		$('#rewardForm').form('clear');
 		$("#userStr4reward").hide();
 		$("#user4reward").show();
+		$("#rewardDown").remove();
 	}
 	function editReward() {
 		var row = $('#rewardDg').datagrid('getSelected');
@@ -196,6 +197,14 @@
 					$(openDlg).dialog('open').dialog('setTitle', '修改');
 					$(openForm).form('clear');
 					$(openForm).form('load', data);
+					$("#rewardDown").remove();
+					if (data.rewardFile) {
+						$("#rewardPath")
+								.append(
+										"<div  style='margin-bottom: 7px;' align='center' id='rewardDown'><a href=research/download.do?path="
+												+ data.rewardFile
+												+ ">点击下载奖励文件</a></div>");
+					}
 				},
 			})
 		} else {
@@ -211,7 +220,7 @@
 			type="text" name="rewardName" style="width: 200px; height: 30px;" />
 		<label>获奖类别：</label>
 		<input id="rewardType" class="easyui-combobox" name="rewardType" style="width:200px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do'">
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do',editable:false ">
 		<label for="rewardOrgan">奖励单位:</label> 
 		<input class="easyui-textbox"	type="text" name="rewardOrgan" style="width: 200px; height: 30px;" />
 	</div>
@@ -255,8 +264,8 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delReward()">移除</a>
 </div>
 
-<div id="rewardDlg" class="easyui-dialog" style="width:590px;height:500px;padding:10px 20px"
-		closed="true" buttons="#rewardDlg-buttons" align="center">
+<div id="rewardDlg" class="easyui-dialog" style="width:610px;height:500px;padding:10px 20px"
+		closed="true" buttons="#rewardDlg-buttons" align="center" modal="true">
 	<form id="rewardForm" method="post">
 		<div style="margin-bottom: 7px;">
 			<div id="userStr4reward" align="left">
@@ -289,17 +298,17 @@
 		<div style="margin-bottom: 7px;">
 			<label>获奖类别：</label>
 			<input id="rewardType" class="easyui-combobox" name="rewardType" style="width:200px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do'" required="true" >
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do',editable:false " required="true" >
 			<label>本人位次：</label>
 			<input id="rewardPlace" class="easyui-combobox" name="rewardPlace" style="width:200px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPlaceType.do'" required="true" >
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPlaceType.do',editable:false " required="true" >
 		</div>
 		<div style="margin-bottom: 7px;" align="left">
 
 			<label>获奖时间：</label>
 			<input name="rewardTime" style="width:200px;height:30px;" class="easyui-datebox">
 		</div>
-		<div style="margin-bottom: 7px; ">
+		<div style="margin-bottom: 7px; " id="rewardPath">
 			<input type="file" name="rewardFile" id="rewardFile" width="260px"/>
 			<input name="rewardFileUrl" hidden="true" id="rewardFileUrl"/>
 		</div>

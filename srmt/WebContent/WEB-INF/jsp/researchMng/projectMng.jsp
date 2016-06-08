@@ -63,11 +63,12 @@
             onUploadStart : function(file) {
                 var param = {};
                 param.picHref = $('#file_upload_href').val();
-                     $("#proectFile").uploadify("settings", "formData", param);
+                     $("#projectFile").uploadify("settings", "formData", param);
                 },
             onUploadSuccess : function(file, data, response) {
+            	debugger
             	var flag =JSON.parse(data);
-                $("#proectFileUrl").val(flag.url);        
+                $("#projectFileUrl").val(flag.url);        
             },
             onUploadError : function(file, errorCode, errorMsg, errorString) {
                 alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
@@ -139,10 +140,12 @@
 	
 	
 	function addProjec() {
+		
 		$('#projectDlg').dialog('open').dialog('setTitle', '新增项目');
 		$('#projectForm').form('clear');
 		$("#userStr4project").hide();
 		$("#user4project").show();
+		$("#projectDown").remove();
 	}
 	
 	function saveProject() {
@@ -159,7 +162,6 @@
 						msg : result.msg
 					});
 				} else {
-					debugger
 					$.messager.alert('提示', '保存成功!');
 					$('#projectDlg').dialog('close'); // close the dialog
 					$('#projectDg').datagrid('reload',getData()); // reload the user data
@@ -169,6 +171,8 @@
 	}
 	
 	function editProject() {
+		
+		
 		var row = $('#projectDg').datagrid('getSelected');
 		if (row) {
 			var openDlg='';
@@ -192,6 +196,14 @@
 					$(openDlg).dialog('open').dialog('setTitle', '修改');
 					$(openForm).form('clear');
 					$(openForm).form('load', data);
+					$("#projectDown").remove();
+					if (data.projectFile) {
+						$("#projectPath")
+								.append(
+										"<div  style='margin-bottom: 7px;' align='center' id='projectDown'><a href=research/download.do?path="
+												+ data.projectFile
+												+ ">点击下载项目文件</a></div>");
+					}
 				},
 			})
 		} else {
@@ -199,7 +211,7 @@
 		}
 	}
 </script>
-<form id="queryProjectForm" method="post">
+<form id="queryProjectForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
 		<label for="projectName">用户编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
@@ -251,8 +263,8 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editProject()">修改</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delProject()">移除</a>
 </div>
-	<div id="projectDlg" class="easyui-dialog" style="width:600px;height:540px;padding:10px 20px"
-		closed="true" buttons="#projectDlg-buttons">
+	<div id="projectDlg" class="easyui-dialog" style="width:630px;height:540px;padding:10px 20px"
+		closed="true" buttons="#projectDlg-buttons" modal="true">
 	<form id="projectForm" method="post">
 		<div style="margin-bottom: 7px;">
 			<div id="userStr4project" align="left">
@@ -277,7 +289,7 @@
 		<div style="margin-bottom: 7px;">
 			<label>项目类别：</label>
 			<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do'" required="true" >
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do',editable:false" required="true" >
 			<label>到位经费：</label>
 			<input name="projectFund" class="easyui-numberbox" data-options="precision:2,groupSeparator:',',decimalSeparator:'.',prefix:'￥'"  
 					style="width:200px;height:30px;" required="true" >
@@ -302,8 +314,8 @@
 			<label>第&nbsp;&nbsp;三&nbsp;&nbsp;位：</label>
 			<input name="projectThird" class="easyui-validatebox"  style="width:200px;height:30px;">
 		</div>
-		<div style="margin-bottom: 7px; ">
-			<input type="file" name="projectFile" id="projectFile" width="360px"/>
+		<div style="margin-bottom: 7px; " id="projectPath">
+			<span id="span"><input type="file" name="projectFile" id="projectFile" width="360px"/></span>
 			<input name="projectFileUrl" hidden="true" id="projectFileUrl"/>
 		</div>
 	</form>

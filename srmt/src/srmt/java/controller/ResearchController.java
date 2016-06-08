@@ -1,5 +1,7 @@
 package srmt.java.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -9,8 +11,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,13 +80,9 @@ public class ResearchController {
 
 	@ResponseBody
 	@RequestMapping("/getThesisInfo.do")
-	public Map getThesisInfo(HttpServletRequest request , Model model) {
+	public Map getThesisInfo(HttpServletRequest request, Model model) {
 		String researchId = request.getParameter("researchId");
 		Map map = researchService.getThesisInfo(researchId);
-		String url = (String)map.get("thesisFile");
-		if(StringUtils.isNotEmpty(url)){
-			url = url.substring(2, url.length()-1);
-		}
 		return map;
 	}
 
@@ -194,7 +196,7 @@ public class ResearchController {
 
 	@ResponseBody
 	@RequestMapping("/getCurrentThesisWorkload4Tec.do")
-	public List<Map> getCurrentThesisWorkload4Tec(HttpServletRequest request,Model Model) {
+	public List<Map> getCurrentThesisWorkload4Tec(HttpServletRequest request, Model Model) {
 		HttpSession session = request.getSession();
 		BigInteger userNum = (BigInteger) session.getAttribute("userNum");
 		List<Map> sum = researchService.getCurrentThesisWorkload4Tec(userNum);
@@ -203,7 +205,7 @@ public class ResearchController {
 	}
 
 	@RequestMapping("/enterWorkload4Tec.do")
-	public ModelAndView enterWorkload4Tec(HttpServletRequest request,Model Model) {
+	public ModelAndView enterWorkload4Tec(HttpServletRequest request, Model Model) {
 		String msgView = "researchMng/workload4Tec";
 		HttpSession session = request.getSession();
 		BigInteger userNum = (BigInteger) session.getAttribute("userNum");
@@ -219,37 +221,37 @@ public class ResearchController {
 		List<Map> projectList = researchService.getCurrentProjectWorkload4Tec(userNum);
 		List<Map> rewardList = researchService.getCurrentRewardWorkload4Tec(userNum);
 		List<Map> patentList = researchService.getCurrentPatentWorkload4Tec(userNum);
-        double sumWorkload = 0;
-        int thesisSize = 0;
-        int projectSize = 0;
-        int rewardSize = 0;
-        int patentSize = 0;
-        if(thesisList!=null&&thesisList.size()>0){
-        	thesisSize = thesisList.size()-1;
-        	Map map = thesisList.get(thesisSize-1);
-        	double workload =(double) map.get("workload");
-        	sumWorkload = sumWorkload + workload;
-        }
-        if(projectList!=null&&projectList.size()>0){
-        	projectSize = projectList.size()-1;
-        	Map map = projectList.get(projectList.size()-1);
-        	double workload =(double) map.get("workload");
-        	BigDecimal   b   =   new   BigDecimal(workload);  
-        	double workload4str   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue(); 
-            sumWorkload = workload4str + sumWorkload;
-        }
-        if(rewardList!=null&&rewardList.size()>0){
-        	rewardSize = rewardList.size()-1;
-        	Map map = rewardList.get(rewardList.size()-1);
-        	double workload =(double) map.get("workload");
-        	sumWorkload = sumWorkload + workload;
-        }
-        if(patentList!=null&&patentList.size()>0){
-        	patentSize = patentList.size()-1;
-        	Map map = patentList.get(patentList.size()-1);
-        	double workload =(double) map.get("workload");
-        	sumWorkload = sumWorkload + workload;
-        }
+		double sumWorkload = 0;
+		int thesisSize = 0;
+		int projectSize = 0;
+		int rewardSize = 0;
+		int patentSize = 0;
+		if (thesisList != null && thesisList.size() > 0) {
+			thesisSize = thesisList.size() - 1;
+			Map map = thesisList.get(thesisSize - 1);
+			double workload = (double) map.get("workload");
+			sumWorkload = sumWorkload + workload;
+		}
+		if (projectList != null && projectList.size() > 0) {
+			projectSize = projectList.size() - 1;
+			Map map = projectList.get(projectList.size() - 1);
+			double workload = (double) map.get("workload");
+			BigDecimal b = new BigDecimal(workload);
+			double workload4str = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+			sumWorkload = workload4str + sumWorkload;
+		}
+		if (rewardList != null && rewardList.size() > 0) {
+			rewardSize = rewardList.size() - 1;
+			Map map = rewardList.get(rewardList.size() - 1);
+			double workload = (double) map.get("workload");
+			sumWorkload = sumWorkload + workload;
+		}
+		if (patentList != null && patentList.size() > 0) {
+			patentSize = patentList.size() - 1;
+			Map map = patentList.get(patentList.size() - 1);
+			double workload = (double) map.get("workload");
+			sumWorkload = sumWorkload + workload;
+		}
 		Map sumMap = new HashMap<>();
 		sumMap.put("sumWorkload", sumWorkload);
 		sumMap.put("thesisSize", thesisSize);
@@ -264,25 +266,26 @@ public class ResearchController {
 		Model.addAttribute("userInfo", userInfo);
 		return new ModelAndView(msgView);
 	}
-	
+
 	@RequestMapping("/enterThesisMng.do")
-	public ModelAndView enterThesisMng(HttpServletRequest request) {
+	public ModelAndView enterThesisMng(HttpServletRequest request, Model model) {
 		HttpSession session = request.getSession();
 		String userType = (String) session.getAttribute("userType");
 		String msgView = "researchMng/thesisMng4Tec";
 		if (Constants.USER_TYPE_ADMIN.equals(userType)) {
 			msgView = "researchMng/thesisMng";
 		}
+		model.addAttribute("", "url");
 		return new ModelAndView(msgView);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryThesisList.do")
 	public List<Map> queryThesisList(HttpServletRequest request) {
 		List<Map> list = researchService.queryThesisList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterProjectMng.do")
 	public ModelAndView enterProjectMng(HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -293,14 +296,14 @@ public class ResearchController {
 		}
 		return new ModelAndView(msgView);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryProjectList.do")
 	public List<Map> queryProjectList(HttpServletRequest request) {
 		List<Map> list = researchService.queryProjectList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterRewardMng.do")
 	public ModelAndView enterRewardMng(HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -311,14 +314,14 @@ public class ResearchController {
 		}
 		return new ModelAndView(msgView);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryRewardList.do")
 	public List<Map> queryRewardList(HttpServletRequest request) {
 		List<Map> list = researchService.queryRewardList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterPatentMng.do")
 	public ModelAndView enterPatentMng(HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -329,40 +332,40 @@ public class ResearchController {
 		}
 		return new ModelAndView(msgView);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryPatentList.do")
 	public List<Map> queryPatentList(HttpServletRequest request) {
 		List<Map> list = researchService.queryPatentList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterThieisScore.do")
 	public ModelAndView enterThieisScore(HttpServletRequest request) {
 		return new ModelAndView("researchScore/thieis");
 	}
-	
+
 	@RequestMapping("/enterProjectScore.do")
 	public ModelAndView enterProjectScore(HttpServletRequest request) {
 		return new ModelAndView("researchScore/project");
 	}
-	
+
 	@RequestMapping("/enterRewardScore.do")
 	public ModelAndView enterRewardScore(HttpServletRequest request) {
 		return new ModelAndView("researchScore/reward");
 	}
-	
+
 	@RequestMapping("/enterPatentScore.do")
 	public ModelAndView enterPatentScore(HttpServletRequest request) {
 		return new ModelAndView("researchScore/patent");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/getThesisScore.do")
 	public Map getThesisScore(HttpServletRequest request) {
 		return researchService.getThesisScore();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/saveThesisScore.do")
 	public Map saveThesisScore(HttpServletRequest request) {
@@ -371,13 +374,13 @@ public class ResearchController {
 		map.put("success", true);
 		return map;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/getProjectScore.do")
 	public Map getProjectScore(HttpServletRequest request) {
 		return researchService.getProjectScore();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/saveProjectScore.do")
 	public Map saveProjectScore(HttpServletRequest request) {
@@ -386,13 +389,13 @@ public class ResearchController {
 		map.put("success", true);
 		return map;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/getPatentScore.do")
 	public Map getPatentScore(HttpServletRequest request) {
 		return researchService.getPatentScore();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/savetPatentScore.do")
 	public Map savetPatentScore(HttpServletRequest request) {
@@ -401,13 +404,13 @@ public class ResearchController {
 		map.put("success", true);
 		return map;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/getRewardScore.do")
 	public Map getRewardScore(HttpServletRequest request) {
 		return researchService.getRewardScore();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/savetRewardScore.do")
 	public Map savetRewardScore(HttpServletRequest request) {
@@ -416,64 +419,76 @@ public class ResearchController {
 		map.put("success", true);
 		return map;
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryScore4Tong.do")
 	public List<Map> queryScore4Tong(HttpServletRequest request) {
 		List<Map> list = researchService.queryScore4Tong(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterScore4Tong.do")
 	public ModelAndView enterScore4Tong(HttpServletRequest request) {
 		return new ModelAndView("researchMng/researchTong");
 	}
-	
+
 	@RequestMapping("/enterThesisTong.do")
 	public ModelAndView enterThesisTong(HttpServletRequest request) {
 		return new ModelAndView("researchMng/thsisTong");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryThesisTongList.do")
 	public List<Map> queryThesisTongList(HttpServletRequest request) {
 		List<Map> list = researchService.queryThesisTongList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterProjectTong.do")
 	public ModelAndView enterProjectTong(HttpServletRequest request) {
 		return new ModelAndView("researchMng/projectTong");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryProjecTongtList.do")
 	public List<Map> queryProjecTongtList(HttpServletRequest request) {
 		List<Map> list = researchService.queryProjecTongtList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterRewardTong.do")
 	public ModelAndView enterRewardTong(HttpServletRequest request) {
 		return new ModelAndView("researchMng/rewardTong");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryRewardTongList.do")
 	public List<Map> queryRewardTongList(HttpServletRequest request) {
 		List<Map> list = researchService.queryRewardTongList(request);
 		return list;
 	}
-	
+
 	@RequestMapping("/enterPatentTong.do")
 	public ModelAndView enterPatentTong(HttpServletRequest request) {
 		return new ModelAndView("researchMng/patentTong");
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/queryPatentTongList.do")
 	public List<Map> queryPatentTongList(HttpServletRequest request) {
 		List<Map> list = researchService.queryPatentTongList(request);
 		return list;
+	}
+
+	@RequestMapping("download.do")
+	public ResponseEntity<byte[]> download(HttpServletRequest request) throws IOException {
+		String path = request.getParameter("path");
+		path = new String(path.getBytes("ISO-8859-1"),"UTF-8");
+		File file = new File(path);
+		HttpHeaders headers = new HttpHeaders();
+		String fileName = new String(file.getName().getBytes("UTF-8"), "iso-8859-1");// 为了解决中文名称乱码问题
+		headers.setContentDispositionFormData("attachment", fileName);
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.CREATED);
 	}
 }

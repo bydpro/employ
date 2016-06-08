@@ -37,13 +37,14 @@ public class LoginDao {
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> list =query.list();
 		String msg = "";
-		if (list!=null&&list.size()>0) {
+		if (!list.isEmpty()) {
 			Map loginInfo = list.get(0);
 			String userId = (String)loginInfo.get("user_id");
 			String login = (String)loginInfo.get("login_id");
 			String organId = (String)loginInfo.get("organ_id");
 			String userName = (String)loginInfo.get("username");
 			String userType = (String)loginInfo.get("user_type");
+			String isValid = (String)loginInfo.get("is_valid");
 			BigInteger userNum = (BigInteger)loginInfo.get("user_num");
 			HttpSession session = request.getSession();
 			session.setAttribute("userId", userId);
@@ -52,7 +53,11 @@ public class LoginDao {
 			session.setAttribute("userName", userName);
 			session.setAttribute("userType", userType);
 			session.setAttribute("userNum", userNum);
-			msg =Constants.YES;
+			if(Constants.NO.equals(isValid)){
+				msg = "用户处于无效状态，不能登陆该系统，请联系管理员";
+			}else{
+				msg =Constants.YES;
+			}			
 		} else {
 			msg = Constants.NO;
 		}

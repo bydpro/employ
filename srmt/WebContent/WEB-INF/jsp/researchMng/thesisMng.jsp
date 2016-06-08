@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <meta charset="utf-8" />
-<%@ page language="java" import="srmt.java.common.Constants"%>
 <style type="text/css">
 .uploadify-button {
 	background-color: transparent;
@@ -110,6 +109,7 @@
 		$('#thesisForm').form('clear');
 		$("#userStr4thesis").hide();
 		$("#user4thesis").show();
+		$("#thesisDown").remove();
 	}
 	
 	function saveThesis() {
@@ -137,6 +137,7 @@
 	}
 	
 
+
 	function editThesis() {
 		var row = $('#thesisDg').datagrid('getSelected');
 		if (row) {
@@ -146,20 +147,29 @@
 			$("#userStr4thesis").show();
 			$("#user4thesis").hide();
 			$("#userNumStr4thesis").html(row.USERNUM);
-			$.ajax({
-				type : "POST",
-				dataType : "json",
-				url : url,
-				data : {
-					researchId : row.THESISID
-				},
-				async : true,
-				success : function(data) {
-					$(openDlg).dialog('open').dialog('setTitle', '修改');
-					$(openForm).form('clear');
-					$(openForm).form('load', data);
-				},
-			})
+			$
+					.ajax({
+						type : "POST",
+						dataType : "json",
+						url : url,
+						data : {
+							researchId : row.THESISID
+						},
+						async : true,
+						success : function(data) {
+							$(openDlg).dialog('open').dialog('setTitle', '修改');
+							$(openForm).form('clear');
+							$(openForm).form('load', data);
+							$("#thesisDown").remove();
+							if (data.thesisFileUrl) {
+								$("#thesisPath")
+										.append(
+												"<div  style='margin-bottom: 7px;' align='center' id='thesisDown'><a href=research/download.do?path="
+														+ data.thesisFileUrl
+														+ ">点击下载论文文件</a></div>")
+							}
+						},
+					})
 		} else {
 			$.messager.alert('提示', '请选中一行!');
 		}
@@ -183,7 +193,7 @@
 					removeCompleted : false,
 					debug : true,
 					onCancel : function(event, ID, fileObj, data) {
-						
+
 					},
 					onUploadStart : function(file) {
 						var param = {};
@@ -202,18 +212,6 @@
 					}
 				});
 	});
-	
-
-	
-    function doc_filedownload1(a) {
-    	debugger
-    	$.fileDownload($(a).attr('href'), {
-            failCallback: function(responseHtml, url) {
-            	if (responseHtml.trim().startsWith('{')) responseHtml = responseHtml.toObj()
-                $(a).bjuiajax('ajaxDone', responseHtml)
-            }
-        })
-    }
 </script>
 <!-- url 直接指向文件地址，或返回正确的文件地址 -->
 <form id="queryThesisForm" method="post" style="margin-top: 20px;">
@@ -304,7 +302,7 @@
 			<label style="margin-right: 120px;">论文摘要：</label>
 			<input name="thesisAbstract" style="width:300px;height: 100px;" class="easyui-textbox" data-options="multiline:true" required="true">
 		</div>
-		<div style="margin-bottom: 7px; " align="left">
+		<div style="margin-bottom: 7px; " align="left" id="thesisPath">
 			<input type="file" name="thesisFile" id="thesisFile" width="360px"/>
 			<input name="thesisFileUrl" hidden="true" id="thesisFileUrl"/>
 		</div>
