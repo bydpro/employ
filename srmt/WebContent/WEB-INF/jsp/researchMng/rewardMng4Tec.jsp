@@ -14,6 +14,15 @@
 }
 </style>
 <script type="text/javascript">
+function format(val, row) {
+	if (val == 1) {
+		return '审核通过';
+	} else if (val == 2) {
+		return '审核不通过';
+	} else if (val == 3) {
+		return '未审核';
+	}
+}
 	$.fn.serializeObject = function() {
 		var o = {};
 		var a = this.serializeArray();
@@ -30,16 +39,16 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearForm4reward() {
 		$('#queryRewardForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4reward() {
+		getData4reward();
 	}
 
 	$(function() {
-		getData();
+		getData4reward();
 
 		$("#rewardFile").uploadify(
 				{
@@ -79,16 +88,16 @@
 
 	})
 
-	function getData() {
+	function getData4reward() {
 		$.post('research/queryRewardList.do?' + Math.random(), $(
 				'#queryRewardForm').serializeObject(), function(data) {
 			$('#rewardDg').datagrid({
-				loadFilter : pagerFilter
+				loadFilter : pagerFilter4reward
 			}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4reward(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -128,7 +137,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#rewardDg').datagrid('reload', getData());// reload the user data
+							$('#rewardDg').datagrid('reload', getData4reward());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -159,7 +168,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#rewardDlg').dialog('close'); // close the dialog
-					$('#rewardDg').datagrid('reload', getData()); // reload the user data
+					$('#rewardDg').datagrid('reload', getData4reward()); // reload the user data
 				}
 			}
 		});
@@ -222,10 +231,10 @@
 	
 		<input class="easyui-linkbutton" type="button" value="查询"
 			style="width: 98px; height: 30px; margin-left: 845px"
-			onclick="doSearch()"> 
+			onclick="doSearch4reward()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearForm4reward()" />
 	</div>
 
 </form>
@@ -246,6 +255,7 @@
 			<th field="REWARDORGAN" width="50">奖励单位</th>
 			<th field="REWARDUSER" width="50">获奖所有人员</th>
 			<th field="REWARDTIME" width="50">获奖时间</th>
+				<th field="REWARDPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>

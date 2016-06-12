@@ -31,16 +31,16 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearForm4project() {
 		$('#queryProjectForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4project() {
+		getData4project();
 	}
 
 	$(function() {
-		getData();
+		getData4project();
 		
 	    $("#projectFile").uploadify({
 	        height        : 30,
@@ -76,13 +76,13 @@
 
 	})
 	
-		function getData() {
+		function getData4project() {
 		$.post('research/queryProjectList.do?' + Math.random(), $('#queryProjectForm').serializeObject(), function(data) {
-			$('#projectDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#projectDg').datagrid({loadFilter : pagerFilter4project}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4project(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -122,7 +122,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#projectDg').datagrid('reload',getData());// reload the user data
+							$('#projectDg').datagrid('reload',getData4project());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -158,10 +158,9 @@
 						msg : result.msg
 					});
 				} else {
-					debugger
 					$.messager.alert('提示', '保存成功!');
 					$('#projectDlg').dialog('close'); // close the dialog
-					$('#projectDg').datagrid('reload',getData()); // reload the user data
+					$('#projectDg').datagrid('reload',getData4project()); // reload the user data
 				}
 			}
 		});
@@ -202,12 +201,22 @@
 			$.messager.alert('提示', '请选中一行!');
 		}
 	}
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
 <form id="queryProjectForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
 		<label for="projectName">项目名称:</label> <input class="easyui-textbox"
 			type="text" name="projectName" style="width: 200px; height: 30px;" />
-		<label>项目类别：</label>
+		<label>项目类型：</label>
 		<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do'">	
 		<label>项目起始时间：</label>
@@ -219,10 +228,10 @@
 	
 		<input class="easyui-linkbutton" type="button" value="查询"
 			style="width: 98px; height: 30px; margin-left: 845px"
-			onclick="doSearch()"> 
+			onclick="doSearch4project()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearForm4project()" />
 	</div>
 
 </form>
@@ -244,6 +253,7 @@
 			<th field="STARTTIME" width="50">开始日期</th>
 			<th field="ENDTIME" width="50">开始日期</th>
 			<th field="PROJECTSOURCE" width="50">项目来源</th>
+			<th field="PROJECTPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
@@ -267,7 +277,7 @@
 			<input name="projectSource" class="easyui-validatebox" data-options="required:true" style="width:470px;height:30px;">
  		</div>
 		<div style="margin-bottom: 7px;">
-			<label>项目类别：</label>
+			<label>项目类型：</label>
 			<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do',editable:false" required="true" >
 			<label>到位经费：</label>

@@ -43,7 +43,7 @@
 
 	function saveMyUser() {
 		$('#myUserForm').form('submit', {
-			url : "userMng/saveUser.do",
+			url : "userMng/saveMyUser.do",
 			onSubmit : function() {
 				return $(this).form('validate');
 			},
@@ -142,10 +142,10 @@
 			<div style="margin-bottom: 7px;">
 				<label>所属学院</label> <input id="organId" class="easyui-combobox"
 					name="organId" style="width: 200px; height: 30px;"
-					data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
-				<label>所属院系</label>
+					data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
+				<label>所属系部</label>
 				<input id="dept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false">
 			</div>
 			<div style="margin-bottom: 7px;">
 				<label>生日日期</label> <input type="text" class="easyui-datebox"

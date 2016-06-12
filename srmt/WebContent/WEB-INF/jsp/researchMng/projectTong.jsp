@@ -35,12 +35,12 @@
 		$('#queryProjectTongForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4projectTong() {
+		getData4projectTong();
 	}
 
 	$(function() {
-		getData();
+		getData4projectTong();
 		
 	    $("#projectFile").uploadify({
 	        height        : 30,
@@ -76,14 +76,14 @@
 
 	})
 	
-		function getData() {
+		function getData4projectTong() {
 		$.post('research/queryProjecTongtList.do?' + Math.random(), $('#queryProjectTongForm').serializeObject(), function(data) {
-			$('#projectTongDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#projectTongDg').datagrid({loadFilter : pagerFilter4projectTong}).datagrid('loadData', data);
 			$("#size4project").html(data.length);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4projectTong(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -117,29 +117,39 @@
 	<div style="margin-bottom: 7px;">
 		<label for="projectName">教师编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
-		<label for="projectName">教师姓名:</label> <input class="easyui-textbox"
-			type="text" name="userName" style="width: 200px; height: 30px;" />
+		<label for="organ4proect">所属学院:</label>
+		<input id="organ4proecttong" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
+     	<label>所属系部:</label>
+		<input id="dept4proecttong" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false">
+		<label for="username">教师姓名:</label>
+		<input class="easyui-combobox" type="text" name="userName"  style="width:200px;height:30px;"
+			data-options="valueField:'str',textField:'username',url:'userMng/queryUser4sel.do'" id="username4proecttong"/>
+			</div>
+	<div style="margin-bottom: 7px;">
 		<label for="projectName">项目名称:</label> <input class="easyui-textbox"
 			type="text" name="projectName" style="width: 200px; height: 30px;" />
 		<label>项目类别：</label>
 		<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do'">	
 	
-	</div>
-	<div style="margin-bottom: 7px;">
+
 		<label>项目起始时间：</label>
 		<input name="startTime" type="text"  style="width:170px;height:30px;" class="easyui-datebox" />
 		<label>项目结束时间：</label>
 		<input name="endTime" type="text" style="width:170px;height:30px;" class="easyui-datebox"/>
+		</div>
+	<div style="margin-bottom: 7px;">
 		<input class="easyui-linkbutton" type="button" value="检索"
-			style="width: 198px; height: 30px; margin-left: 295px"
-			onclick="doSearch()"> 
+			style="width: 198px; height: 30px; margin-left: 855px"
+			onclick="doSearch4projectTong()"> 
 	</div>
 
 </form>
 <div style="color: blue;"><font size="5">共检索到</font> <font id="size4project" size="5"></font><font size="5">条记录</font></div>
 <table id="projectTongDg" title="项目信息统计列表" 
-	style="width: 1050px; height: 72%;" toolbar="#projectTongDgBar" data-options="
+	style="width: 1050px; height: 67%;" toolbar="#projectTongDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,

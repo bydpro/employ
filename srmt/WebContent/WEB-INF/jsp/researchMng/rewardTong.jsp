@@ -22,27 +22,27 @@
 		$('#queryRewardTongForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4rewardTong() {
+		getData4rewardTtong();
 	}
 
 	$(function() {
-		getData();
+		getData4rewardTtong();
 
 	})
 
-	function getData() {
+	function getData4rewardTtong() {
 		$.post('research/queryRewardTongList.do?' + Math.random(), $(
 				'#queryRewardTongForm').serializeObject(), function(data) {
 			$('#rewardTongDg').datagrid({
-				loadFilter : pagerFilter
+				loadFilter : pagerFilter4rewardTtong
 			}).datagrid('loadData', data);
 			
 			$("#size4reward").html(data.length);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4rewardTtong(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -91,7 +91,7 @@
 		<input name="rewardTime" type="text" style="width:200px;height:30px;" class="easyui-datebox"/>
 		<input class="easyui-linkbutton" type="button" value="检索"
 			style="width: 198px; height: 30px; margin-left: 325px"
-			onclick="doSearch()"> 
+			onclick="doSearch4rewardTong()"> 
 	</div>
 
 </form>

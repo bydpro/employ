@@ -56,8 +56,9 @@ public class OrganDao {
 				sb.append("  and SO.IS_VALID != :isValid or SO.IS_VALID is null     ");
 			}
 		}
-		getSession().beginTransaction();
-		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
+		SQLQuery query = currSession.createSQLQuery(sb.toString());
 		query.setParameter("organType", Constants.ORGAN_TYPE_COLLEGE);
 		if (StringUtils.isNotEmpty(organName)) {
 			organName = "%" + organName + "%";
@@ -72,44 +73,47 @@ public class OrganDao {
 		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> queryList = query.list();
+		transaction.commit();
 		return queryList;
 	}
 
 	public void delOrgan(HttpServletRequest request) {
 		String organId = request.getParameter("organId");
-		Transaction transaction = getSession().beginTransaction();
-		SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
-		getSession().delete(sysOrgan);
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
+		SysOrgan sysOrgan = (SysOrgan) currSession.get(SysOrgan.class, organId);
+		currSession.delete(sysOrgan);
 		transaction.commit();
 	}
 
 	public void unLayoutOrgan(String organId) {
-		Transaction transaction = getSession().beginTransaction();
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
 		if (StringUtils.isNotEmpty(organId)) {
-			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
+			SysOrgan sysOrgan = (SysOrgan) currSession.get(SysOrgan.class, organId);
 			sysOrgan.setIsValid(Constants.YES);
-			getSession().update(sysOrgan);
+			currSession.update(sysOrgan);
 		}
 		transaction.commit();
-		getSession().close();
 	}
 
 	public void layoutOrgan(String organId) {
-		Transaction transaction = getSession().beginTransaction();
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
 		if (StringUtils.isNotEmpty(organId)) {
-			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
+			SysOrgan sysOrgan = (SysOrgan) currSession.get(SysOrgan.class, organId);
 			sysOrgan.setIsValid(Constants.NO);
-			getSession().update(sysOrgan);
+			currSession.update(sysOrgan);
 		}
 		transaction.commit();
-		getSession().close();
 	}
 
 	public Map getOrganInfo(String organId) {
 		Map map = new HashMap();
-		Transaction transaction = getSession().beginTransaction();
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
 		if (StringUtils.isNotEmpty(organId)) {
-			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
+			SysOrgan sysOrgan = (SysOrgan) currSession.get(SysOrgan.class, organId);
 			map.put("organId", sysOrgan.getOrganId());
 			map.put("organCode", sysOrgan.getOrganCode());
 			map.put("organName", sysOrgan.getOrganName());
@@ -118,7 +122,6 @@ public class OrganDao {
 			map.put("parent", sysOrgan.getParent());
 		}
 		transaction.commit();
-		getSession().close();
 		return map;
 	}
 
@@ -134,38 +137,42 @@ public class OrganDao {
 			result.put("msg", "学院代码不能重复");
 			return result;
 		}
-		Transaction transaction = getSession().beginTransaction();
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
 		if (StringUtils.isNotEmpty(organId)) {
-			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
+			SysOrgan sysOrgan = (SysOrgan) currSession.get(SysOrgan.class, organId);
 			sysOrgan.setIsValid(isValid);
 			sysOrgan.setOrganAddress(address);
 			sysOrgan.setOrganCode(organCode);
 			sysOrgan.setOrganName(organName);
-			getSession().update(sysOrgan);
+			currSession.update(sysOrgan);
 		} else {
 			SysOrgan sysOrgan = new SysOrgan();
-			sysOrgan.setIsValid(isValid);
+			if(StringUtils.isNotEmpty(isValid)){
+				sysOrgan.setIsValid(isValid);
+			}else{
+				sysOrgan.setIsValid(Constants.YES);
+			}		
 			sysOrgan.setOrganAddress(address);
 			sysOrgan.setOrganCode(organCode);
 			sysOrgan.setOrganName(organName);
 			sysOrgan.setOrganType(Constants.ORGAN_TYPE_COLLEGE);
-			getSession().save(sysOrgan);
+			currSession.save(sysOrgan);
 		}
 		transaction.commit();
-		getSession().close();
 		result.put("success", true);
 		return result;
 	}
 
 	public List<Map> queryOrgan(HttpServletRequest request) {
 		String sql = "SELECT SO.ORGAN_ID  ORGANID ,SO.ORGAN_NAME ORGANNAME FROM SYS_ORGAN SO WHERE SO.IS_VALID=:isValid";
-		Transaction transaction = getSession().beginTransaction();
-		SQLQuery query = getSession().createSQLQuery(sql);
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
+		SQLQuery query = currSession.createSQLQuery(sql);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("isValid", Constants.YES);
 		List<Map> queryList = query.list();
 		transaction.commit();
-		getSession().close();
 		return queryList;
 	}
 
@@ -175,8 +182,9 @@ public class OrganDao {
 		if (StringUtils.isNotEmpty(organId)) {
 			sql = sql + "  and  organ_id != :organId";
 		}
-		getSession().beginTransaction();
-		SQLQuery query = getSession().createSQLQuery(sql);
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
+		SQLQuery query = currSession.createSQLQuery(sql);
 		query.setParameter("organCode", organCode);
 		if (StringUtils.isNotEmpty(organId)) {
 			query.setParameter("organId", organId);
@@ -185,6 +193,7 @@ public class OrganDao {
 		if (queryList != null && queryList.size() > 0) {
 			flag = true;
 		}
+		transaction.commit();
 		return flag;
 	}
 	
@@ -221,8 +230,9 @@ public class OrganDao {
 				sb.append("  and SO.IS_VALID != :isValid or SO.IS_VALID is null     ");
 			}
 		}
-		getSession().beginTransaction();
-		SQLQuery query = getSession().createSQLQuery(sb.toString());
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
+		SQLQuery query = currSession.createSQLQuery(sb.toString());
 		query.setParameter("organType", Constants.ORGAN_TYPE_DEPT);
 		if (StringUtils.isNotEmpty(organName)) {
 			organName = "%" + organName + "%";
@@ -240,18 +250,19 @@ public class OrganDao {
 		}
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		List<Map> queryList = query.list();
+		transaction.commit();
 		return queryList;
 	}
 	
 	public List<Map> queryOrgan4dept(HttpServletRequest request) {
 		String sql = "SELECT SO.ORGAN_ID  ORGANID ,SO.ORGAN_NAME ORGANNAME FROM SYS_ORGAN SO WHERE SO.ORGAN_TYPE=:organType ";
-		Transaction transaction = getSession().beginTransaction();
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
 		SQLQuery query = getSession().createSQLQuery(sql);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("organType", Constants.ORGAN_TYPE_COLLEGE);
 		List<Map> queryList = query.list();
 		transaction.commit();
-		getSession().close();
 		return queryList;
 	}
 	
@@ -265,29 +276,33 @@ public class OrganDao {
 		Map result = new HashMap();
 		if (isExitOrganCode(organCode, organId)) {
 			result.put("errorMsg", true);
-			result.put("msg", "院系代码不能重复");
+			result.put("msg", "系部代码不能重复");
 			return result;
 		}
-		Transaction transaction = getSession().beginTransaction();
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
 		if (StringUtils.isNotEmpty(organId)) {
-			SysOrgan sysOrgan = (SysOrgan) getSession().get(SysOrgan.class, organId);
+			SysOrgan sysOrgan = (SysOrgan) currSession.get(SysOrgan.class, organId);
 			sysOrgan.setIsValid(isValid);
 			sysOrgan.setOrganCode(organCode);
 			sysOrgan.setOrganName(organName);
 			sysOrgan.setOrganName(organName);
 			sysOrgan.setParent(parent);
-			getSession().update(sysOrgan);
+			currSession.update(sysOrgan);
 		} else {
 			SysOrgan sysOrgan = new SysOrgan();
-			sysOrgan.setIsValid(isValid);
+			if(StringUtils.isNotEmpty(isValid)){
+				sysOrgan.setIsValid(isValid);
+			}else{
+				sysOrgan.setIsValid(Constants.YES);
+			}	
 			sysOrgan.setOrganCode(organCode);
 			sysOrgan.setOrganName(organName);
 			sysOrgan.setParent(parent);
 			sysOrgan.setOrganType(Constants.ORGAN_TYPE_DEPT);
-			getSession().save(sysOrgan);
+			currSession.save(sysOrgan);
 		}
 		transaction.commit();
-		getSession().close();
 		result.put("success", true);
 		return result;
 	}
@@ -297,8 +312,9 @@ public class OrganDao {
 		if(StringUtils.isNotEmpty(parent)){
 			sql = sql + "  AND SO.PARENT = :parent ";
 		}
-		Transaction transaction = getSession().beginTransaction();
-		SQLQuery query = getSession().createSQLQuery(sql);
+		Session currSession = getSession();
+		Transaction transaction = currSession.beginTransaction();
+		SQLQuery query = currSession.createSQLQuery(sql);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		query.setParameter("organType", Constants.ORGAN_TYPE_DEPT);
 		if(StringUtils.isNotEmpty(parent)){
@@ -306,7 +322,6 @@ public class OrganDao {
 		}
 		List<Map> queryList = query.list();
 		transaction.commit();
-		getSession().close();
 		return queryList;
 	}
 }

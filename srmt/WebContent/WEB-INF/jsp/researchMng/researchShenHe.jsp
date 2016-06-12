@@ -31,16 +31,16 @@
 		return o;
 	}
 	
-	function clearForm4research() {
+	function clearForm() {
 		$('#resTecFf').form('clear');
 	}
 
-	function doSearch4research() {
-		getData4research();
+	function doSearch() {
+		getData();
 	}
 
 	$(function() {
-		getData4research();
+		getData();
 		
 		$('#organ4tong')
 		.combobox(
@@ -67,13 +67,13 @@
 	})
 	
 
-	function getData4research() {
+	function getData() {
 		$.post('research/queryResearchList.do?' + Math.random(), $('#resTecFf').serializeObject(), function(data) {
-			$('#resTecDg').datagrid({loadFilter : pagerFilter4research}).datagrid('loadData', data);
+			$('#resTecDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter4research(data) {
+	function pagerFilter(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -102,65 +102,6 @@
 		data.rows = (data.originalRows.slice(start, end));
 		return data;
 	}
-	
-	function pass() {
-		var row = $('#resTecDg').datagrid('getSelected');
-		if (row) {
-			$.messager.confirm('Confirm', '确认审核通过么?', function(r) {
-				if (r) {
-					$.post('research/pass.do', {
-						researchId : row.RESEARCHID,researchType : row.RESEARCHTYPE
-					}, function(result) {
-						if (result.success) {
-							$.messager.alert('提示', '审核成功!');
-							$('#resTecDg').datagrid('reload',getData4research());// reload the user data
-						} else {
-							$.messager.show({ // show error message
-								title : 'Error',
-								msg : '审核通过操作失败'
-							});
-						}
-					}, 'json');
-				}
-			});
-		} else {
-			$.messager.alert('提示', '请选中一行!');
-		}
-	}
-	function unpass() {
-		var row = $('#resTecDg').datagrid('getSelected');
-		if (row) {
-			$.messager.confirm('Confirm', '确认审核不 通过么?', function(r) {
-				if (r) {
-					$.post('research/unpass.do', {
-						researchId : row.RESEARCHID,researchType : row.RESEARCHTYPE
-					}, function(result) {
-						if (result.success) {
-							$.messager.alert('提示', '审核成功!');
-							$('#resTecDg').datagrid('reload',getData4research());// reload the user data
-						} else {
-							$.messager.show({ // show error message
-								title : 'Error',
-								msg : '审核不通过操作失败'
-							});
-						}
-					}, 'json');
-				}
-			});
-		} else {
-			$.messager.alert('提示', '请选中一行!');
-		}
-	}
-	
-	function format(val, row) {
-		if (val == 1) {
-			return '审核通过';
-		} else if (val == 2) {
-			return '审核不通过';
-		} else if (val == 3) {
-			return '未审核';
-		}
-	}
 </script>
 <form id="resTecFf" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
@@ -183,22 +124,16 @@
 			class="easyui-combobox" name="dictValue"
 			style="width: 200px; height: 30px;"
 			data-options="valueField:'dictvalue',textField:'dictname',url:'research/queryResearchType.do',editable:false">
-		 <label style="margin-left: 0px;">审核状态:&nbsp;&nbsp;</label>
-        <span class="radioSpan">
-            <input type="radio" name="check" value="1"/>审核通过&nbsp;&nbsp;&nbsp;
-			<input type="radio" name="check" value="2"/>审核不通过&nbsp;&nbsp;&nbsp;
-			<input type="radio" name="check" value="3"/>未审核
-        </span>
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 33px"
-			onclick="doSearch4research()"> <input class="easyui-linkbutton"
+			style="width: 98px; height: 30px; margin-left: 313px"
+			onclick="doSearch()"> <input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm4research()" />
+			onclick="clearForm()" />
 	</div>
 
 </form>
 <table id="resTecDg" title="教师科研信息列表" 
-	style="width: 1050px; height: 81%;" toolbar="#rewardDgBar4admin" data-options="
+	style="width: 1050px; height: 81%;" toolbar="#toolbar4resTec" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
@@ -207,19 +142,14 @@
 				pageSize:10">
 	<thead>
 		<tr>
-			<th field="USERNUM" width="40px;">教师编号</th>
-			<th field="USERNAME" width="35px;">姓名</th>
-			<th field="RESEARCHNAME" width="90px;">科研名称</th>
-			<th field="DICTNAME" width="30px;" align="center">科研类型</th>
-			<th field="STATUS" width="30px;" formatter="format" >审核状态</th>
-			<th field="ORGANNAME" width="50px;">所属学院</th>
-			<th field="DEPTNAME" width="50px;">所属系部</th>
-			<th field="USERID" width="50px;" hidden="true">USERID</th>
-			<th field="RID" width="50px;" hidden="true">RID</th>
+			<th field="USERNUM" width="50">教师编号</th>
+			<th field="USERNAME" width="50">姓名</th>
+			<th field="RESEARCHNAME" width="50">科研名称</th>
+			<th field="DICTNAME" width="50">科研类型</th>
+			<th field="MOBILE" width="50">移动电话</th>
+			<th field="EMAIL" width="50">电子邮箱</th>
+			<th field="USERID" width="50" hidden="true">USERID</th>
+			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
 	</thead>
 </table>
-<div id="rewardDgBar4admin">
-	<a href="#" class="easyui-linkbutton"  iconCls="icon-add" plain="true" onclick="pass()">审核通过</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="unpass()">审核不用过</a>
-</div>

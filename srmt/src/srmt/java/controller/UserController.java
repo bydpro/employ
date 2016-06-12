@@ -1,5 +1,7 @@
+
 package srmt.java.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,4 +106,55 @@ public class UserController {
 		Map map = userSevrvice.savePassword(password,userId,newPassword);
 		return map;
 	}
+	
+	@ResponseBody
+	@RequestMapping("/queryUser4sel.do")
+	public List<Map> queryUser4sel(HttpServletRequest request){
+		List<Map> list =userSevrvice.queryUser4sel(request);
+		return list;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveMyUser.do")
+	public Map saveMyUser(HttpServletRequest request){
+		Map map = userSevrvice.saveMyUser(request);
+		return map;
+	}
+	
+	@RequestMapping("/enterSysDict.do")
+	public ModelAndView enterSysDict() {
+
+		return new ModelAndView("sysDict");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/querySysDict.do")
+	public List<Map> querySysDict(HttpServletRequest request){
+		List<Map> list = userSevrvice.querySysDict(request);
+		return list;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveDict.do")
+	public Map saveDict(HttpServletRequest request){
+		Map map = userSevrvice.saveDict(request);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/delDict.do")
+	public Map delDict(HttpServletRequest request){
+		userSevrvice.delDict(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getDictInfo.do")
+	public Map getDictInfo(HttpServletRequest request){
+		String dictId = request.getParameter("dictId");
+		return userSevrvice.getDictInfo(dictId);
+	}
+
 }

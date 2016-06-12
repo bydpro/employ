@@ -51,8 +51,19 @@ public class PatentInfo implements Serializable {
 
 	@Column(name="patent_type")
 	private String patentType;
+	
+	@Column(name="patent_pass")
+	private String patentPass;
 
 	public PatentInfo() {
+	}
+
+	public String getPatentPass() {
+		return patentPass;
+	}
+
+	public void setPatentPass(String patentPass) {
+		this.patentPass = patentPass;
 	}
 
 	public String getPatentId() {

@@ -54,12 +54,23 @@ public class ProjectInfo implements Serializable {
 
 	@Column(name="project_type")
 	private String projectType;
+	
+	@Column(name="project_pass")
+	private String projectPass;
 
 	@Temporal(TemporalType.DATE)
 	@Column(name="start_time")
 	private Date startTime;
 
 	public ProjectInfo() {
+	}
+
+	public String getProjectPass() {
+		return projectPass;
+	}
+
+	public void setProjectPass(String projectPass) {
+		this.projectPass = projectPass;
 	}
 
 	public String getProjectId() {

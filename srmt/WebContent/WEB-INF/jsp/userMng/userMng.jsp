@@ -18,12 +18,12 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearForm4ff() {
 		$('#ff').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4ff() {
+		getData4user();
 	}
 
 	function addUser() {
@@ -67,7 +67,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#dg').datagrid('reload',getData()); // reload the user data
+							$('#dg').datagrid('reload',getData4user()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -97,7 +97,7 @@
 					});
 				} else {
 					$('#dlg').dialog('close'); // close the dialog
-					$('#dg').datagrid('reload',getData()); // reload the user data
+					$('#dg').datagrid('reload',getData4user()); // reload the user data
 				}
 			}
 		});
@@ -142,7 +142,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '注销成功!');
-							$('#dg').datagrid('reload',getData()); // reload the user data
+							$('#dg').datagrid('reload',getData4user()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -171,7 +171,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '取消注销成功!');
-							$('#dg').datagrid('reload',getData()); // reload the user data
+							$('#dg').datagrid('reload',getData4user()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -186,16 +186,16 @@
 		}
 	}
 
-	function getData() {
+	function getData4user() {
 		$.post('userMng/queryUserList.do?' + Math.random(), $('#ff')
 				.serializeObject(), function(data) {
 			$('#dg').datagrid({
-				loadFilter : pagerFilter
+				loadFilter : pagerFilter4user
 			}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4user(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -226,7 +226,7 @@
 	}
 
 	$(function() {
-		getData();
+		getData4user();
 		
 		
 		$('#ccOrgan')
@@ -244,10 +244,21 @@
 		.combobox(
 				{onSelect : function() {
 						$('#dept').combobox('clear');
+						$('#username').combobox('clear');
 						var url = 'organMng/queryDept.do?organId='
 								+ $('#organ').combobox('getValue');
-						$('#dept').combobox(
-								'reload', url);
+						$('#dept').combobox('reload', url);
+						$('#username').combobox('reload', 'userMng/queryUser4sel.do?organId='
+								+ $('#organ').combobox('getValue')+'&deptId=');
+					}
+				});
+		
+		$('#dept')
+		.combobox(
+				{onSelect : function() {
+						$('#username').combobox('clear');
+						$('#username').combobox('reload', 'userMng/queryUser4sel.do?deptId='
+								+ $('#dept').combobox('getValue')+'&organId=');
 					}
 				});
 
@@ -268,20 +279,21 @@
     <div style="margin-bottom: 7px">
     	<label for="userNum">用户编号:</label>
 		<input class="easyui-textbox" type="text" name="userNum"  style="width:200px;height:30px;"/>
+		     	<label for="organId">所属学院:</label>
+		<input id="organ" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
+     	<label>所属系部:</label>
+		<input id="dept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false">
 		<label for="username">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:</label>
-		<input class="easyui-textbox" type="text" name="userName"  style="width:200px;height:30px;"/>
+		<input class="easyui-combobox" type="text" name="userName"  style="width:200px;height:30px;"
+			data-options="valueField:'str',textField:'username',url:'userMng/queryUser4sel.do'" id="username"/>
+    </div>
+     <div style="margin-bottom: 7px;">
 		<label for="email">电子邮箱:</label>
 		<input class="easyui-textbox" type="text" name="email" style="width:200px;height:30px;"/>
 		<label for="mobile">移动电话:</label>
 		<input class="easyui-textbox" type="text" name="mobile" style="width:200px;height:30px;"/>
-    </div>
-     <div style="margin-bottom: 7px;">
-     	<label for="organId">所属学院:</label>
-		<input id="organ" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do'">
-     	<label>所属院系:</label>
-		<input id="dept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
-    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do'">
 		<label>是否有效:&nbsp;&nbsp;</label>
         <span class="radioSpan">
                 <input type="radio" name="isValid" value="1">是</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -295,8 +307,8 @@
         </div>
        <div style="margin-bottom: 7px;">
 		<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
-				margin-left:820px " onclick="doSearch()">
-		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
+				margin-left:820px " onclick="doSearch4ff()">
+		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm4ff()"/>
     </div>
     
 </form>
@@ -307,7 +319,7 @@
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:20">
+				pageSize:10">
 	<thead>
 		<tr>
 			<th field="USERID"  hidden="true">USERID</th>
@@ -317,7 +329,7 @@
 			<th field="EMAIL" width="60px;">电子邮箱</th>
 			<th field="MOBILE" width="40px;" align="center">移动电话</th>
 			<th field="ORGANNAME" width="60px;">所属学院</th>
-			<th field="DEPTNAME" width="60px;">所属院系</th>
+			<th field="DEPTNAME" width="60px;">所属系部</th>
 			<th field="USERTYPE" formatter="formatUserType" width="30px;">用户类型</th>
 			<th field="ISVALID"  formatter="formatValue" align="center" width="20px;">是否有效</th>
 			<th field="BIRTHDAY" align="center" width="30px;">生日</th>
@@ -357,7 +369,7 @@
 			<input id="ccOrgan" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
     			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false "
     			>
-    		<label>所属院系</label>
+    		<label>所属系部</label>
 			<input id="ccDept" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
     			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false ">
 		</div>

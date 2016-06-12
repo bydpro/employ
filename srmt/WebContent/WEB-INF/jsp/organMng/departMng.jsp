@@ -19,27 +19,27 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearForm4dept() {
 		$('#deptFf').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4dept() {
+		getData4dept();
 	}
 
 	$(function() {
-		getData();
+		getData4dept();
 		
 	})
 	
 
-	function getData() {
+	function getData4dept() {
 		$.post('organMng/queryDeptList.do?' + Math.random(), $('#deptFf').serializeObject(), function(data) {
-			$('#deptDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#deptDg').datagrid({loadFilter : pagerFilter4dept}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4dept(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -81,7 +81,7 @@
 				},
 				async : true,
 				success : function(data) {
-					$('#deptDlg').dialog('open').dialog('setTitle', '修改院系');
+					$('#deptDlg').dialog('open').dialog('setTitle', '修改系部');
 					$('#submitForm').form('load', data);
 				},
 			})
@@ -93,14 +93,14 @@
 	function deldept() {
 		var row = $('#deptDg').datagrid('getSelected');
 		if (row) {
-			$.messager.confirm('Confirm', '确认删除所选院系么?', function(r) {
+			$.messager.confirm('Confirm', '确认删除所选系部么?', function(r) {
 				if (r) {
 					$.post('organMng/delOrgan.do', {
 						organId : row.ORGANID
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#deptDg').datagrid('reload',getData());// reload the user data
+							$('#deptDg').datagrid('reload',getData4dept());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -131,7 +131,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#deptDlg').dialog('close'); // close the dialog
-					$('#deptDg').datagrid('reload',getData()); // reload the user data
+					$('#deptDg').datagrid('reload',getData4dept()); // reload the user data
 				}
 			}
 		});
@@ -149,17 +149,17 @@
 		var row = $('#deptDg').datagrid('getSelected');
 		if (row) {
 			if (row.ISVALID == 0) {
-				$.messager.alert('提示', '当前院系已经处于无效状态，无需再次注销!');
+				$.messager.alert('提示', '当前系部已经处于无效状态，无需再次注销!');
 				return;
 			}
-			$.messager.confirm('Confirm', '确认将选中院系设置为无效么?', function(r) {
+			$.messager.confirm('Confirm', '确认将选中系部设置为无效么?', function(r) {
 				if (r) {
 					$.post('organMng/layoutOrgan.do', {
 						organId : row.ORGANID
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '注销成功!');
-							$('#deptDg').datagrid('reload',getData()); // reload the user data
+							$('#deptDg').datagrid('reload',getData4dept()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -178,17 +178,17 @@
 		var row = $('#deptDg').datagrid('getSelected');
 		if (row) {
 			if (row.ISVALID == 1) {
-				$.messager.alert('提示', '当前院系已经处于有效状态，无需再次取消注销!');
+				$.messager.alert('提示', '当前系部已经处于有效状态，无需再次取消注销!');
 				return;
 			}
-			$.messager.confirm('Confirm', '确认将选中院系设置为有效么?', function(r) {
+			$.messager.confirm('Confirm', '确认将选中系部设置为有效么?', function(r) {
 				if (r) {
 					$.post('organMng/unLayoutOrgan.do', {
 						organId : row.ORGANID
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '取消注销成功!');
-							$('#deptDg').datagrid('reload',getData()); // reload the user data
+							$('#deptDg').datagrid('reload',getData4dept()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -204,15 +204,15 @@
 	}
 
 	function adddept() {
-		$('#deptDlg').dialog('open').dialog('setTitle', '新增院系');
+		$('#deptDlg').dialog('open').dialog('setTitle', '新增系部');
 		$('#submitForm').form('clear');
 	}
 </script>
 <form id="deptFf" method="post" style="margin-top: 20px;">
      <div style="margin-bottom: 7px;" >
-		<label for="organName" style="margin-left: 20px;">院系名称:</label>
+		<label for="organName" style="margin-left: 20px;">系部名称:</label>
 		<input class="easyui-textbox" type="text" name="organName"  style="width:200px;height:30px;"/>
-		<label for="organCode" style="margin-left: 20px;">院系代码:</label>
+		<label for="organCode" style="margin-left: 20px;">系部代码:</label>
 		<input class="easyui-textbox" type="text" name="organCode"  style="width:200px;height:30px;"/>
 		<label for="organId" style="margin-left: 20px;">所属学院:</label>
 		<input id="cc" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
@@ -225,25 +225,25 @@
     </div>
      <div style="margin-bottom: 7px;">
      	<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
-				margin-left:840px " onclick="doSearch()">
-		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
+				margin-left:840px " onclick="doSearch4dept()">
+		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm4dept()"/>
      </div>
     
 </form>
-<table id="deptDg" title="院系列表" 
+<table id="deptDg" title="系部列表" 
 	style="width: 1050px; height: 77%;" toolbar="#toolbar4dept" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:20">
+				pageSize:10">
 	<thead>
 		<tr>
-			<th field="ORGANNAME" width="50">院系名称</th>
+			<th field="ORGANNAME" width="50">系部名称</th>
 			<th field="PARENT" width="50">所属学院</th>
 			<th field="ORGANID" width="50" hidden="true">deptID</th>
-			<th field="ORGANCODE" width="50">院系代码</th>
+			<th field="ORGANCODE" width="50">系部代码</th>
 			<th field="ISVALID" width="50" formatter="formatValue">是否有效</th>
 		</tr>
 	</thead>
@@ -261,18 +261,18 @@
 	<form id="submitForm" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="organId" hidden="true"/>
-			<label>院系名称：</label>
+			<label>系部名称：</label>
 			<input name="organName" class="easyui-validatebox" required="true" style="width:200px;height:30px;">
 		</div>
  		<div style="margin-bottom: 7px;">	
- 			<label>院系代码：</label>
+ 			<label>系部代码：</label>
 			<input name="organCode" class="easyui-validatebox" data-options="required:true" style="width:200px;height:30px;">
  		</div>
 		<div style="margin-bottom: 7px;">
 			<label>所属学院：</label> <input
 				class="easyui-combobox" name="parent"
 				style="width: 200px; height: 30px;"
-				data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false ">
+				data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false " required="true" >
 		</div>
 		<div  style="margin-bottom: 7px;">
 		    <label>是否有效:</label>

@@ -247,38 +247,38 @@ public class ResearchService {
 						{
 							workload = (double) theisScore.get("thesisEishou");
 						}
+					}else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_JIAOWU)) {
+						if ((double) theisScore.get("thesisJiaowu") > workload);
+						{
+							workload = (double) theisScore.get("thesisJiaowu");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EISHOULU)) {
+						if ((double) theisScore.get("thesisEishoulu") > workload);
+						{
+							workload = (double) theisScore.get("thesisEishoulu");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_SHOULU)) {
+						if ((double) theisScore.get("thesisShoulu") > workload);
+						{
+							workload = (double) theisScore.get("thesisShoulu");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_CHINESE)) {
+						if ((double) theisScore.get("thesisChinese") > workload);
+						{
+							workload = (double) theisScore.get("thesisChinese");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_GUOJI)) {
+						if ((double) theisScore.get("thesisGuoji") > workload);
+						{
+							workload = (double) theisScore.get("thesisGuoji");
+						}
+					} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_OTHER)) {
+						if ((double) theisScore.get("thesisOther") > workload);
+						{
+							workload = (double) theisScore.get("thesisOther");
+						}
 					}
-				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_JIAOWU)) {
-					if ((double) theisScore.get("thesisJiaowu") > workload);
-					{
-						workload = (double) theisScore.get("thesisJiaowu");
-					}
-				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_EISHOULU)) {
-					if ((double) theisScore.get("thesisEishoulu") > workload);
-					{
-						workload = (double) theisScore.get("thesisEishoulu");
-					}
-				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_SHOULU)) {
-					if ((double) theisScore.get("thesisShoulu") > workload);
-					{
-						workload = (double) theisScore.get("thesisShoulu");
-					}
-				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_CHINESE)) {
-					if ((double) theisScore.get("thesisChinese") > workload);
-					{
-						workload = (double) theisScore.get("thesisChinese");
-					}
-				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_GUOJI)) {
-					if ((double) theisScore.get("thesisGuoji") > workload);
-					{
-						workload = (double) theisScore.get("thesisGuoji");
-					}
-				} else if (thesisPeriodical.contains(Constants.THESIS_INCLUDED_OTHER)) {
-					if ((double) theisScore.get("thesisOther") > workload);
-					{
-						workload = (double) theisScore.get("thesisOther");
-					}
-				}
+				} 
 				workloadSum = workloadSum + workload;
 			}
 			scoreMap.put("thesis", size + "/" + workloadSum);
@@ -463,13 +463,13 @@ public class ResearchService {
 			}
 			scoreMap.put("reward", rewardSzie + "/" + workloadSum4reward);
 			
-			sum = workloadSum +workloadSum4Patent +workloadSum4pro + workloadSum4reward;
+		
 			scoreMap.put("sum", sum);
 		}else{
 			scoreMap.put("reward", "0/0");
-			scoreMap.put("sum", 0);
 		}
-		
+		sum = workloadSum +workloadSum4Patent +workloadSum4pro + workloadSum4reward;
+		scoreMap.put("sum", sum);
 		return scoreMap;
 	}
 	
@@ -491,5 +491,13 @@ public class ResearchService {
 	
 	public List<Map> queryPatentTongList(HttpServletRequest request) {
 		return researchDao.queryPatentTongList(request);
+	}
+	
+	public void pass(HttpServletRequest request){
+		researchDao.pass(request);
+	}
+	
+	public void unpass(HttpServletRequest request){
+		researchDao.unpass(request);
 	}
 }

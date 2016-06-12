@@ -31,26 +31,26 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearForm4thesis() {
 		$('#queryThesisForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4thesis() {
+		getData4thesis();
 	}
 
 	$(function() {
-		getData();
+		getData4thesis();
 
 	})
 	
-		function getData() {
+		function getData4thesis() {
 		$.post('research/queryThesisList.do?' + Math.random(), $('#queryThesisForm').serializeObject(), function(data) {
-			$('#thesisDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#thesisDg').datagrid({loadFilter : pagerFilter4thesis}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4thesis(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -90,7 +90,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#resTecDg').datagrid('reload',getData());// reload the user data
+							$('#resTecDg').datagrid('reload',getData4thesis());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -129,7 +129,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#thesisDlg').dialog('close'); // close the dialog
-					$('#thesisDg').datagrid('reload',getData()); // reload the user data
+					$('#thesisDg').datagrid('reload',getData4thesis()); // reload the user data
 				}
 			}
 		});
@@ -209,25 +209,42 @@
 					}
 				});
 	});
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
 <form id="queryThesisForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
-		<label for="thesisName">论文名称:</label> <input class="easyui-textbox"
+		<label for="thesisName">论文名称:</label> 
+		<input class="easyui-textbox"
 			type="text" name="thesisName" style="width: 200px; height: 30px;" />
 			
-			<label >论文类别：</label>
-			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width: 200px; height: 30px;" "
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do'">
+			<label >论文类型：</label>
+			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width: 200px; height: 30px;" 
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do',editable:false">
+    			    		<label>起始日期:</label>
+			<input name="thesisStartDate" style="width:200px;height: 30px;" class="easyui-datebox" data-options="editable:false" >
+			<label>结束日期:</label>
+			<input name="thesisEndDate" style="width:200px;height: 30px;" class="easyui-datebox" data-options="editable:false" >
+	</div>	
+	<div style="margin-bottom: 7px;">
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 73px"
-			onclick="doSearch()"> <input class="easyui-linkbutton"
+			style="width: 98px; height: 30px; margin-left: 843px"
+			onclick="doSearch4thesis()"> <input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearForm4thesis()" />
 	</div>
 
 </form>
 <table id="thesisDg" title="论文信息列表" 
-	style="width: 1050px; height: 85%;" toolbar="#thesisDgBar" data-options="
+	style="width: 1120px; height: 80%;" toolbar="#thesisDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
@@ -242,7 +259,10 @@
 			<th field="THESISTYPE" width="50">论文类型</th>
 			<th field="THESISAUTHOR" width="50">全部作者</th>
 			<th field="THESISRECORD" width="50">发表期刊</th>
+			<th field="THESISPAGE" width="50px">发表卷、期、页码</th>
+			<th field="THESISDATE" width="40px">发表日期</th>
 			<th field="THESISPERIODICAL" width="50">论文收录情况</th>
+			<th field="THESISPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
@@ -262,7 +282,7 @@
 			<input name="thesisName" class="easyui-validatebox" required="true" style="width:300px;height:30px;margin-left: 120px;">
 		</div>
 		<div style="margin-bottom: 7px;">
-			<label style="margin-right: 120px;">论文类别：</label>
+			<label style="margin-right: 120px;">论文类型：</label>
 			<input id="thesisType" class="easyui-combobox" name="thesisType" style="width:300px;height:30px;margin-left:120px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryThesisType.do',editable:false" required="true" >
 		</div>
@@ -277,8 +297,14 @@
 		 	<input id="thesisPeriodicalStr" name="thesisPeriodicalStr" hidden="true">
 		</div>
 		<div style="margin-bottom: 7px;">
-			<label>发表期刊、卷、期、页码，日期：</label>
-			<input name="thesisRecord" style="width:300px;height: 100px;" class="easyui-textbox" data-options="multiline:true" required="true">
+			<label>发表期刊：</label>
+			<input name="thesisRecord" style="width:300px;height: 30px;margin-left: 120px;" class="easyui-validatebox" required="true">
+		</div>
+		<div style="margin-bottom: 7px;">
+			<label>发表卷、期、页码</label>
+			<input name="thesisPage" style="width:170px;height: 30px;" class="easyui-textbox" required="true" data-options="prompt:'313(5789):940-943'">
+			<label>发表日期</label>
+			<input name="thesisDate" style="width:160px;height: 30px;" class="easyui-datebox" data-options="editable:false" required="true">
 		</div>
 		<div style="margin-bottom: 7px;">
 			<label style="margin-right: 120px;">论文摘要：</label>

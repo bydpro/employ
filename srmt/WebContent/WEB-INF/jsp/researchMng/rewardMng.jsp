@@ -30,17 +30,39 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearqueryRewardForm() {
 		$('#queryRewardForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4queryRewardForm() {
+		getData4queryReward();
 	}
 
 	$(function() {
-		getData();
+		getData4queryReward();
 
+		$('#organ4reward')
+		.combobox(
+				{onSelect : function() {
+						$('#dept4reward').combobox('clear');
+						$('#username4reward').combobox('clear');
+						var url = 'organMng/queryDept.do?organId='
+								+ $('#organ4reward').combobox('getValue');
+						$('#dept4reward').combobox('reload', url);
+						$('#username4reward').combobox('reload', 'userMng/queryUser4sel.do?organId='
+								+ $('#organ4reward').combobox('getValue')+'&deptId=');
+					}
+				});
+		
+		$('#dept4reward')
+		.combobox(
+				{onSelect : function() {
+						$('#username4reward').combobox('clear');
+						$('#username4reward').combobox('reload', 'userMng/queryUser4sel.do?deptId='
+								+ $('#dept4reward').combobox('getValue')+'&organId=');
+					}
+				});
+		
 		$("#rewardFile").uploadify(
 				{
 					height : 30,
@@ -79,16 +101,16 @@
 
 	})
 
-	function getData() {
+	function getData4queryReward() {
 		$.post('research/queryRewardList.do?' + Math.random(), $(
 				'#queryRewardForm').serializeObject(), function(data) {
 			$('#rewardDg').datagrid({
-				loadFilter : pagerFilter
+				loadFilter : pagerFilter4queryReward
 			}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4queryReward(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -128,7 +150,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#rewardDg').datagrid('reload', getData());// reload the user data
+							$('#rewardDg').datagrid('reload', getData4queryReward());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -159,7 +181,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#rewardDlg').dialog('close'); // close the dialog
-					$('#rewardDg').datagrid('reload', getData()); // reload the user data
+					$('#rewardDg').datagrid('reload', getData4queryReward()); // reload the user data
 					
 				}
 			}
@@ -211,33 +233,56 @@
 			$.messager.alert('提示', '请选中一行!');
 		}
 	}
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
-<form id="queryRewardForm" method="post">
+<form id="queryRewardForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
 		<label for="projectName">用户编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
+			<label for="organ4reward">所属学院:</label>
+		<input id="organ4reward" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
+     	<label>所属系部:</label>
+		<input id="dept4reward" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false">
+		<label for="username">教师姓名:</label>
+		<input class="easyui-combobox" type="text" name="userName"  style="width:200px;height:30px;"
+		
+			data-options="valueField:'str',textField:'username',url:'userMng/queryUser4sel.do'" id="username4reward"/>
+	</div>
+	<div style="margin-bottom: 7px;">
 		<label for="rewardName">奖励名称:</label> <input class="easyui-textbox"
 			type="text" name="rewardName" style="width: 200px; height: 30px;" />
-		<label>获奖类别：</label>
+		<label>获奖类型:</label>
 		<input id="rewardType" class="easyui-combobox" name="rewardType" style="width:200px;height:30px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do',editable:false ">
 		<label for="rewardOrgan">奖励单位:</label> 
 		<input class="easyui-textbox"	type="text" name="rewardOrgan" style="width: 200px; height: 30px;" />
+
+		<label>	获奖时间:</label>
+		<input name="rewardTime" type="text" style="width:200px;height:30px;" class="easyui-datebox" data-options="editable:false"/>
 	</div>
 	<div style="margin-bottom: 7px;">
-		<label>	获奖时间:</label>
-		<input name="rewardTime" type="text" style="width:200px;height:30px;" class="easyui-datebox"/>
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 585px"
-			onclick="doSearch()"> 
+			style="width: 98px; height: 30px; margin-left: 845px"
+			onclick="doSearch4queryRewardForm()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearqueryRewardForm()" />
 	</div>
 
 </form>
 <table id="rewardDg" title="奖励信息列表" 
-	style="width: 1050px; height: 80%;" toolbar="#rewardDgBar" data-options="
+	style="width: 1050px; height: 73%;" toolbar="#rewardDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
@@ -253,6 +298,7 @@
 			<th field="REWARDORGAN" width="50">奖励单位</th>
 			<th field="REWARDUSER" width="50">获奖所有人员</th>
 			<th field="REWARDTIME" width="50">获奖时间</th>
+			<th field="REWARDPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
@@ -296,7 +342,7 @@
 			<input name="rewardContent" style="width:460px;height: 100px;" class="easyui-textbox" data-options="multiline:true" required="true">
 		</div>
 		<div style="margin-bottom: 7px;">
-			<label>获奖类别：</label>
+			<label>获奖类型：</label>
 			<input id="rewardType" class="easyui-combobox" name="rewardType" style="width:200px;height:30px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryRewardType.do',editable:false " required="true" >
 			<label>本人位次：</label>

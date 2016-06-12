@@ -39,6 +39,12 @@ public class ThesisInfo implements Serializable {
 
 	@Column(name="thesis_name")
 	private String thesisName;
+	
+	@Column(name="thesis_page")
+	private String thesisPage;
+	
+	@Column(name="thesis_pass")
+	private String thesisPass;
 
 	@Column(name="thesis_periodical")
 	private String thesisPeriodical;
@@ -50,6 +56,28 @@ public class ThesisInfo implements Serializable {
 	private String thesisType;
 
 	public ThesisInfo() {
+	}
+	
+	
+
+	public String getThesisPass() {
+		return thesisPass;
+	}
+
+
+
+	public void setThesisPass(String thesisPass) {
+		this.thesisPass = thesisPass;
+	}
+
+
+
+	public String getThesisPage() {
+		return thesisPage;
+	}
+
+	public void setThesisPage(String thesisPage) {
+		this.thesisPage = thesisPage;
 	}
 
 	public String getThesisId() {

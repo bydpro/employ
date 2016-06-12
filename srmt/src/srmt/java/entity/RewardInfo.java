@@ -42,7 +42,9 @@ public class RewardInfo implements Serializable {
 	@Column(name="reward_file")
 	private String rewardFile;
 	
-
+	@Column(name="reward_pass")
+	private String rewardPass;
+	
 	@Temporal(TemporalType.DATE)
 	@Column(name="reward_time")
 	private Date rewardTime;
@@ -55,6 +57,17 @@ public class RewardInfo implements Serializable {
 
 	public RewardInfo() {
 	}
+
+	
+	public String getRewardPass() {
+		return rewardPass;
+	}
+
+
+	public void setRewardPass(String rewardPass) {
+		this.rewardPass = rewardPass;
+	}
+
 
 	public String getRewardContent() {
 		return rewardContent;

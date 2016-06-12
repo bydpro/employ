@@ -38,17 +38,17 @@
 		}
 	}
 	
-	function clearForm() {
+	function clearForm4patent() {
 		$('#queryPatentForm').form('clear');
 	}
 
-	function getData() {
+	function getData4patent() {
 		$.post('research/queryPatentList.do?' + Math.random(), $('#queryPatentForm').serializeObject(), function(data) {
-			$('#patentDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#patentDg').datagrid({loadFilter : pagerFilter4patent}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4patent(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -78,12 +78,12 @@
 		return data;
 	}
 	
-	function doSearch() {
-		getData();
+	function doSearch4patent() {
+		getData4patent();
 	}
 
 	$(function() {
-		getData();
+		getData4patent();
 			    $("#patentFile").uploadify({
 	        height        : 30,
 	        swf           : './uploadify/uploadify.swf',
@@ -133,7 +133,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#patentDlg').dialog('close'); // close the dialog
-					$('#patentDg').datagrid('reload',getData()); // reload the user data
+					$('#patentDg').datagrid('reload',getData4patent()); // reload the user data
 				}
 			}
 		});
@@ -156,7 +156,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#patentDg').datagrid('reload',getData());// reload the user data
+							$('#patentDg').datagrid('reload',getData4patent());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -208,6 +208,16 @@
 			$.messager.alert('提示', '请选中一行!');
 		}
 	}
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
 
 <form id="queryPatentForm" method="post" style="margin-top: 20px;">
@@ -237,10 +247,10 @@
             </span>
 		<input class="easyui-linkbutton" type="button" value="查询"
 			style="width: 98px; height: 30px; margin-left:410px"
-			onclick="doSearch()"> 
+			onclick="doSearch4patent()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearForm4patent()" />
 	</div>
 
 </form>
@@ -263,6 +273,7 @@
 			<th field="PATENTFIRST" width="50" formatter="formatValue" align="center">是否首位</th>
 			<th field="PATENTISTRANSFER" width="50" formatter="formatValue" align="center">是 否转让</th>
 			<th field="PATENTDATE" width="50" align="center">授权日期 </th>
+			<th field="PATENTPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>

@@ -31,16 +31,38 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearQueryProjectForm() {
 		$('#queryProjectForm').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4queryProject() {
+		getData4QueryProject();
 	}
 
 	$(function() {
-		getData();
+		getData4QueryProject();
+		
+		$('#organ4proect')
+		.combobox(
+				{onSelect : function() {
+						$('#dept4proect').combobox('clear');
+						$('#username4proect').combobox('clear');
+						var url = 'organMng/queryDept.do?organId='
+								+ $('#organ4proect').combobox('getValue');
+						$('#dept4proect').combobox('reload', url);
+						$('#username4proect').combobox('reload', 'userMng/queryUser4sel.do?organId='
+								+ $('#organ4proect').combobox('getValue')+'&deptId=');
+					}
+				});
+		
+		$('#dept4proect')
+		.combobox(
+				{onSelect : function() {
+						$('#username4proect').combobox('clear');
+						$('#username4proect').combobox('reload', 'userMng/queryUser4sel.do?deptId='
+								+ $('#dept4proect').combobox('getValue')+'&organId=');
+					}
+				});
 		
 	    $("#projectFile").uploadify({
 	        height        : 30,
@@ -77,13 +99,13 @@
 
 	})
 	
-		function getData() {
+		function getData4QueryProject() {
 		$.post('research/queryProjectList.do?' + Math.random(), $('#queryProjectForm').serializeObject(), function(data) {
-			$('#projectDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#projectDg').datagrid({loadFilter : pagerFilterqueryProject}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilterqueryProject(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -123,7 +145,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#projectDg').datagrid('reload',getData());// reload the user data
+							$('#projectDg').datagrid('reload',getData4QueryProject());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -164,7 +186,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#projectDlg').dialog('close'); // close the dialog
-					$('#projectDg').datagrid('reload',getData()); // reload the user data
+					$('#projectDg').datagrid('reload',getData4QueryProject()); // reload the user data
 				}
 			}
 		});
@@ -210,33 +232,55 @@
 			$.messager.alert('提示', '请选中一行!');
 		}
 	}
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
 <form id="queryProjectForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
 		<label for="projectName">用户编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
-		<label for="projectName">项目名称:</label> <input class="easyui-textbox"
-			type="text" name="projectName" style="width: 200px; height: 30px;" />
-		<label>项目类别：</label>
-		<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do'">	
-		<label>项目起始时间：</label>
-		<input name="startTime" type="text"  style="width:170px;height:30px;" class="easyui-datebox" />
+		<label for="organ4proect">所属学院:</label>
+		<input id="organ4proect" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
+     	<label>所属系部:</label>
+		<input id="dept4proect" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false">
+		<label for="username">教师姓名:</label>
+		<input class="easyui-combobox" type="text" name="userName"  style="width:200px;height:30px;"
+			data-options="valueField:'str',textField:'username',url:'userMng/queryUser4sel.do'" id="username4proect"/>
 	</div>
 	<div style="margin-bottom: 7px;">
-		<label>项目结束时间：</label>
-		<input name="endTime" type="text" style="width:170px;height:30px;" class="easyui-datebox"/>
+		<label for="projectName">项目名称:</label> 
+		<input class="easyui-textbox"
+			type="text" name="projectName" style="width: 200px; height: 30px;" />
+		<label>项目类型:</label>
+		<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do',editable:false">	
+		<label>项目起始时间：</label>
+		<input name="startTime" type="text"  style="width:170px;height:30px;" class="easyui-datebox" data-options="editable:false"/>
+				<label>项目结束时间：</label>
+		<input name="endTime" type="text" style="width:170px;height:30px;" class="easyui-datebox" data-options="editable:false"/>
+	</div>
+	<div style="margin-bottom: 7px;">
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 585px"
-			onclick="doSearch()"> 
+			style="width: 98px; height: 30px; margin-left: 845px"
+			onclick="doSearch4queryProject()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearQueryProjectForm()" />
 	</div>
 
 </form>
 <table id="projectDg" title="项目信息列表" 
-	style="width: 1050px; height: 79%;" toolbar="#projectDgBar" data-options="
+	style="width: 1050px; height: 73%;" toolbar="#projectDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
@@ -251,8 +295,9 @@
 			<th field="PROJECTTYPE" width="50">项目类型</th>
 			<th field="PROJECTFUND" width="50">项目经费</th>
 			<th field="STARTTIME" width="50">开始日期</th>
-			<th field="ENDTIME" width="50">开始日期</th>
+			<th field="ENDTIME" width="50">结束日期</th>
 			<th field="PROJECTSOURCE" width="50">项目来源</th>
+			<th field="PROJECTPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
@@ -287,7 +332,7 @@
 			<input name="projectSource" class="easyui-validatebox" data-options="required:true" style="width:470px;height:30px;">
  		</div>
 		<div style="margin-bottom: 7px;">
-			<label>项目类别：</label>
+			<label>项目类型：</label>
 			<input id="projectType" class="easyui-combobox" name="projectType" style="width:200px;height:30px;"
     			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryProjectType.do',editable:false" required="true" >
 			<label>到位经费：</label>
@@ -296,9 +341,9 @@
 		</div>
 		<div style="margin-bottom: 7px;">
 			<label>项目起始时间：</label>
-			<input name="startTime" style="width:175px;height:30px;" class="easyui-datebox" required="true">
+			<input name="startTime" style="width:175px;height:30px;" class="easyui-datebox" required="true" data-options="editable:false">
 			<label>项目结束时间：</label>
-			<input name="endTime" style="width:175px;height:30px;" class="easyui-datebox">
+			<input name="endTime" style="width:175px;height:30px;" class="easyui-datebox" data-options="editable:false">
 		</div>
 		<div style="margin-bottom: 7px;">
 			<label>项目内容：</label>

@@ -38,17 +38,17 @@
 		}
 	}
 	
-	function clearForm() {
+	function clearForm4queryPatentForm() {
 		$('#queryPatentForm').form('clear');
 	}
 
-	function getData() {
+	function getData4queryPatentForm() {
 		$.post('research/queryPatentList.do?' + Math.random(), $('#queryPatentForm').serializeObject(), function(data) {
-			$('#patentDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#patentDg').datagrid({loadFilter : pagerFilter4queryPatent}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4queryPatent(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -78,12 +78,34 @@
 		return data;
 	}
 	
-	function doSearch() {
-		getData();
+	function doSearch4queryPatentForm() {
+		getData4queryPatentForm();
 	}
 
+	$('#organ4patent')
+	.combobox(
+			{onSelect : function() {
+					$('#dept4patent').combobox('clear');
+					$('#username4patent').combobox('clear');
+					var url = 'organMng/queryDept.do?organId='
+							+ $('#organ4patent').combobox('getValue');
+					$('#dept4patent').combobox('reload', url);
+					$('#username4patent').combobox('reload', 'userMng/queryUser4sel.do?organId='
+							+ $('#organ4patent').combobox('getValue')+'&deptId=');
+				}
+			});
+	
+	$('#dept4patent')
+	.combobox(
+			{onSelect : function() {
+					$('#username4patent').combobox('clear');
+					$('#username4patent').combobox('reload', 'userMng/queryUser4sel.do?deptId='
+							+ $('#dept4patent').combobox('getValue')+'&organId=');
+				}
+			});
+	
 	$(function() {
-		getData();
+		getData4queryPatentForm();
 			    $("#patentFile").uploadify({
 	        height        : 30,
 	        swf           : './uploadify/uploadify.swf',
@@ -133,7 +155,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#patentDlg').dialog('close'); // close the dialog
-					$('#patentDg').datagrid('reload',getData()); // reload the user data
+					$('#patentDg').datagrid('reload',getData4queryPatentForm()); // reload the user data
 				}
 			}
 		});
@@ -158,7 +180,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#patentDg').datagrid('reload',getData());// reload the user data
+							$('#patentDg').datagrid('reload',getData4queryPatentForm());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -214,24 +236,47 @@
 			$.messager.alert('提示', '请选中一行!');
 		}
 	}
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
 
 <form id="queryPatentForm" method="post" style="margin-top: 20px;">
 	<div style="margin-bottom: 7px;">
-		<label for="projectName">用户编号:</label> <input class="easyui-textbox"
+		<label for="projectName">教师编号:</label> <input class="easyui-textbox"
 			type="text" name="userNum" style="width: 180px; height: 30px;" />
+		<label for="organ4patent">所属学院:</label>
+		<input id="organ4patent" class="easyui-combobox" name="organId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryOrgan4dept.do',editable:false">
+     	<label>所属系部:</label>
+		<input id="dept4patent" class="easyui-combobox" name="deptId" style="width:200px;height:30px;"
+    			data-options="valueField:'ORGANID',textField:'ORGANNAME',url:'organMng/queryDept.do',editable:false">
+		<label for="username">教师姓名:</label>
+		<input class="easyui-combobox" type="text" name="userName"  style="width:200px;height:30px;"
+
+			data-options="valueField:'str',textField:'username',url:'userMng/queryUser4sel.do'" id="username4patent"/>
+		</div>
+	<div style="margin-bottom: 7px;">	
 		<label for="patentName">知识产权名称:</label> <input class="easyui-textbox"
 			type="text" name="patentName" style="width: 180px; height: 30px;" />
 		 <label>知识产权类型:</label>
  		<input  class="easyui-combobox" name="patentType" style="width:180px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPatentType.do'">
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPatentType.do',editable:false">
 		<label>专利人权类别:</label>
  		<input id="patentPeople" class="easyui-combobox" name="patentPeople" style="width:180px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPatentPeople.do'">
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPatentPeople.do',editable:false">
+
+		<label>授权日期:</label>
+		<input name="patentDate" style="width:180px;height:30px;" class="easyui-datebox" data-options="editable:false">
 	</div>
 	<div style="margin-bottom: 7px;">
-		<label>授权日期:</label>
-		<input name="patentDate" style="width:180px;height:30px;" class="easyui-datebox">
 		 <label>是&nbsp;&nbsp;否&nbsp;&nbsp;首&nbsp;&nbsp;位：</label>
 		    <span class="radioSpan">
                 <input type="radio" name="patentFirst" value="1">是</input>&nbsp;&nbsp;&nbsp;
@@ -243,16 +288,16 @@
                 <input type="radio" name="patentIsTransfer" value="0">否</input>
             </span>
 		<input class="easyui-linkbutton" type="button" value="查询"
-			style="width: 98px; height: 30px; margin-left: 170px"
-			onclick="doSearch()"> 
+			style="width: 98px; height: 30px; margin-left: 370px"
+			onclick="doSearch4queryPatentForm()"> 
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearForm4queryPatentForm()" />
 	</div>
 
 </form>
 <table id="patentDg" title="专利信息列表" 
-	style="width: 1050px; height: 80%;" toolbar="#patentDgBar" data-options="
+	style="width: 1050px; height: 73%;" toolbar="#patentDgBar" data-options="
 				rownumbers:true,
 				singleSelect:true,
 				autoRowHeight:false,
@@ -270,6 +315,7 @@
 			<th field="PATENTFIRST" width="50" formatter="formatValue" align="center">是否首位</th>
 			<th field="PATENTISTRANSFER" width="50" formatter="formatValue" align="center">是 否转让</th>
 			<th field="PATENTDATE" width="50" align="center">授权日期 </th>
+			<th field="PATENTPASS" width="50" align="center" formatter="format">审核状态 </th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>
@@ -310,7 +356,7 @@
  		 <div style="margin-bottom: 7px;">	
  			<label>专利人权类别：</label>
  			<input id="patentPeople" class="easyui-combobox" name="patentPeople" style="width:300px;height:30px;"
-    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPatentPeople.do'" required="true" >
+    			data-options="valueField:'DICTVALUE',textField:'DICTNAME',url:'research/queryPatentPeople.do',editable:false" required="true" >
  		</div>
  			<div style="margin-bottom: 7px;">
 			<label>专利内容简介：</label>

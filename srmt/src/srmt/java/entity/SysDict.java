@@ -34,6 +34,8 @@ public class SysDict implements Serializable {
 	@Column(name="is_valid")
 	private String isValid;
 
+	private String seq;
+
 	public SysDict() {
 	}
 
@@ -75,6 +77,14 @@ public class SysDict implements Serializable {
 
 	public void setIsValid(String isValid) {
 		this.isValid = isValid;
+	}
+
+	public String getSeq() {
+		return this.seq;
+	}
+
+	public void setSeq(String seq) {
+		this.seq = seq;
 	}
 
 }

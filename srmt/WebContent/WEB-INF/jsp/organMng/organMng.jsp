@@ -19,27 +19,27 @@
 		return o;
 	}
 
-	function clearForm() {
+	function clearForm4organ() {
 		$('#organFf').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4organ() {
+		getData4organ();
 	}
 
 	$(function() {
-		getData();
+		getData4organ();
 		
 	})
 	
 
-	function getData() {
+	function getData4organ() {
 		$.post('organMng/queryOragnList.do?' + Math.random(), $('#organFf').serializeObject(), function(data) {
-			$('#organDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#organDg').datagrid({loadFilter : pagerFilter4organ}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4organ(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -82,7 +82,7 @@
 				async : true,
 				success : function(data) {
 					$('#organDlg').dialog('open').dialog('setTitle', '修改学院');
-					$('#submitForm').form('load', data);
+					$('#submitForm4organ').form('load', data);
 				},
 			})
 		} else {
@@ -100,7 +100,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '删除成功!');
-							$('#organDg').datagrid('reload',getData());// reload the user data
+							$('#organDg').datagrid('reload',getData4organ());// reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -116,7 +116,7 @@
 	}
 
 	function saveOrgan() {
-		$('#submitForm').form('submit', {
+		$('#submitForm4organ').form('submit', {
 			url : "organMng/saveOrgan.do",
 			onSubmit : function() {
 				return $(this).form('validate');
@@ -131,7 +131,7 @@
 				} else {
 					$.messager.alert('提示', '保存成功!');
 					$('#organDlg').dialog('close'); // close the dialog
-					$('#organDg').datagrid('reload',getData()); // reload the user data
+					$('#organDg').datagrid('reload',getData4organ()); // reload the user data
 				}
 			}
 		});
@@ -159,7 +159,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '注销成功!');
-							$('#organDg').datagrid('reload',getData()); // reload the user data
+							$('#organDg').datagrid('reload',getData4organ()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -188,7 +188,7 @@
 					}, function(result) {
 						if (result.success) {
 							$.messager.alert('提示', '取消注销成功!');
-							$('#organDg').datagrid('reload',getData()); // reload the user data
+							$('#organDg').datagrid('reload',getData4organ()); // reload the user data
 						} else {
 							$.messager.show({ // show error message
 								title : 'Error',
@@ -205,7 +205,7 @@
 
 	function addOrgan() {
 		$('#organDlg').dialog('open').dialog('setTitle', '新增学院');
-		$('#submitForm').form('clear');
+		$('#submitForm4organ').form('clear');
 	}
 </script>
 <form id="organFf" method="post" style="margin-top: 20px;">
@@ -220,8 +220,8 @@
                 <input type="radio" name="isValid" value="0">否</input>
         </span>
 		<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
-				margin-left:200px " onclick="doSearch()">
-		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
+				margin-left:200px " onclick="doSearch4organ()">
+		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm4organ()"/>
     </div>
     
 </form>
@@ -232,7 +232,7 @@
 				autoRowHeight:false,
 				pagination:true,
 				fitColumns :true,
-				pageSize:20">
+				pageSize:10">
 	<thead>
 		<tr>
 			<th field="ORGANNAME" width="50">学院名称</th>
@@ -253,7 +253,7 @@
 
 <div id="organDlg" class="easyui-dialog" style="width:390px;height:250px;padding:10px 20px"
 		closed="true" buttons="#organDlg-buttons" align="center" modal="true">
-	<form id="submitForm" method="post">
+	<form id="submitForm4organ" method="post">
 		<div  style="margin-bottom: 7px;">
 			<input name="organId" hidden="true"/>
 			<label>学院名称：</label>

@@ -44,4 +44,30 @@ public class UserSevrvice {
 	public Map savePassword(String password,String userId ,String newPassword) {
 		return userDao.savePassword(password,userId,newPassword);
 	}
+	
+	public List<Map> queryUser4sel(HttpServletRequest request){
+		List<Map> list = userDao.queryUser4sel(request);
+		return list;
+	}
+	
+	public Map saveMyUser(HttpServletRequest request){
+		return userDao.saveMyUser(request);
+	}
+	
+	public List<Map> querySysDict(HttpServletRequest request){
+		List<Map> list = userDao.querySysDict(request);
+		return list;
+	}
+	
+	public Map saveDict(HttpServletRequest request){
+		return userDao.saveDict(request);
+	}
+	
+	public void delDict(HttpServletRequest request){
+		userDao.delDict(request);
+	}
+	
+	public Map getDictInfo(String userId){
+		return userDao.getDictInfo(userId);
+	}
 }

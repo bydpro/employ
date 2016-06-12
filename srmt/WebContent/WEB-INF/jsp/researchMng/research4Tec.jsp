@@ -20,27 +20,27 @@
 		return o;
 	}
 	
-	function clearForm() {
+	function clearForm4research() {
 		$('#resTecFf').form('clear');
 	}
 
-	function doSearch() {
-		getData();
+	function doSearch4research() {
+		getData4research();
 	}
 
 	$(function() {
-		getData();
+		getData4research();
 		
 	})
 	
 
-	function getData() {
+	function getData4research() {
 		$.post('research/queryResearchList.do?' + Math.random(), $('#resTecFf').serializeObject(), function(data) {
-			$('#resTecDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#resTecDg').datagrid({loadFilter : pagerFilter4research}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4research(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -69,6 +69,16 @@
 		data.rows = (data.originalRows.slice(start, end));
 		return data;
 	}
+	
+	function format(val, row) {
+		if (val == 1) {
+			return '审核通过';
+		} else if (val == 2) {
+			return '审核不通过';
+		} else if (val == 3) {
+			return '未审核';
+		}
+	}
 </script>
 <form id="resTecFf" method="post" style="margin-top: 20px;">
      <div style="margin-bottom: 7px;">
@@ -76,10 +86,10 @@
 		<input class="easyui-textbox" type="text" name="researchName"  style="width:200px;height:30px;"/>
 		<label for="organName">科研类型:</label>
 		<input id="cc" class="easyui-combobox" name="dictValue" style="width:200px;height:30px;"
-    			data-options="valueField:'dictvalue',textField:'dictname',url:'research/queryResearchType.do'">
+    			data-options="valueField:'dictvalue',textField:'dictname',url:'research/queryResearchType.do',editable:false">
 		<input class="easyui-linkbutton" type="button" value="查询" style="width:98px;height:30px;
-				margin-left:330px " onclick="doSearch()">
-		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm()"/>
+				margin-left:330px " onclick="doSearch4research()">
+		<input class="easyui-linkbutton" type="button" value="重置" style="width:98px;height:30px;" onclick="clearForm4research()"/>
     </div>
     
 </form>
@@ -97,8 +107,9 @@
 			<th field="USERNAME" width="50">姓名</th>
 			<th field="RESEARCHNAME" width="50">科研名称</th>
 			<th field="DICTNAME" width="50">科研类型</th>
-			<th field="MOBILE" width="50">移动电话</th>
-			<th field="EMAIL" width="50">电子邮箱</th>
+			<th field="STATUS" width="30px;" formatter="format" >审核状态</th>
+			<th field="ORGANNAME" width="50px;">所属学院</th>
+			<th field="DEPTNAME" width="50px;">所属系部</th>
 			<th field="USERID" width="50" hidden="true">USERID</th>
 			<th field="RID" width="50" hidden="true">RID</th>
 		</tr>

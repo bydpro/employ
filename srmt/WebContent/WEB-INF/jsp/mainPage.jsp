@@ -46,7 +46,7 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			},
 			iconCls : "icon-overlays"
 		},{
-			text : "院系管理",
+			text : "系部管理",
 			attributes : {
 				url : "organMng/enterDeptMng.do"
 			},
@@ -55,12 +55,6 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 		];
 
 		var tree2Data = [{
-			text : "科研信息管理",
-			attributes : {
-				url : "research/enterResearchMng.do"
-			},
-			iconCls : "icon-teacher_info"
-		},{
 			text : "论文管理",
 			attributes : {
 				url : "research/enterThesisMng.do"
@@ -151,6 +145,44 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			},
 			iconCls : "icon-patent_score"
 		}];
+		
+		var tree8Data = [ {
+			text : "科研信息审核",
+			attributes : {
+				url : "research/enterResearchMng.do"
+			},
+			iconCls : "icon-shenhe"
+		} ];
+		
+		var tree10Data = [ {
+			text : "系统字典表管理",
+			attributes : {
+				url : "userMng/enterSysDict.do"
+			},
+			iconCls : "icon-dictionary_mng"
+		} ];
+		
+		//实例化树形菜单
+		$("#tree10").tree({
+			data : tree10Data,
+			lines : true,
+			onClick : function(node) {
+				if (node.attributes) {
+					Open(node.text, node.attributes.url);
+				}
+			}
+		});
+		
+		//实例化树形菜单
+		$("#tree8").tree({
+			data : tree8Data,
+			lines : true,
+			onClick : function(node) {
+				if (node.attributes) {
+					Open(node.text, node.attributes.url);
+				}
+			}
+		});
 		
 		//实例化树形菜单
 		$("#tree6").tree({
@@ -310,6 +342,10 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 				style="padding: 10px;">
 				<ul id="tree2"></ul>
 			</div>
+			<div title="科研信息审核" data-options="iconCls:'icon-shen',selected:true"
+				style="padding: 10px;">
+				<ul id="tree8"></ul>
+			</div>
 			<div title="科研信息统计" data-options="iconCls:'icon-mobile_statistics'"
 				style="padding: 10px;">
 				<ul id="tree5"></ul>
@@ -317,6 +353,10 @@ article, aside, figure, footer, header, hgroup, menu, nav, section {
 			<div title="科研分统计标准" data-options="iconCls:'icon-score_mng'"
 				style="padding: 10px;">
 				<ul id="tree6"></ul>
+			</div>
+			<div title="系统字典表管理" data-options="iconCls:'icon-dictionary_easyicon'"
+				style="padding: 10px;">
+				<ul id="tree10"></ul>
 			</div>
 			<div title="个人信息管理" data-options="iconCls:'icon-people_information'"
 				style="overflow: auto; padding: 10px;">

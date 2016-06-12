@@ -19,28 +19,27 @@
 		return o;
 	}
 	
-	function clearForm() {
+	function clearForm4researchTong() {
 		$('#queryScoreTongFf').form('clear');
 	}
 
-	function doSearch() {
-		debugger
-		getData();
+	function doSearch4researchTtong() {
+		getData4researchTong();
 	}
 
 	$(function() {
-		getData();
+		getData4researchTong();
 		
 	})
 	
 
-	function getData() {
+	function getData4researchTong() {
 		$.post('research/queryScore4Tong.do?' + Math.random(), $('#queryScoreTongFf').serializeObject(), function(data) {
-			$('#resTongDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#resTongDg').datagrid({loadFilter : pagerFilter4researchTong}).datagrid('loadData', data);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4researchTong(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -100,10 +99,10 @@
 			type="text" name="userNum" style="width: 200px; height: 30px;" />
 		<input class="easyui-linkbutton" type="button" value="查询"
 			style="width: 98px; height: 30px; margin-left: 573px"
-			onclick="doSearch()">
+			onclick="doSearch4researchTtong()">
 		<input class="easyui-linkbutton"
 			type="button" value="重置" style="width: 98px; height: 30px;"
-			onclick="clearForm()" />
+			onclick="clearForm4researchTong()" />
 	</div>
 
 </form>

@@ -26,14 +26,14 @@
 		}
 	}
 
-	function getData() {
+	function getData4patentTong() {
 		$.post('research/queryPatentTongList.do?' + Math.random(), $('#queryPatentTongForm').serializeObject(), function(data) {
-			$('#patentTongDg').datagrid({loadFilter : pagerFilter}).datagrid('loadData', data);
+			$('#patentTongDg').datagrid({loadFilter : pagerFilter4patentTong}).datagrid('loadData', data);
 			$("#size4patent").html(data.length);
 		});
 	}
 
-	function pagerFilter(data) {
+	function pagerFilter4patentTong(data) {
 		if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 			data = {
 				total : data.length,
@@ -63,12 +63,12 @@
 		return data;
 	}
 	
-	function doSearch() {
-		getData();
+	function doSearch4patentTong() {
+		getData4patentTong();
 	}
 
 	$(function() {
-		getData();
+		getData4patentTong();
 	});
 	
 </script>
@@ -103,7 +103,7 @@
             </span>
 		<input class="easyui-linkbutton" type="button" value="检索"
 			style="width: 98px; height: 30px; margin-left: 5px"
-			onclick="doSearch()"> 
+			onclick="doSearch4patentTong()"> 
 	</div>
 
 </form>

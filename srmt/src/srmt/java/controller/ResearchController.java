@@ -228,7 +228,7 @@ public class ResearchController {
 		int patentSize = 0;
 		if (thesisList != null && thesisList.size() > 0) {
 			thesisSize = thesisList.size() - 1;
-			Map map = thesisList.get(thesisSize - 1);
+			Map map = thesisList.get(thesisList.size() - 1);
 			double workload = (double) map.get("workload");
 			sumWorkload = sumWorkload + workload;
 		}
@@ -490,5 +490,28 @@ public class ResearchController {
 		headers.setContentDispositionFormData("attachment", fileName);
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping("/enterResearchShenHe.do")
+	public ModelAndView enterResearchShenHe(HttpServletRequest request) {
+		return new ModelAndView("researchMng/researchShenHe");
+	}
+	
+	@ResponseBody
+	@RequestMapping("/pass.do")
+	public Map pass(HttpServletRequest request) {
+		researchService.pass(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/unpass.do")
+	public Map unpass(HttpServletRequest request) {
+		researchService.unpass(request);
+		Map map = new HashMap();
+		map.put("success", true);
+		return map;
 	}
 }
