@@ -2488,17 +2488,17 @@ public class ResearchDao {
 						workload4reward = (double) rewardScore.get("dishi3Third");
 					}
 				} else if (Constants.REWARD_TYPE_XIAO1.equals(type)) {
-					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+					
 						workload4reward = (double) rewardScore.get("schoolFirst");
-					}
+					
 				} else if (Constants.REWARD_TYPE_XIAO2.equals(type)) {
-					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+					
 						workload4reward = (double) rewardScore.get("schoolSecond");
-					}
+					
 				} else if (Constants.REWARD_TYPE_XIAO3.equals(type)) {
-					if (Constants.PLACE_TYPE_FIRST.equals(rewardPlace)) {
+					
 						workload4reward = (double) rewardScore.get("schoolThird");
-					}
+					
 				} else if (Constants.REWARD_TYPE_JIAO.equals(type)) {
 					workload4reward = (double) rewardScore.get("youxiuJiaoxue");
 				} else if (Constants.REWARD_TYPE_QING.equals(type)) {

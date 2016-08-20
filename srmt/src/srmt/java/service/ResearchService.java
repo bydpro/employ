@@ -359,12 +359,13 @@ public class ResearchService {
 							* (double)projectScore.get("otherK");
 				}
 				workloadSum4project = workloadSum4project + workload4project;
-				BigDecimal   b   =   new   BigDecimal(workload4project);  
-			    workloadSum4pro   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue(); 
-			    if(workloadSum4pro == 0){
-			    	workloadSum4pro = 0;
-			    }
+		
 			}
+			BigDecimal   b   =   new   BigDecimal(workloadSum4project);  
+		    workloadSum4pro   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue(); 
+		    if(workloadSum4pro == 0){
+		    	workloadSum4pro = 0;
+		    }
 			scoreMap.put("project", projectSzie + "/" + workloadSum4pro);
 		}else{
 			scoreMap.put("project", "0/0");
